@@ -4,5 +4,23 @@
     "password": "1234",
     "fullName": "คุณครูผู้ดูแลระบบ",
     "role": "Admin"
+  },
+  {
+    "username": "test_teacher_x",
+    "password": "pwd",
+    "fullName": "Test Teacher X",
+    "role": "Teacher"
+  },
+  {
+    "username": "test_teacher_y",
+    "password": "123",
+    "fullName": "Test Teacher Y",
+    "role": "Teacher"
+  },
+  {
+    "username": "Kruging",
+    "password": "1234",
+    "fullName": "คุณครูกิ่ง",
+    "role": "Teacher"
   }
 ]

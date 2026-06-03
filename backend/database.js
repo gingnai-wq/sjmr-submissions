@@ -37,8 +37,8 @@ function loadData() {
   }
 
   // Fallback to environment variables or user default credentials if config file has empty values (e.g. after cloud redeploy resets disk)
-  const DEFAULT_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxKI4nfHMXC72CvkJf0Svo9X_gGdmw3_wbakVo0939jeW3LRhK4Rov--WLNn8vE5o7k/exec';
-  const DEFAULT_FOLDER_ID = '1x90_05aAiqJeXL-5RCRsOxpvUcawZhag';
+  const DEFAULT_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx724Oxu2ilrlEL3n4lEhgMcz0ZKTBcaNBcvynJODee6sfOZosGgHmE0UYBitC6cvWE/exec';
+  const DEFAULT_FOLDER_ID = '1NzhSQbM3vkopg9URFqTC-XJbzUAWrf4w';
 
   if (!config.scriptUrl) {
     config.scriptUrl = process.env.DRIVE_SCRIPT_URL || DEFAULT_SCRIPT_URL;
@@ -165,6 +165,12 @@ function loadDefaultTeachers() {
       password: "1234",
       fullName: "คุณครูผู้ดูแลระบบ",
       role: "Admin"
+    },
+    {
+      username: "Kruging",
+      password: "1234",
+      fullName: "คุณครูกิ่ง",
+      role: "Teacher"
     }
   ];
   saveTeachers();
@@ -401,6 +407,7 @@ async function pushToDrive() {
 
 // Initialize on require
 loadData();
+syncDrive(); // Trigger sync immediately on startup
 
 // Start background sync loop (every 30 seconds)
 setInterval(syncDrive, 30000);
