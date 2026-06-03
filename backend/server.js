@@ -269,6 +269,55 @@ app.post('/api/assignments', (req, res) => {
   res.status(201).json({ success: true, assignment: newAssignment });
 });
 
+// 3.1. Update assignment (Teacher)
+app.post('/api/assignments/update', (req, res) => {
+  const { Assignment_ID, Assignment_Name, Subject_ID, Class, Due_Date, Max_Score, Requester_Username, Requester_Role } = req.body;
+
+  if (!Assignment_ID || !Assignment_Name || !Due_Date || !Max_Score) {
+    return res.status(400).json({ success: false, message: 'ข้อมูลไม่ครบถ้วน' });
+  }
+
+  // Check permissions: Requester must be Admin OR have subject ownership
+  if (!hasGradingPermission(Requester_Username, Requester_Role, Assignment_ID)) {
+    return res.status(403).json({ success: false, message: 'ปฏิเสธการเข้าถึง: คุณไม่มีสิทธิ์จัดการภาระงานชิ้นนี้' });
+  }
+
+  const updated = db.updateAssignment(Assignment_ID, {
+    Assignment_Name,
+    Subject_ID: Subject_ID || "S001",
+    Due_Date,
+    Max_Score: Number(Max_Score),
+    Class: Class || "ทุกชั้นเรียน"
+  });
+
+  if (updated) {
+    res.json({ success: true, message: 'แก้ไขข้อมูลภาระงานสำเร็จ', assignment: updated });
+  } else {
+    res.status(404).json({ success: false, message: 'ไม่พบภาระงานดังกล่าว' });
+  }
+});
+
+// 3.2. Delete assignment (Teacher)
+app.post('/api/assignments/delete', (req, res) => {
+  const { Assignment_ID, Requester_Username, Requester_Role } = req.body;
+
+  if (!Assignment_ID) {
+    return res.status(400).json({ success: false, message: 'กรุณาระบุรหัสการบ้านที่ต้องการลบ' });
+  }
+
+  // Check permissions: Requester must be Admin OR have subject ownership
+  if (!hasGradingPermission(Requester_Username, Requester_Role, Assignment_ID)) {
+    return res.status(403).json({ success: false, message: 'ปฏิเสธการเข้าถึง: คุณไม่มีสิทธิ์ลบภาระงานชิ้นนี้' });
+  }
+
+  const deleted = db.deleteAssignment(Assignment_ID);
+  if (deleted) {
+    res.json({ success: true, message: 'ลบภาระงานเรียบร้อยแล้ว' });
+  } else {
+    res.status(404).json({ success: false, message: 'ไม่พบภาระงานดังกล่าว' });
+  }
+});
+
 // 4. Submit assignment (Student)
 app.post('/api/submit', upload.single('file'), (req, res) => {
   const { Student_ID, Assignment_ID, Notes, Link } = req.body;

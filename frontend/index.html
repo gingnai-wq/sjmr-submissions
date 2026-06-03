@@ -350,6 +350,30 @@
                   </table>
                 </div>
  
+                <div class="panel-header" style="margin-top: 25px; display: flex; justify-content: space-between; align-items: center;">
+                  <h3><i class="fa-solid fa-list-check text-purple"></i> ทะเบียนภาระงาน (Assignment Management)</h3>
+                </div>
+
+                <div class="table-container" style="margin-top: 15px;">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>รหัสการบ้าน</th>
+                        <th>ชื่อภาระงาน / หัวข้อ</th>
+                        <th>รายวิชา</th>
+                        <th>ห้องเรียนที่รับมอบหมาย</th>
+                        <th>วันครบกำหนด</th>
+                        <th>คะแนนเต็ม</th>
+                        <th>การจัดการ</th>
+                      </tr>
+                    </thead>
+                    <tbody id="assignments-table-body">
+                      <tr>
+                        <td colspan="7" class="text-center">กำลังโหลดข้อมูล...</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
               </div>
 
               <!-- View 4: Reports Summary & Printing (NEW) -->
@@ -635,6 +659,64 @@
             <button type="button" class="btn btn-secondary btn-close-edit-modal-btn">ยกเลิก</button>
             <button type="submit" class="btn btn-purple">
               <i class="fa-solid fa-circle-check"></i> บันทึกข้อมูลนักเรียน
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Assignment Modal (NEW) -->
+  <div id="assignment-edit-modal" class="modal-overlay">
+    <div class="modal-container glass-card modal-medium animate-zoom-in">
+      <div class="modal-header">
+        <h2><i class="fa-solid fa-file-pen text-purple"></i> แก้ไขข้อมูลภาระงาน</h2>
+        <button id="btn-close-assignment-edit-modal" class="btn-close-modal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="assignment-edit-form">
+          <div class="form-row">
+            <div class="input-group">
+              <label for="edit-assign-id-display">รหัสการบ้าน (แก้ไขไม่ได้)</label>
+              <input type="text" id="edit-assign-id-display" readonly style="background: rgba(255,255,255,0.05); color: var(--text-muted);">
+              <input type="hidden" id="edit-assign-id" name="Assignment_ID">
+            </div>
+            <div class="input-group">
+              <label for="edit-assign-name">ชื่อภาระงาน / หัวข้อ</label>
+              <input type="text" id="edit-assign-name" name="Assignment_Name" required autocomplete="off">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="input-group">
+              <label for="edit-assign-subject">รายวิชา</label>
+              <select id="edit-assign-subject" name="Subject_ID" required style="background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--glass-border); padding: 8px; border-radius: 6px; width: 100%;">
+                <!-- Loaded dynamically -->
+              </select>
+            </div>
+            <div class="input-group">
+              <label for="edit-assign-class">ระดับชั้นเรียนที่มอบหมาย</label>
+              <select id="edit-assign-class" name="Class" required style="background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--glass-border); padding: 8px; border-radius: 6px; width: 100%;">
+                <option value="all">ทุกชั้นเรียน (All Classes)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="input-group">
+              <label for="edit-assign-due">วันครบกำหนด</label>
+              <input type="date" id="edit-assign-due" name="Due_Date" required>
+            </div>
+            <div class="input-group">
+              <label for="edit-assign-score">คะแนนเต็ม</label>
+              <input type="number" id="edit-assign-score" name="Max_Score" min="1" max="100" required>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary btn-close-assignment-edit-modal-btn">ยกเลิก</button>
+            <button type="submit" class="btn btn-purple">
+              <i class="fa-solid fa-circle-check"></i> บันทึกข้อมูลภาระงาน
             </button>
           </div>
         </form>

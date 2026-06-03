@@ -132,9 +132,12 @@ const passwordModal = document.getElementById('password-modal');
 const gradeModal = document.getElementById('grade-modal');
 const studentEditModal = document.getElementById('student-edit-modal');
 const studentEditForm = document.getElementById('student-edit-form');
+const assignmentEditModal = document.getElementById('assignment-edit-modal');
+const assignmentEditForm = document.getElementById('assignment-edit-form');
+const assignmentsTableBody = document.getElementById('assignments-table-body');
 
 // Close buttons for modals (updated to be generic and support all modals including the edit modal)
-document.querySelectorAll('.btn-close-modal, .btn-close-modal-btn, .btn-close-pwd-modal, .btn-close-pwd-modal-btn, .btn-close-grade-modal, .btn-close-grade-modal-btn, .btn-close-edit-modal-btn').forEach(btn => {
+document.querySelectorAll('.btn-close-modal, .btn-close-modal-btn, .btn-close-pwd-modal, .btn-close-pwd-modal-btn, .btn-close-grade-modal, .btn-close-grade-modal-btn, .btn-close-edit-modal-btn, .btn-close-assignment-edit-modal-btn').forEach(btn => {
   btn.addEventListener('click', (e) => {
     const modal = e.currentTarget.closest('.modal-overlay');
     if (modal) closeModal(modal);
@@ -914,6 +917,7 @@ async function loadTeacherDashboard() {
     
     renderSubmissionsTable();
     renderStudentsDirectoryTable();
+    loadAssignmentsTable();
   } catch (err) {
     console.error(err);
     showToast('ไม่สามารถโหลดข้อมูลหลังบ้านได้', 'error');
@@ -3224,6 +3228,213 @@ document.getElementById('panel-teachers-view').addEventListener('click', async (
       } catch (err) {
         console.error(err);
         showToast('เกิดข้อผิดพลาดในการลบรายวิชา', 'error');
+      }
+    }
+  }
+});
+
+// Render Assignments Table in Teacher Dashboard (NEW)
+async function loadAssignmentsTable() {
+  if (!assignmentsTableBody) return;
+  assignmentsTableBody.innerHTML = '<tr><td colspan="7" class="text-center"><i class="fa-solid fa-spinner fa-spin"></i> กำลังโหลดข้อมูล...</td></tr>';
+
+  try {
+    // Sort assignments by ID descending
+    const list = [...state.assignments];
+    list.sort((a, b) => b.Assignment_ID.localeCompare(a.Assignment_ID));
+
+    assignmentsTableBody.innerHTML = '';
+    
+    // Filter assignments that are permitted
+    const permitted = list.filter(a => hasSubjectAccess(a.Subject_ID));
+
+    if (permitted.length === 0) {
+      assignmentsTableBody.innerHTML = '<tr><td colspan="7" class="text-center">ไม่พบข้อมูลภาระงานที่ท่านมีสิทธิ์เข้าถึง</td></tr>';
+      return;
+    }
+    
+    permitted.forEach(assign => {
+      const subj = state.subjects.find(s => s.Subject_ID === assign.Subject_ID);
+      const subjectName = subj ? `${subj.Subject_Name} (${assign.Subject_ID})` : assign.Subject_ID;
+      
+      const formattedDate = new Date(assign.Due_Date).toLocaleDateString('th-TH', {
+        day: 'numeric',
+        month: 'short',
+        year: '2-digit'
+      });
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><strong>${assign.Assignment_ID}</strong></td>
+        <td>${assign.Assignment_Name}</td>
+        <td>${subjectName}</td>
+        <td><span class="badge" style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);">${assign.Class === 'all' || assign.Class === 'ทุกชั้นเรียน' ? 'ทุกชั้นเรียน' : assign.Class}</span></td>
+        <td>${formattedDate}</td>
+        <td><strong>${assign.Max_Score}</strong></td>
+        <td>
+          <div class="actions-group" style="display: flex; gap: 8px;">
+            <button class="btn btn-secondary btn-icon-only btn-edit-assign-trigger" 
+                    data-id="${assign.Assignment_ID}"
+                    data-name="${assign.Assignment_Name}"
+                    data-subject="${assign.Subject_ID}"
+                    data-class="${assign.Class}"
+                    data-due="${assign.Due_Date}"
+                    data-score="${assign.Max_Score}"
+                    style="padding: 4px 8px; font-size: 0.8rem;"
+                    title="แก้ไขการบ้าน">
+              <i class="fa-solid fa-pen"></i>
+            </button>
+            <button class="btn btn-red btn-icon-only btn-delete-assign-trigger" 
+                    data-id="${assign.Assignment_ID}"
+                    style="padding: 4px 8px; font-size: 0.8rem;"
+                    title="ลบการบ้าน">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </div>
+        </td>
+      `;
+      assignmentsTableBody.appendChild(tr);
+    });
+  } catch (err) {
+    console.error(err);
+    assignmentsTableBody.innerHTML = '<tr><td colspan="7" class="text-center text-red">เกิดข้อผิดพลาดในการแสดงตารางภาระงาน</td></tr>';
+  }
+}
+
+// Modal bindings for editing assignments
+if (assignmentEditForm) {
+  // Populate subject options in edit modal
+  const populateEditSubjectDropdown = () => {
+    const editAssignSub = document.getElementById('edit-assign-subject');
+    if (editAssignSub && state.subjects) {
+      editAssignSub.innerHTML = '';
+      const permittedSubjects = state.subjects.filter(s => hasSubjectAccess(s.Subject_ID));
+      permittedSubjects.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s.Subject_ID;
+        opt.textContent = `${s.Subject_ID} - ${s.Subject_Name}`;
+        editAssignSub.appendChild(opt);
+      });
+    }
+  };
+
+  // Populate class options in edit modal
+  const populateEditClassDropdown = () => {
+    const editAssignClass = document.getElementById('edit-assign-class');
+    if (editAssignClass && state.students) {
+      // Keep only 'all' option initially
+      editAssignClass.innerHTML = '<option value="all">ทุกชั้นเรียน (All Classes)</option>';
+      const classes = new Set();
+      state.students.forEach(s => {
+        if (s.Class) classes.add(s.Class);
+      });
+      Array.from(classes).sort().forEach(cls => {
+        const opt = document.createElement('option');
+        opt.value = cls;
+        opt.textContent = cls;
+        editAssignClass.appendChild(opt);
+      });
+    }
+  };
+
+  // Listen to Edit Button Clicks
+  document.getElementById('panel-teachers-view').addEventListener('click', (e) => {
+    const editBtn = e.target.closest('.btn-edit-assign-trigger');
+    if (editBtn) {
+      populateEditSubjectDropdown();
+      populateEditClassDropdown();
+
+      const assignId = editBtn.dataset.id;
+      const assignName = editBtn.dataset.name;
+      const subjectId = editBtn.dataset.subject;
+      const assignClass = editBtn.dataset.class;
+      const due = editBtn.dataset.due;
+      const score = editBtn.dataset.score;
+
+      document.getElementById('edit-assign-id-display').value = assignId;
+      document.getElementById('edit-assign-id').value = assignId;
+      document.getElementById('edit-assign-name').value = assignName;
+      document.getElementById('edit-assign-subject').value = subjectId;
+      document.getElementById('edit-assign-class').value = assignClass || 'all';
+      document.getElementById('edit-assign-due').value = due;
+      document.getElementById('edit-assign-score').value = score;
+
+      openModal(assignmentEditModal);
+    }
+  });
+
+  // Handle Edit Form Submission
+  assignmentEditForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btnSubmit = assignmentEditForm.querySelector('button[type="submit"]');
+    const btnOriginalText = btnSubmit.innerHTML;
+    btnSubmit.disabled = true;
+    btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังบันทึก...';
+
+    const formData = {
+      Assignment_ID: document.getElementById('edit-assign-id').value,
+      Assignment_Name: document.getElementById('edit-assign-name').value.trim(),
+      Subject_ID: document.getElementById('edit-assign-subject').value,
+      Class: document.getElementById('edit-assign-class').value,
+      Due_Date: document.getElementById('edit-assign-due').value,
+      Max_Score: Number(document.getElementById('edit-assign-score').value),
+      Requester_Username: state.teacherData ? state.teacherData.username : '',
+      Requester_Role: state.teacherData ? state.teacherData.role : ''
+    };
+
+    try {
+      const res = await fetch('/api/assignments/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      }).then(r => r.json());
+
+      if (res.success) {
+        showToast(res.message, 'success');
+        logAgentEvent('edit_assignment', 'Teacher', { assignmentId: formData.Assignment_ID });
+        closeModal(assignmentEditModal);
+        
+        await loadTeacherDashboard(); // This will refresh table, dropdowns, and state!
+      } else {
+        showToast(res.message, 'error');
+      }
+    } catch (err) {
+      console.error(err);
+      showToast('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์', 'error');
+    } finally {
+      btnSubmit.disabled = false;
+      btnSubmit.innerHTML = btnOriginalText;
+    }
+  });
+}
+
+// Listen to Delete Button Clicks
+document.getElementById('panel-teachers-view').addEventListener('click', async (e) => {
+  const delBtn = e.target.closest('.btn-delete-assign-trigger');
+  if (delBtn) {
+    const assignmentId = delBtn.dataset.id;
+    if (confirm(`คุณครูยืนยันว่าต้องการลบการบ้านรหัส "${assignmentId}" หรือไม่?\n(การลบจะลบประวัติการส่งงานและคะแนนของเด็กทั้งหมดด้วย)`)) {
+      try {
+        const res = await fetch('/api/assignments/delete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            Assignment_ID: assignmentId,
+            Requester_Username: state.teacherData ? state.teacherData.username : '',
+            Requester_Role: state.teacherData ? state.teacherData.role : ''
+          })
+        }).then(r => r.json());
+        
+        if (res.success) {
+          showToast(res.message, 'success');
+          logAgentEvent('delete_assignment', 'Teacher', { assignmentId });
+          await loadTeacherDashboard(); // This will refresh everything!
+        } else {
+          showToast(res.message, 'error');
+        }
+      } catch (err) {
+        console.error(err);
+        showToast('เกิดข้อผิดพลาดในการลบการบ้าน', 'error');
       }
     }
   }

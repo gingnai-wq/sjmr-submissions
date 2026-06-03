@@ -453,6 +453,38 @@ module.exports = {
     pushToDrive();
     return assignment;
   },
+  updateAssignment: (assignmentId, updatedData) => {
+    const idx = assignments.findIndex(a => a.Assignment_ID === assignmentId);
+    if (idx !== -1) {
+      assignments[idx] = {
+        ...assignments[idx],
+        ...updatedData,
+        Max_Score: Number(updatedData.Max_Score || assignments[idx].Max_Score)
+      };
+      saveAssignments();
+      pushToDrive();
+      return assignments[idx];
+    }
+    return null;
+  },
+  deleteAssignment: (assignmentId) => {
+    const idx = assignments.findIndex(a => a.Assignment_ID === assignmentId);
+    if (idx !== -1) {
+      const removed = assignments.splice(idx, 1);
+      saveAssignments();
+      
+      // Cascade delete submissions referencing this assignment
+      const originalSubCount = submissions.length;
+      submissions = submissions.filter(s => s.Assignment_ID !== assignmentId);
+      if (submissions.length !== originalSubCount) {
+        saveSubmissions();
+      }
+      
+      pushToDrive();
+      return removed[0];
+    }
+    return null;
+  },
   
   // Submission helpers
   getSubmissions: () => submissions,
