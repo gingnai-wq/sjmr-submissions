@@ -14,7 +14,14 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static frontend files
+// Serve static frontend files with no-cache headers to prevent browser caching old versions
+app.use((req, res, next) => {
+  const url = req.url.split('?')[0];
+  if (url.endsWith('.js') || url.endsWith('.css') || url === '/' || url.endsWith('.html')) {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+  }
+  next();
+});
 app.use(express.static(path.join(__dirname, '../frontend')));
 
 // Ensure uploads folders exist
