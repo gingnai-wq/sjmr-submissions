@@ -37,7 +37,7 @@ function loadData() {
   }
 
   // Fallback to environment variables or user default credentials if config file has empty values (e.g. after cloud redeploy resets disk)
-  const DEFAULT_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx724Oxu2ilrlEL3n4lEhgMcz0ZKTBcaNBcvynJODee6sfOZosGgHmE0UYBitC6cvWE/exec';
+  const DEFAULT_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwHQazkkyDCYDw38lUHTJmHXhBw1YrgM824FTqipe0oKCK8hJ4pvj7U4y_xAMNDvXhu/exec';
   const DEFAULT_FOLDER_ID = '1NzhSQbM3vkopg9URFqTC-XJbzUAWrf4w';
 
   if (!config.scriptUrl) {
