@@ -1,0 +1,6204 @@
+[
+  {
+    "Student_ID": "4983",
+    "FullName": "เด็กชาย ศิรชัช  วงศ์ประเสริฐ",
+    "Class": "ป.6/3",
+    "Email": "4983@sjmr.ac.th",
+    "Status": "1639800508409"
+  },
+  {
+    "Student_ID": "5015",
+    "FullName": "เด็กชาย ชยุต  วนาอโณทัย",
+    "Class": "ป.6/3",
+    "Email": "5015@sjmr.ac.th",
+    "Status": "1630400221643"
+  },
+  {
+    "Student_ID": "5173",
+    "FullName": "เด็กชาย กำพล  แซ่ม้า",
+    "Class": "ป.6/3",
+    "Email": "5173@sjmr.ac.th",
+    "Status": "1200901696389"
+  },
+  {
+    "Student_ID": "5174",
+    "FullName": "เด็กชาย สาโรจน์  แซ่ม้า",
+    "Class": "ป.6/3",
+    "Email": "5174@sjmr.ac.th",
+    "Status": "1609901144984"
+  },
+  {
+    "Student_ID": "5205",
+    "FullName": "เด็กหญิง ลภัสรดา  กาญจนพันธุ์บุญ",
+    "Class": "ป.6/3",
+    "Email": "5205@sjmr.ac.th",
+    "Status": "0639800017458"
+  },
+  {
+    "Student_ID": "5223",
+    "FullName": "เด็กหญิง สุชาดา  เดโชคงลาภ",
+    "Class": "ป.6/3",
+    "Email": "5223@sjmr.ac.th",
+    "Status": "1639800499019"
+  },
+  {
+    "Student_ID": "5330",
+    "FullName": "เด็กชาย อิศม์เดช  สำเภาเล็ก",
+    "Class": "ป.6/3",
+    "Email": "5330@sjmr.ac.th",
+    "Status": "1639200042981"
+  },
+  {
+    "Student_ID": "5629",
+    "FullName": "เด็กชาย กิตติพงศ์  สินไพบูลย์เลิศ",
+    "Class": "ป.6/3",
+    "Email": "5629@sjmr.ac.th",
+    "Status": "1630500246753"
+  },
+  {
+    "Student_ID": "5010",
+    "FullName": "เด็กหญิง วชิราภรณ์  วิเชียรวิจิตร",
+    "Class": "ป.1/1",
+    "Email": "5010@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5093",
+    "FullName": "เด็กชาย ชลกร  เกษตรไพร",
+    "Class": "ป.1/1",
+    "Email": "5093@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5099",
+    "FullName": "เด็กหญิง สุรดา  นันทราย",
+    "Class": "ป.1/1",
+    "Email": "5099@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5102",
+    "FullName": "เด็กชาย ธนกฤต  นุรังษี",
+    "Class": "ป.1/1",
+    "Email": "5102@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5103",
+    "FullName": "เด็กหญิง ธิษตยา  อินถา",
+    "Class": "ป.1/1",
+    "Email": "5103@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5107",
+    "FullName": "เด็กหญิง สุณิสา  คำสวัสดิ์",
+    "Class": "ป.1/1",
+    "Email": "5107@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5129",
+    "FullName": "เด็กหญิง ธนาภรณ์  คิดทำ",
+    "Class": "ป.1/1",
+    "Email": "5129@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5187",
+    "FullName": "เด็กหญิง รุจิรา  มรดกคีรี",
+    "Class": "ป.1/1",
+    "Email": "5187@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5193",
+    "FullName": "เด็กชาย ณัฐกฤต  ปัญญาดี",
+    "Class": "ป.1/1",
+    "Email": "5193@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5224",
+    "FullName": "เด็กหญิง นันท์ธิญา  ไพรวิภาวี",
+    "Class": "ป.1/1",
+    "Email": "5224@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5248",
+    "FullName": "เด็กชาย ตายุโด้มู  -",
+    "Class": "ป.1/1",
+    "Email": "5248@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5415",
+    "FullName": "เด็กชาย พันธวีร์  กามอทซู",
+    "Class": "ป.1/1",
+    "Email": "5415@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5430",
+    "FullName": "เด็กหญิง พิชยา  อาชาวัฒนกุล",
+    "Class": "ป.1/1",
+    "Email": "5430@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5435",
+    "FullName": "เด็กหญิง สุทธิดา  ปัญญา",
+    "Class": "ป.1/1",
+    "Email": "5435@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5436",
+    "FullName": "เด็กชาย ปองคุณ  แก้วกลุ่ม",
+    "Class": "ป.1/1",
+    "Email": "5436@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5449",
+    "FullName": "เด็กชาย บดินทร์  -",
+    "Class": "ป.1/1",
+    "Email": "5449@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5450",
+    "FullName": "เด็กชาย เกื้อกูล  -",
+    "Class": "ป.1/1",
+    "Email": "5450@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5452",
+    "FullName": "เด็กชาย โทมาลูวิสเบล  -",
+    "Class": "ป.1/1",
+    "Email": "5452@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5472",
+    "FullName": "เด็กชาย คึกะบอเซ  -",
+    "Class": "ป.1/1",
+    "Email": "5472@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5668",
+    "FullName": "เด็กชาย วิชัยสดุดี  พลากิจจรัสแสง",
+    "Class": "ป.1/1",
+    "Email": "5668@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5669",
+    "FullName": "เด็กหญิง กันธิชา  พลากิจจรัสแสง",
+    "Class": "ป.1/1",
+    "Email": "5669@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5679",
+    "FullName": "เด็กชาย ชัยวัฒน์  กันเมืองเวียง",
+    "Class": "ป.1/1",
+    "Email": "5679@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5726",
+    "FullName": "เด็กหญิง เกวรินทร์  บุญถิ่น",
+    "Class": "ป.1/1",
+    "Email": "5726@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5878",
+    "FullName": "เด็กชาย ธนวัฒน์  กองศรีใจ",
+    "Class": "ป.1/1",
+    "Email": "5878@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5879",
+    "FullName": "เด็กชาย วรายุ  วงจันป๊อก",
+    "Class": "ป.1/1",
+    "Email": "5879@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5890",
+    "FullName": "เด็กหญิง กานต์รวี  สุรางวัด",
+    "Class": "ป.1/1",
+    "Email": "5890@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5891",
+    "FullName": "เด็กหญิง จิดาภา  สัมมาวิบูลย์",
+    "Class": "ป.1/1",
+    "Email": "5891@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5892",
+    "FullName": "เด็กหญิง ชุติมา  อนุตรธรรม",
+    "Class": "ป.1/1",
+    "Email": "5892@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5895",
+    "FullName": "เด็กชาย ณกรกฤช  นวลละออง",
+    "Class": "ป.1/1",
+    "Email": "5895@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5896",
+    "FullName": "เด็กหญิง จิดาภา  ยอดทองหลาง",
+    "Class": "ป.1/1",
+    "Email": "5896@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5097",
+    "FullName": "เด็กหญิง มะลิ  -",
+    "Class": "ป.1/2",
+    "Email": "5097@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5101",
+    "FullName": "เด็กหญิง อมรรัตน์  ปันปละ",
+    "Class": "ป.1/2",
+    "Email": "5101@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5109",
+    "FullName": "เด็กชาย ภัทรกร  กองสี",
+    "Class": "ป.1/2",
+    "Email": "5109@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5122",
+    "FullName": "เด็กหญิง ขวัญชีวา  คงเทศ",
+    "Class": "ป.1/2",
+    "Email": "5122@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5124",
+    "FullName": "เด็กหญิง ปภาวรินทร์  องค์การ",
+    "Class": "ป.1/2",
+    "Email": "5124@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5130",
+    "FullName": "เด็กหญิง เปรมสินี  เบญจบงกช",
+    "Class": "ป.1/2",
+    "Email": "5130@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5141",
+    "FullName": "เด็กหญิง ชัญญาทิพย์  อ๊ะนา",
+    "Class": "ป.1/2",
+    "Email": "5141@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5158",
+    "FullName": "เด็กหญิง ชลิตา  ภูมิทิวนนท์",
+    "Class": "ป.1/2",
+    "Email": "5158@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5189",
+    "FullName": "เด็กชาย สุวาฐณัฐ  มั่งตั๋น",
+    "Class": "ป.1/2",
+    "Email": "5189@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5196",
+    "FullName": "เด็กชาย ชัยธวัช  สุวรรณศรี",
+    "Class": "ป.1/2",
+    "Email": "5196@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5197",
+    "FullName": "เด็กหญิง ชนัญชิดา  สุวรรณศรี",
+    "Class": "ป.1/2",
+    "Email": "5197@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5429",
+    "FullName": "เด็กหญิง ฐิตาพร  อินปิก",
+    "Class": "ป.1/2",
+    "Email": "5429@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5482",
+    "FullName": "เด็กหญิง ผริตา  -",
+    "Class": "ป.1/2",
+    "Email": "5482@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5484",
+    "FullName": "เด็กชาย บวรภัค  วนภูมิพิทักษ์",
+    "Class": "ป.1/2",
+    "Email": "5484@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5501",
+    "FullName": "เด็กหญิง ปรีดาวรรณ  เวียงตา",
+    "Class": "ป.1/2",
+    "Email": "5501@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5675",
+    "FullName": "เด็กชาย ธนภัทร  จันธิดา",
+    "Class": "ป.1/2",
+    "Email": "5675@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5676",
+    "FullName": "เด็กหญิง ภิญญ์นารา  สนิทจันทร์แจ้ง",
+    "Class": "ป.1/2",
+    "Email": "5676@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5733",
+    "FullName": "เด็กหญิง เฌอรีน  -",
+    "Class": "ป.1/2",
+    "Email": "5733@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5880",
+    "FullName": "เด็กชาย ณภัค  ใจผัดคำ",
+    "Class": "ป.1/2",
+    "Email": "5880@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5881",
+    "FullName": "เด็กชาย ธนภัทร  ยอดปานันท์",
+    "Class": "ป.1/2",
+    "Email": "5881@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5884",
+    "FullName": "เด็กชาย ดวิน  หิรัญเดชศิริ",
+    "Class": "ป.1/2",
+    "Email": "5884@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5885",
+    "FullName": "เด็กชาย ศุภพงศ์  ถมยา",
+    "Class": "ป.1/2",
+    "Email": "5885@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5886",
+    "FullName": "เด็กหญิง ปพิชญา  อุปรี",
+    "Class": "ป.1/2",
+    "Email": "5886@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5887",
+    "FullName": "เด็กหญิง อชิรญา  เสมอใจ",
+    "Class": "ป.1/2",
+    "Email": "5887@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5888",
+    "FullName": "เด็กหญิง กัญจน์ณิชา  ตาก้อง",
+    "Class": "ป.1/2",
+    "Email": "5888@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5889",
+    "FullName": "เด็กหญิง อชิรญาณ์  ปลูกปัญญาดี",
+    "Class": "ป.1/2",
+    "Email": "5889@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5893",
+    "FullName": "เด็กหญิง จิรัชญา  ดรอ่อนเบ้า",
+    "Class": "ป.1/2",
+    "Email": "5893@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5894",
+    "FullName": "เด็กหญิง กัญญาภรณ์  ธิมา",
+    "Class": "ป.1/2",
+    "Email": "5894@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5927",
+    "FullName": "เด็กหญิง กัญจน์ชญาภา  งาทอง",
+    "Class": "ป.1/2",
+    "Email": "5927@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5928",
+    "FullName": "เด็กหญิง รัชญา  -",
+    "Class": "ป.1/2",
+    "Email": "5928@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5000",
+    "FullName": "เด็กชาย โยตะ  -",
+    "Class": "ป.1/3",
+    "Email": "5000@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5014",
+    "FullName": "เด็กชาย ยุทธชัย  เจริญศรีคีรีชัย",
+    "Class": "ป.1/3",
+    "Email": "5014@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5125",
+    "FullName": "เด็กชาย คณาธิป  หนึ่งชัชวาล",
+    "Class": "ป.1/3",
+    "Email": "5125@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5230",
+    "FullName": "เด็กหญิง พอบอมู  -",
+    "Class": "ป.1/3",
+    "Email": "5230@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "05239",
+    "FullName": "เด็กชาย ชนากานต์  ชนากร",
+    "Class": "ป.1/3",
+    "Email": "05239@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5388",
+    "FullName": "เด็กหญิง มูลาคลึ  -",
+    "Class": "ป.1/3",
+    "Email": "5388@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5420",
+    "FullName": "เด็กชาย ดลธี  กาญจนพันธ์ุบุญ",
+    "Class": "ป.1/3",
+    "Email": "5420@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5422",
+    "FullName": "เด็กชาย สุทธิพจน์  -",
+    "Class": "ป.1/3",
+    "Email": "5422@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5432",
+    "FullName": "เด็กหญิง ณัชชา  ถิ่นเรา",
+    "Class": "ป.1/3",
+    "Email": "5432@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5433",
+    "FullName": "เด็กชาย ณัฏฐกิตติ์  มลอา",
+    "Class": "ป.1/3",
+    "Email": "5433@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5442",
+    "FullName": "เด็กชาย ณภัทร  -",
+    "Class": "ป.1/3",
+    "Email": "5442@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5460",
+    "FullName": "เด็กหญิง แอ้เบพอ  -",
+    "Class": "ป.1/3",
+    "Email": "5460@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5496",
+    "FullName": "เด็กหญิง โรเซทู  -",
+    "Class": "ป.1/3",
+    "Email": "5496@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5509",
+    "FullName": "เด็กชาย วิลเลี่ยมวอเลอทู  -",
+    "Class": "ป.1/3",
+    "Email": "5509@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5671",
+    "FullName": "เด็กหญิง ไซนิ่งมู  -",
+    "Class": "ป.1/3",
+    "Email": "5671@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5673",
+    "FullName": "เด็กหญิง เซคึพอ  -",
+    "Class": "ป.1/3",
+    "Email": "5673@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5678",
+    "FullName": "เด็กหญิง ลดา  -",
+    "Class": "ป.1/3",
+    "Email": "5678@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5685",
+    "FullName": "เด็กชาย สุรชัย  -",
+    "Class": "ป.1/3",
+    "Email": "5685@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5686",
+    "FullName": "เด็กหญิง เซอแคนเตอะรีน่าทู  -",
+    "Class": "ป.1/3",
+    "Email": "5686@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5687",
+    "FullName": "เด็กหญิง เอเมี๊ยะนันดา  -",
+    "Class": "ป.1/3",
+    "Email": "5687@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5689",
+    "FullName": "เด็กชาย ภาคิน  -",
+    "Class": "ป.1/3",
+    "Email": "5689@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5696",
+    "FullName": "เด็กชาย ซอทูนล่วยทู  -",
+    "Class": "ป.1/3",
+    "Email": "5696@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5725",
+    "FullName": "เด็กชาย สมพงษ์  -",
+    "Class": "ป.1/3",
+    "Email": "5725@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5778",
+    "FullName": "เด็กหญิง พิทยรัศมิ์  ธิดาชาวดอย",
+    "Class": "ป.1/3",
+    "Email": "5778@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5883",
+    "FullName": "เด็กชาย สุเมธ  อรัญประทานกุล",
+    "Class": "ป.1/3",
+    "Email": "5883@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5929",
+    "FullName": "เด็กหญิง กัญญาวีร์  วาโพ",
+    "Class": "ป.1/3",
+    "Email": "5929@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5930",
+    "FullName": "เด็กหญิง จิลลา  -",
+    "Class": "ป.1/3",
+    "Email": "5930@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "4706",
+    "FullName": "เด็กชาย จักรกฤษณ์  หทัยวิโรจน์",
+    "Class": "ป.2/1",
+    "Email": "4706@sjmr.ac.th",
+    "Status": "นักเรียนเก่าเข้าใหม่"
+  },
+  {
+    "Student_ID": "4745",
+    "FullName": "เด็กชาย ขจรเกียรติ  มณีทอง",
+    "Class": "ป.2/1",
+    "Email": "4745@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4920",
+    "FullName": "เด็กหญิง ธนัชชา  ใจทะเล",
+    "Class": "ป.2/1",
+    "Email": "4920@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4932",
+    "FullName": "เด็กชาย ชญานนท์  แก้วส้อย",
+    "Class": "ป.2/1",
+    "Email": "4932@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4935",
+    "FullName": "เด็กชาย เทวัญ  ฐานกรณ์สกุล",
+    "Class": "ป.2/1",
+    "Email": "4935@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4944",
+    "FullName": "เด็กหญิง ชณัญชิญา  ร่มไม้เกตุ",
+    "Class": "ป.2/1",
+    "Email": "4944@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4948",
+    "FullName": "เด็กหญิง หน่อรีเม  -",
+    "Class": "ป.2/1",
+    "Email": "4948@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4949",
+    "FullName": "เด็กชาย อัศวิน  ปินนิล",
+    "Class": "ป.2/1",
+    "Email": "4949@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4953",
+    "FullName": "เด็กชาย คุณภัทร  บึกหาญ",
+    "Class": "ป.2/1",
+    "Email": "4953@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4963",
+    "FullName": "เด็กหญิง หน่อ ฟรี ด้อม โพ  -",
+    "Class": "ป.2/1",
+    "Email": "4963@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4987",
+    "FullName": "เด็กชาย จิณณวัตร  พนาขุนเขา",
+    "Class": "ป.2/1",
+    "Email": "4987@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5079",
+    "FullName": "เด็กชาย ซอ โล มี  -",
+    "Class": "ป.2/1",
+    "Email": "5079@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5081",
+    "FullName": "เด็กหญิง ไอยวริญ  ยั่งยืนชีวิต",
+    "Class": "ป.2/1",
+    "Email": "5081@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5082",
+    "FullName": "เด็กหญิง พรชนก  บ่อแก้วคงลาภ",
+    "Class": "ป.2/1",
+    "Email": "5082@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5083",
+    "FullName": "เด็กชาย ธนภัทร  ต๊ะวัน",
+    "Class": "ป.2/1",
+    "Email": "5083@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5084",
+    "FullName": "เด็กหญิง เจนจิรา  การังใจ",
+    "Class": "ป.2/1",
+    "Email": "5084@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5100",
+    "FullName": "เด็กชาย ธาวิน  เพาะแพร่พันธ์",
+    "Class": "ป.2/1",
+    "Email": "5100@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5120",
+    "FullName": "เด็กชาย ณัฐภูมินทร์  ซ้ายกระโทก",
+    "Class": "ป.2/1",
+    "Email": "5120@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5186",
+    "FullName": "เด็กหญิง กัญญารัตน์  -",
+    "Class": "ป.2/1",
+    "Email": "5186@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5238",
+    "FullName": "เด็กชาย กันตินันท์  ไพรวิภาวี",
+    "Class": "ป.2/1",
+    "Email": "5238@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5408",
+    "FullName": "เด็กหญิง ฉัตรชนก  ชลธีสายวิมาน",
+    "Class": "ป.2/1",
+    "Email": "5408@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5412",
+    "FullName": "เด็กชาย ไววิทย์  เพิ่มพรใจ",
+    "Class": "ป.2/1",
+    "Email": "5412@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5416",
+    "FullName": "เด็กชาย สมบูรณ์  -",
+    "Class": "ป.2/1",
+    "Email": "5416@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5417",
+    "FullName": "เด็กหญิง แอะมูตอ  -",
+    "Class": "ป.2/1",
+    "Email": "5417@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5431",
+    "FullName": "เด็กหญิง ตะวัน  -",
+    "Class": "ป.2/1",
+    "Email": "5431@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5458",
+    "FullName": "เด็กหญิง กัลยารัตน์  ไพรบุญศีล",
+    "Class": "ป.2/1",
+    "Email": "5458@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5502",
+    "FullName": "เด็กหญิง ลูซี่โพ  -",
+    "Class": "ป.2/1",
+    "Email": "5502@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5641",
+    "FullName": "เด็กหญิง ปภาวรินทร์  ก้อนนคร",
+    "Class": "ป.2/1",
+    "Email": "5641@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5642",
+    "FullName": "เด็กชาย วัชรากร  นวลนิ่ม",
+    "Class": "ป.2/1",
+    "Email": "5642@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5654",
+    "FullName": "เด็กหญิง นิชดา  จิตธรรม",
+    "Class": "ป.2/1",
+    "Email": "5654@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5655",
+    "FullName": "เด็กชาย บุญจรัตน์  วนาเดชสกุล",
+    "Class": "ป.2/1",
+    "Email": "5655@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5656",
+    "FullName": "เด็กชาย ภครพล  พาดี",
+    "Class": "ป.2/1",
+    "Email": "5656@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5657",
+    "FullName": "เด็กหญิง กันยารัตน์  วนารัตน์มงคล",
+    "Class": "ป.2/1",
+    "Email": "5657@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5658",
+    "FullName": "เด็กชาย สุรเดช  วนาเฉลิมภูมิ",
+    "Class": "ป.2/1",
+    "Email": "5658@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5659",
+    "FullName": "เด็กชาย พชร  สุรินต๊ะ",
+    "Class": "ป.2/1",
+    "Email": "5659@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5660",
+    "FullName": "เด็กชาย ณภัทร  เพิ่มนิธิสกุล",
+    "Class": "ป.2/1",
+    "Email": "5660@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5661",
+    "FullName": "เด็กชาย คณิศร  พันยุโดด",
+    "Class": "ป.2/1",
+    "Email": "5661@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5663",
+    "FullName": "เด็กหญิง ไอยดารา  พันธ์ปัญญากรกุล",
+    "Class": "ป.2/1",
+    "Email": "5663@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5754",
+    "FullName": "เด็กชาย ซา นา มิ  -",
+    "Class": "ป.2/1",
+    "Email": "5754@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5762",
+    "FullName": "เด็กหญิง ปวีณ์ธิดา  คงวังทอง",
+    "Class": "ป.2/1",
+    "Email": "5762@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5874",
+    "FullName": "เด็กหญิง อัญมณี  แก้วยศ",
+    "Class": "ป.2/1",
+    "Email": "5874@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5875",
+    "FullName": "เด็กหญิง รุจิรดา  สิงจันทรดา",
+    "Class": "ป.2/1",
+    "Email": "5875@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5932",
+    "FullName": "เด็กหญิง พนัชกร  บำเพ็ญสกุณา",
+    "Class": "ป.2/1",
+    "Email": "5932@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "4645",
+    "FullName": "เด็กชาย ภูริณัฐ  คำลำปาง",
+    "Class": "ป.2/2",
+    "Email": "4645@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4653",
+    "FullName": "เด็กชาย คุณากร  ชนวัฒนะกูล",
+    "Class": "ป.2/2",
+    "Email": "4653@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4772",
+    "FullName": "เด็กหญิง แอะพอพอ  -",
+    "Class": "ป.2/2",
+    "Email": "4772@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4938",
+    "FullName": "เด็กหญิง พิชญาภัสณ์  แคแดง",
+    "Class": "ป.2/2",
+    "Email": "4938@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4946",
+    "FullName": "เด็กชาย กฤษณพล  มิฟองฟู",
+    "Class": "ป.2/2",
+    "Email": "4946@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "4947",
+    "FullName": "เด็กหญิง ฐิรนันท์  วันไทร",
+    "Class": "ป.2/2",
+    "Email": "4947@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4952",
+    "FullName": "เด็กชาย ปรปรัชญ์  จีนกิจมั่น",
+    "Class": "ป.2/2",
+    "Email": "4952@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4968",
+    "FullName": "เด็กชาย กันตพัฒน์  โอภาสอำนวย",
+    "Class": "ป.2/2",
+    "Email": "4968@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5086",
+    "FullName": "เด็กชาย ภูวดล  ขจิตพัฒนากร",
+    "Class": "ป.2/2",
+    "Email": "5086@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5087",
+    "FullName": "เด็กชาย วรภัทร  สุพา",
+    "Class": "ป.2/2",
+    "Email": "5087@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5088",
+    "FullName": "เด็กชาย ชวัลกร  เอี้ยงหมี",
+    "Class": "ป.2/2",
+    "Email": "5088@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5089",
+    "FullName": "เด็กชาย กิตติกวิน  คงเกียรติคีรี",
+    "Class": "ป.2/2",
+    "Email": "5089@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5091",
+    "FullName": "เด็กชาย รัตนวัชร์  สุวรรณยศ",
+    "Class": "ป.2/2",
+    "Email": "5091@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5092",
+    "FullName": "เด็กชาย ชยาวุธ  บ่อแก้วคงลาภ",
+    "Class": "ป.2/2",
+    "Email": "5092@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5121",
+    "FullName": "เด็กชาย กฤตานน  แจ่มจร",
+    "Class": "ป.2/2",
+    "Email": "5121@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5156",
+    "FullName": "เด็กชาย กันตพัฒน์  วงค์นาค",
+    "Class": "ป.2/2",
+    "Email": "5156@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5183",
+    "FullName": "เด็กชาย คุชานันท์  กันตยศ",
+    "Class": "ป.2/2",
+    "Email": "5183@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5184",
+    "FullName": "เด็กชาย ศรายุธ  ลลิตตาคม",
+    "Class": "ป.2/2",
+    "Email": "5184@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5191",
+    "FullName": "เด็กชาย เมนแช่มศัก  -",
+    "Class": "ป.2/2",
+    "Email": "5191@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5192",
+    "FullName": "เด็กหญิง ไอนา  -",
+    "Class": "ป.2/2",
+    "Email": "5192@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5221",
+    "FullName": "เด็กชาย ดนัยกิตติ์  -",
+    "Class": "ป.2/2",
+    "Email": "5221@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5262",
+    "FullName": "เด็กหญิง ชาฮีดะ  -",
+    "Class": "ป.2/2",
+    "Email": "5262@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5411",
+    "FullName": "เด็กหญิง แอ๊ะย้อวา  -",
+    "Class": "ป.2/2",
+    "Email": "5411@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5414",
+    "FullName": "เด็กหญิง กณิกา  -",
+    "Class": "ป.2/2",
+    "Email": "5414@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5426",
+    "FullName": "เด็กหญิง จิราวรรณ  -",
+    "Class": "ป.2/2",
+    "Email": "5426@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5428",
+    "FullName": "เด็กหญิง ดาวิกา  ฟูจุมปา",
+    "Class": "ป.2/2",
+    "Email": "5428@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5444",
+    "FullName": "เด็กหญิง ชมพู  -",
+    "Class": "ป.2/2",
+    "Email": "5444@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5638",
+    "FullName": "เด็กชาย ปณิธาน  เอี้ยงหมี",
+    "Class": "ป.2/2",
+    "Email": "5638@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5639",
+    "FullName": "เด็กหญิง อชิรญา  ยศตุ้ย",
+    "Class": "ป.2/2",
+    "Email": "5639@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5643",
+    "FullName": "เด็กหญิง ฐิติชญา  กุลกรชกายเพชร",
+    "Class": "ป.2/2",
+    "Email": "5643@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5645",
+    "FullName": "เด็กชาย เซอซูเล  -",
+    "Class": "ป.2/2",
+    "Email": "5645@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5646",
+    "FullName": "เด็กหญิง นาน มิน นา  -",
+    "Class": "ป.2/2",
+    "Email": "5646@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5647",
+    "FullName": "เด็กชาย นพรัตน์  หล้าหลวง",
+    "Class": "ป.2/2",
+    "Email": "5647@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5648",
+    "FullName": "เด็กหญิง แอ้ เซล พอ  -",
+    "Class": "ป.2/2",
+    "Email": "5648@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5649",
+    "FullName": "เด็กหญิง พอ ตะ เบล ทู  -",
+    "Class": "ป.2/2",
+    "Email": "5649@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5650",
+    "FullName": "เด็กหญิง นาน เอ มยาเมี๊ยะ โม  -",
+    "Class": "ป.2/2",
+    "Email": "5650@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5651",
+    "FullName": "เด็กหญิง พลิ๊ตตี้  -",
+    "Class": "ป.2/2",
+    "Email": "5651@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5652",
+    "FullName": "เด็กชาย จิรกร  -",
+    "Class": "ป.2/2",
+    "Email": "5652@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5653",
+    "FullName": "เด็กชาย จักริน  -",
+    "Class": "ป.2/2",
+    "Email": "5653@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5665",
+    "FullName": "เด็กชาย ซอ ตู้ เคล  -",
+    "Class": "ป.2/2",
+    "Email": "5665@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5666",
+    "FullName": "เด็กชาย จ่อ ซู เคลน  -",
+    "Class": "ป.2/2",
+    "Email": "5666@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5680",
+    "FullName": "เด็กหญิง เอมิโม  -",
+    "Class": "ป.2/2",
+    "Email": "5680@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5781",
+    "FullName": "เด็กหญิง พาขวัญ  ปุ๊ดปวน",
+    "Class": "ป.2/2",
+    "Email": "5781@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5876",
+    "FullName": "เด็กหญิง ฤทัยญดา  พนารัตน์ธารา",
+    "Class": "ป.2/2",
+    "Email": "5876@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "4510",
+    "FullName": "เด็กหญิง ภัทรพร  ตาคำ",
+    "Class": "ป.3/1",
+    "Email": "4510@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4533",
+    "FullName": "เด็กหญิง วรารัตน์  ศรีคีรีราษฎร์",
+    "Class": "ป.3/1",
+    "Email": "4533@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4539",
+    "FullName": "เด็กหญิง รินรดา  กล้าแกร่งอาชา",
+    "Class": "ป.3/1",
+    "Email": "4539@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4542",
+    "FullName": "เด็กชาย ภูมินันท์  ศรีดาจันทร",
+    "Class": "ป.3/1",
+    "Email": "4542@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4638",
+    "FullName": "เด็กชาย ชรินทร์  นาคแก้ว",
+    "Class": "ป.3/1",
+    "Email": "4638@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4655",
+    "FullName": "เด็กหญิง ธารา  บุญเกตุ",
+    "Class": "ป.3/1",
+    "Email": "4655@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4661",
+    "FullName": "เด็กหญิง ญาณภา  นราวิทูรภัทร",
+    "Class": "ป.3/1",
+    "Email": "4661@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4662",
+    "FullName": "เด็กหญิง ณิชชยา  อนุกรเกียรติ",
+    "Class": "ป.3/1",
+    "Email": "4662@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4663",
+    "FullName": "เด็กหญิง ปริยฉัตร  นรารติธรรม",
+    "Class": "ป.3/1",
+    "Email": "4663@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4665",
+    "FullName": "เด็กหญิง วิกันดา  อนุกรเกียรติ",
+    "Class": "ป.3/1",
+    "Email": "4665@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4666",
+    "FullName": "เด็กหญิง นัยน์ปพร  เด่นดวง",
+    "Class": "ป.3/1",
+    "Email": "4666@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4714",
+    "FullName": "เด็กหญิง ปรีชญา  สุนันต๊ะ",
+    "Class": "ป.3/1",
+    "Email": "4714@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4716",
+    "FullName": "เด็กชาย ณัฐพัชร์  ตาคำไช",
+    "Class": "ป.3/1",
+    "Email": "4716@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4797",
+    "FullName": "เด็กชาย กรกฤตย์  สวยศิลป์",
+    "Class": "ป.3/1",
+    "Email": "4797@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4921",
+    "FullName": "เด็กหญิง ประภาวรินทร์  ปัญญาดี",
+    "Class": "ป.3/1",
+    "Email": "4921@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4922",
+    "FullName": "เด็กหญิง พิชชาภา  วารินสุ",
+    "Class": "ป.3/1",
+    "Email": "4922@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4930",
+    "FullName": "เด็กชาย ณัฐวุฒิ  ปัญญาดี",
+    "Class": "ป.3/1",
+    "Email": "4930@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4955",
+    "FullName": "เด็กหญิง น่อซานโซเกมู  -",
+    "Class": "ป.3/1",
+    "Email": "4955@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5075",
+    "FullName": "เด็กหญิง ณัฏฐณิชา  วงอำนาจ",
+    "Class": "ป.3/1",
+    "Email": "5075@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5076",
+    "FullName": "เด็กชาย วรภัทร  เพาะแพร่พันธ์",
+    "Class": "ป.3/1",
+    "Email": "5076@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5163",
+    "FullName": "เด็กหญิง จันทนิภา  ธนพรวลัย",
+    "Class": "ป.3/1",
+    "Email": "5163@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5367",
+    "FullName": "เด็กหญิง ธรรศภร  แสนตามาศ",
+    "Class": "ป.3/1",
+    "Email": "5367@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5372",
+    "FullName": "เด็กชาย ชลธร  ยอดปานันท์",
+    "Class": "ป.3/1",
+    "Email": "5372@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5379",
+    "FullName": "เด็กหญิง กมลพรรณ  กบินณพัตร",
+    "Class": "ป.3/1",
+    "Email": "5379@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5383",
+    "FullName": "เด็กชาย เตโชดม  ศรีรัตน์",
+    "Class": "ป.3/1",
+    "Email": "5383@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5395",
+    "FullName": "เด็กหญิง กมลลักษณ์  ไกรฤทธิ์",
+    "Class": "ป.3/1",
+    "Email": "5395@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5401",
+    "FullName": "เด็กหญิง ณัฐกฤตา  เปี้ยคำ",
+    "Class": "ป.3/1",
+    "Email": "5401@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5407",
+    "FullName": "เด็กหญิง ปรียาภรณ์  มั่นคง",
+    "Class": "ป.3/1",
+    "Email": "5407@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5486",
+    "FullName": "เด็กชาย ชีวานนท์  มั่งสุวรรณ",
+    "Class": "ป.3/1",
+    "Email": "5486@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5757",
+    "FullName": "เด็กหญิง น้ำฝน  -",
+    "Class": "ป.3/1",
+    "Email": "5757@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5783",
+    "FullName": "เด็กหญิง วรัฐฐา  โสภณพนิดา",
+    "Class": "ป.3/1",
+    "Email": "5783@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5872",
+    "FullName": "เด็กหญิง วิลาวรรณ  มณีธารา",
+    "Class": "ป.3/1",
+    "Email": "5872@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "4462",
+    "FullName": "เด็กชาย ซ้า ทู  -",
+    "Class": "ป.3/3",
+    "Email": "4462@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4943",
+    "FullName": "เด็กหญิง กันต์ฤทัย  พวงโกเมน",
+    "Class": "ป.3/3",
+    "Email": "4943@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4951",
+    "FullName": "เด็กหญิง แอ ซา ตา พอ  -",
+    "Class": "ป.3/3",
+    "Email": "4951@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5222",
+    "FullName": "เด็กหญิง อะเก่ลา  -",
+    "Class": "ป.3/3",
+    "Email": "5222@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5369",
+    "FullName": "เด็กหญิง อนุสรา  ยอดปานันท์",
+    "Class": "ป.3/3",
+    "Email": "5369@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5370",
+    "FullName": "เด็กหญิง เปมิกา  สำเภาเล็ก",
+    "Class": "ป.3/3",
+    "Email": "5370@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5371",
+    "FullName": "เด็กชาย เจนณภัทร  คำทนทาน",
+    "Class": "ป.3/3",
+    "Email": "5371@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5373",
+    "FullName": "เด็กหญิง สี่โมอู  -",
+    "Class": "ป.3/3",
+    "Email": "5373@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5374",
+    "FullName": "เด็กชาย จุฬาเทพ  คำอ้าย",
+    "Class": "ป.3/3",
+    "Email": "5374@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5375",
+    "FullName": "เด็กหญิง ณัฏฐพัชร์  ดงใหญ่",
+    "Class": "ป.3/3",
+    "Email": "5375@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5376",
+    "FullName": "เด็กชาย แสแท้มิน  -",
+    "Class": "ป.3/3",
+    "Email": "5376@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5377",
+    "FullName": "เด็กชาย กรวีร์  -",
+    "Class": "ป.3/3",
+    "Email": "5377@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5378",
+    "FullName": "เด็กชาย ธีรโชติ  ไพรงามแก้ว",
+    "Class": "ป.3/3",
+    "Email": "5378@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5381",
+    "FullName": "เด็กชาย ชัยธนันท์  นราวิทูรภัทร",
+    "Class": "ป.3/3",
+    "Email": "5381@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5382",
+    "FullName": "เด็กหญิง ภัทรธิดา  -",
+    "Class": "ป.3/3",
+    "Email": "5382@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5385",
+    "FullName": "เด็กหญิง น่อปะแลวา  -",
+    "Class": "ป.3/3",
+    "Email": "5385@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5387",
+    "FullName": "เด็กหญิง จารุนันท์  ปุกปนันท์",
+    "Class": "ป.3/3",
+    "Email": "5387@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5389",
+    "FullName": "เด็กชาย อินทัช  เขียววงษ์",
+    "Class": "ป.3/3",
+    "Email": "5389@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5394",
+    "FullName": "เด็กหญิง ชยุตรา  น่อชะเจ",
+    "Class": "ป.3/3",
+    "Email": "5394@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5397",
+    "FullName": "เด็กชาย สโนว์  -",
+    "Class": "ป.3/3",
+    "Email": "5397@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5398",
+    "FullName": "นาย วีระชัย  พนาเลิศกุศล",
+    "Class": "ป.3/3",
+    "Email": "5398@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5400",
+    "FullName": "เด็กชาย พรีนาโต  -",
+    "Class": "ป.3/3",
+    "Email": "5400@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5406",
+    "FullName": "เด็กหญิง ศรัณย์ภัทร  กำแทง",
+    "Class": "ป.3/3",
+    "Email": "5406@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5504",
+    "FullName": "เด็กหญิง ซิน  -",
+    "Class": "ป.3/3",
+    "Email": "5504@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5517",
+    "FullName": "เด็กชาย ดนัย  บันเทิงคีรี",
+    "Class": "ป.3/3",
+    "Email": "5517@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5521",
+    "FullName": "เด็กชาย โนทู  -",
+    "Class": "ป.3/3",
+    "Email": "5521@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5523",
+    "FullName": "เด็กชาย ซีพี  -",
+    "Class": "ป.3/3",
+    "Email": "5523@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5526",
+    "FullName": "เด็กชาย ซอเอเลน  -",
+    "Class": "ป.3/3",
+    "Email": "5526@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5634",
+    "FullName": "เด็กชาย โจเซ็ท  -",
+    "Class": "ป.3/3",
+    "Email": "5634@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5635",
+    "FullName": "เด็กหญิง น่อพอ  -",
+    "Class": "ป.3/3",
+    "Email": "5635@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5664",
+    "FullName": "เด็กชาย สมชาย  สุขธาดาทรัพย์",
+    "Class": "ป.3/3",
+    "Email": "5664@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5768",
+    "FullName": "เด็กชาย ชนสิษฎ์  สีตระการ",
+    "Class": "ป.3/3",
+    "Email": "5768@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4264",
+    "FullName": "เด็กชาย ชิติพัทธ์  กิตติโชติพิศุทธิ์",
+    "Class": "ป.4/1",
+    "Email": "4264@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4281",
+    "FullName": "เด็กหญิง เซกาพอ  -",
+    "Class": "ป.4/1",
+    "Email": "4281@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4282",
+    "FullName": "เด็กชาย ปวรุตม์  ยาวิเสน",
+    "Class": "ป.4/1",
+    "Email": "4282@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4292",
+    "FullName": "เด็กชาย ธนันชัย  ศรีคีรีราษฎร์",
+    "Class": "ป.4/1",
+    "Email": "4292@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4496",
+    "FullName": "เด็กชาย ธิติธาม  กลิ่นหอม",
+    "Class": "ป.4/1",
+    "Email": "4496@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4497",
+    "FullName": "เด็กชาย กิตติพร  ก่อบุญนาค",
+    "Class": "ป.4/1",
+    "Email": "4497@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4503",
+    "FullName": "เด็กชาย สุพงษ์ธนา  กันทะ",
+    "Class": "ป.4/1",
+    "Email": "4503@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4506",
+    "FullName": "เด็กชาย พิชิตชัย  มโนรมสุจริต",
+    "Class": "ป.4/1",
+    "Email": "4506@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4508",
+    "FullName": "เด็กหญิง กมลลักษณ์  ปรีชาญชัย",
+    "Class": "ป.4/1",
+    "Email": "4508@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4509",
+    "FullName": "เด็กหญิง ธนาภา  คิดทำ",
+    "Class": "ป.4/1",
+    "Email": "4509@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4513",
+    "FullName": "เด็กหญิง ญาณัชชา  แสงกิตติ",
+    "Class": "ป.4/1",
+    "Email": "4513@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4518",
+    "FullName": "เด็กหญิง สรมน  เนื้อเงินดี",
+    "Class": "ป.4/1",
+    "Email": "4518@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4604",
+    "FullName": "เด็กชาย ศักรินทร์  ใหม่โม่ง",
+    "Class": "ป.4/1",
+    "Email": "4604@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4626",
+    "FullName": "เด็กหญิง วรรณิศา  ศรีรัตน์",
+    "Class": "ป.4/1",
+    "Email": "4626@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4628",
+    "FullName": "เด็กหญิง ภาณิภัค  เมืองมา",
+    "Class": "ป.4/1",
+    "Email": "4628@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4629",
+    "FullName": "เด็กหญิง จิรธนี  พานนิรมล",
+    "Class": "ป.4/1",
+    "Email": "4629@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4630",
+    "FullName": "เด็กชาย พรรษา  บ่อแก้วคงลาภ",
+    "Class": "ป.4/1",
+    "Email": "4630@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4632",
+    "FullName": "เด็กหญิง พัชรพร  หนึ่งชัชวาล",
+    "Class": "ป.4/1",
+    "Email": "4632@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4635",
+    "FullName": "เด็กชาย ปัณณวิชญ์  ปงรังสี",
+    "Class": "ป.4/1",
+    "Email": "4635@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4652",
+    "FullName": "เด็กชาย ธนวิชญ์  ธรรมชยังกูร",
+    "Class": "ป.4/1",
+    "Email": "4652@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4656",
+    "FullName": "เด็กหญิง กชกร  พะกิ๊",
+    "Class": "ป.4/1",
+    "Email": "4656@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4664",
+    "FullName": "เด็กหญิง พัชรพร  เพชรชำลิ",
+    "Class": "ป.4/1",
+    "Email": "4664@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4727",
+    "FullName": "เด็กหญิง วนัสนันท์  ปวงคำใจ",
+    "Class": "ป.4/1",
+    "Email": "4727@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4915",
+    "FullName": "เด็กชาย ณัฐภัทร  ทาลำปาง",
+    "Class": "ป.4/1",
+    "Email": "4915@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4916",
+    "FullName": "เด็กชาย กล่อ โกลรี สตา  -",
+    "Class": "ป.4/1",
+    "Email": "4916@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4918",
+    "FullName": "เด็กหญิง ณัฏฐณิชา  วงศ์หล้า",
+    "Class": "ป.4/1",
+    "Email": "4918@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4937",
+    "FullName": "เด็กชาย เซอโพล้งา  -",
+    "Class": "ป.4/1",
+    "Email": "4937@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4984",
+    "FullName": "เด็กชาย นพวิทย์  วงค์พิทักษ์",
+    "Class": "ป.4/1",
+    "Email": "4984@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5066",
+    "FullName": "เด็กหญิง ชาลี  -",
+    "Class": "ป.4/1",
+    "Email": "5066@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5071",
+    "FullName": "เด็กชาย รณพีร์  สืบมี",
+    "Class": "ป.4/1",
+    "Email": "5071@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5132",
+    "FullName": "เด็กชาย ชินารมย์  ชัยกมลสกุล",
+    "Class": "ป.4/1",
+    "Email": "5132@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5155",
+    "FullName": "เด็กชาย เซอแอ้ดีตา  -",
+    "Class": "ป.4/1",
+    "Email": "5155@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5195",
+    "FullName": "เด็กชาย สุทธินัย  ปัญญา",
+    "Class": "ป.4/1",
+    "Email": "5195@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5220",
+    "FullName": "เด็กชาย หมื่่นต่าโก่  -",
+    "Class": "ป.4/1",
+    "Email": "5220@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5357",
+    "FullName": "เด็กชาย ธนากร  ปัญญาเทพ",
+    "Class": "ป.4/1",
+    "Email": "5357@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5576",
+    "FullName": "เด็กหญิง ปวีณ์ธิดา  ดำรงนามวนา",
+    "Class": "ป.4/1",
+    "Email": "5576@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5615",
+    "FullName": "เด็กชาย วรภัทร  วดีสุขเกษม",
+    "Class": "ป.4/1",
+    "Email": "5615@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5616",
+    "FullName": "เด็กชาย วิทวัส  ธงทวีทรัพย์",
+    "Class": "ป.4/1",
+    "Email": "5616@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5617",
+    "FullName": "เด็กชาย ต่อตระการ  แซ่ย่าง",
+    "Class": "ป.4/1",
+    "Email": "5617@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5618",
+    "FullName": "เด็กหญิง เขมจิรา  แซ่ม้า",
+    "Class": "ป.4/1",
+    "Email": "5618@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5811",
+    "FullName": "เด็กหญิง นารา  เพชรพนาพลอย",
+    "Class": "ป.4/1",
+    "Email": "5811@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5840",
+    "FullName": "เด็กชาย ธนกร  อินอุ่น",
+    "Class": "ป.4/1",
+    "Email": "5840@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5863",
+    "FullName": "เด็กชาย รัฐกิตติ์  แสนเครือ",
+    "Class": "ป.4/1",
+    "Email": "5863@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5864",
+    "FullName": "เด็กชาย ภีรพงษ์  พิมพารักษ์",
+    "Class": "ป.4/1",
+    "Email": "5864@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "4317",
+    "FullName": "เด็กชาย ชวัลวิทย์  ล่าร้อง",
+    "Class": "ป.4/2",
+    "Email": "4317@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4318",
+    "FullName": "เด็กชาย ปรวีร์  รัตนสามัคคี",
+    "Class": "ป.4/2",
+    "Email": "4318@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4501",
+    "FullName": "เด็กชาย บุญโชค  เลิศล้ำศักดา",
+    "Class": "ป.4/2",
+    "Email": "4501@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4502",
+    "FullName": "เด็กชาย พงศกร  เดือนใส",
+    "Class": "ป.4/2",
+    "Email": "4502@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4511",
+    "FullName": "เด็กหญิง วอเดอฟูโลคี  -",
+    "Class": "ป.4/2",
+    "Email": "4511@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4515",
+    "FullName": "เด็กชาย คริสดีโนลีน  -",
+    "Class": "ป.4/2",
+    "Email": "4515@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4705",
+    "FullName": "เด็กหญิง อรสินี  คีรีราษฎร์ตระกูล",
+    "Class": "ป.4/2",
+    "Email": "4705@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4737",
+    "FullName": "เด็กชาย เอกวัส  สนั่นเมฆา",
+    "Class": "ป.4/2",
+    "Email": "4737@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4895",
+    "FullName": "เด็กชาย แอ้พลาโซ  -",
+    "Class": "ป.4/2",
+    "Email": "4895@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4985",
+    "FullName": "เด็กหญิง โมโมอี  -",
+    "Class": "ป.4/2",
+    "Email": "4985@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5067",
+    "FullName": "เด็กหญิง ครีสโมโร  -",
+    "Class": "ป.4/2",
+    "Email": "5067@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5068",
+    "FullName": "เด็กหญิง ธิติสุดา  เที่ยงแท้",
+    "Class": "ป.4/2",
+    "Email": "5068@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5070",
+    "FullName": "เด็กชาย จิราวัฒน์  ถิ่นเรา",
+    "Class": "ป.4/2",
+    "Email": "5070@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5072",
+    "FullName": "นาย แอ้วา  -",
+    "Class": "ป.4/2",
+    "Email": "5072@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5073",
+    "FullName": "เด็กหญิง เชอนิพอ  -",
+    "Class": "ป.4/2",
+    "Email": "5073@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5074",
+    "FullName": "เด็กหญิง หน่อพอวา  เห่พรึมู",
+    "Class": "ป.4/2",
+    "Email": "5074@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5114",
+    "FullName": "เด็กหญิง ปิยนันท์  แพร่ประชา",
+    "Class": "ป.4/2",
+    "Email": "5114@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5131",
+    "FullName": "เด็กหญิง อรอนงค์  -",
+    "Class": "ป.4/2",
+    "Email": "5131@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5134",
+    "FullName": "เด็กหญิง บเว้พอวา  -",
+    "Class": "ป.4/2",
+    "Email": "5134@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5136",
+    "FullName": "เด็กชาย ซอเนตุเซ  -",
+    "Class": "ป.4/2",
+    "Email": "5136@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5137",
+    "FullName": "เด็กหญิง ณิชานันท์  เกียรติขจรสง่า",
+    "Class": "ป.4/2",
+    "Email": "5137@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5145",
+    "FullName": "เด็กชาย แอะทอโบ  -",
+    "Class": "ป.4/2",
+    "Email": "5145@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5177",
+    "FullName": "เด็กชาย ดาริน มารวิล โซโก  -",
+    "Class": "ป.4/2",
+    "Email": "5177@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5190",
+    "FullName": "เด็กหญิง รอแซน  -",
+    "Class": "ป.4/2",
+    "Email": "5190@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5219",
+    "FullName": "เด็กชาย พลวัต  ไม่มีนามสกุล",
+    "Class": "ป.4/2",
+    "Email": "5219@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5325",
+    "FullName": "เด็กชาย นนทพัทธ์  อุดมเหนือ",
+    "Class": "ป.4/2",
+    "Email": "5325@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5356",
+    "FullName": "เด็กชาย กัณต์ณพงณ์  ยุวรรณศิริ",
+    "Class": "ป.4/2",
+    "Email": "5356@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5358",
+    "FullName": "เด็กหญิง พนิตพร  -",
+    "Class": "ป.4/2",
+    "Email": "5358@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5360",
+    "FullName": "เด็กชาย ทู เลอ ซี  -",
+    "Class": "ป.4/2",
+    "Email": "5360@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5365",
+    "FullName": "เด็กชาย กฤตชญา  ใจมา",
+    "Class": "ป.4/2",
+    "Email": "5365@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5386",
+    "FullName": "เด็กชาย กฤษฎา  ไม่มีชื่อสกุล",
+    "Class": "ป.4/2",
+    "Email": "5386@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5488",
+    "FullName": "เด็กหญิง กมลพร  เกรียงไกรลาภ",
+    "Class": "ป.4/2",
+    "Email": "5488@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5493",
+    "FullName": "เด็กหญิง โรสรินทร์  ดาหะตา",
+    "Class": "ป.4/2",
+    "Email": "5493@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5507",
+    "FullName": "เด็กชาย ซอ แบระเต่อ เร  -",
+    "Class": "ป.4/2",
+    "Email": "5507@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5619",
+    "FullName": "เด็กหญิง หนึ่งนัดดา  เอกเดชา",
+    "Class": "ป.4/2",
+    "Email": "5619@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5620",
+    "FullName": "เด็กชาย อนาวิล  ทรัพย์ประเสริฐ",
+    "Class": "ป.4/2",
+    "Email": "5620@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5621",
+    "FullName": "เด็กชาย ปิยะวัฒน์  -",
+    "Class": "ป.4/2",
+    "Email": "5621@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5865",
+    "FullName": "เด็กชาย สุชาครีย์  ภาชนะ",
+    "Class": "ป.4/2",
+    "Email": "5865@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5866",
+    "FullName": "เด็กชาย ณัฐดนัย  บุญมาก",
+    "Class": "ป.4/2",
+    "Email": "5866@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5867",
+    "FullName": "เด็กหญิง วรรณรดา  ไพรพิริยา",
+    "Class": "ป.4/2",
+    "Email": "5867@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5868",
+    "FullName": "เด็กหญิง น้ำเพชร  อภิบาลพนาลัย",
+    "Class": "ป.4/2",
+    "Email": "5868@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5869",
+    "FullName": "เด็กหญิง เจนจิรา  กมลปราณี",
+    "Class": "ป.4/2",
+    "Email": "5869@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5870",
+    "FullName": "เด็กชาย สิทธิกร  ใจศรีธรรม",
+    "Class": "ป.4/2",
+    "Email": "5870@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4267",
+    "FullName": "เด็กชาย กฤตพล  ไวพยาบาล",
+    "Class": "ป.5/1",
+    "Email": "4267@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4268",
+    "FullName": "เด็กชาย ณรงค์ศักดิ์  ขัตติยะ",
+    "Class": "ป.5/1",
+    "Email": "4268@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4274",
+    "FullName": "เด็กชาย ณัฐวัฒน์  ปู่อ้าย",
+    "Class": "ป.5/1",
+    "Email": "4274@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4276",
+    "FullName": "เด็กหญิง พิชญานิน  องค์การ",
+    "Class": "ป.5/1",
+    "Email": "4276@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4284",
+    "FullName": "เด็กชาย รัฐศาสตร์  อินทะปัญญา",
+    "Class": "ป.5/1",
+    "Email": "4284@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4288",
+    "FullName": "เด็กชาย ศุภสัณห์  ภูมิพระธาตุ",
+    "Class": "ป.5/1",
+    "Email": "4288@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4294",
+    "FullName": "เด็กหญิง กชวรรณ  มรดกคีรี",
+    "Class": "ป.5/1",
+    "Email": "4294@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4295",
+    "FullName": "เด็กหญิง กาญจนา  ถาแก้ว",
+    "Class": "ป.5/1",
+    "Email": "4295@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4296",
+    "FullName": "เด็กหญิง สุพิชญา  วันทา",
+    "Class": "ป.5/1",
+    "Email": "4296@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4476",
+    "FullName": "เด็กชาย คุณธรรม  ปลูกปัญญาดี",
+    "Class": "ป.5/1",
+    "Email": "4476@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4481",
+    "FullName": "เด็กหญิง ดาดา  -",
+    "Class": "ป.5/1",
+    "Email": "4481@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4482",
+    "FullName": "เด็กหญิง ยิ่งลักษณ์  ภูผาอารักษ์",
+    "Class": "ป.5/1",
+    "Email": "4482@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4485",
+    "FullName": "เด็กชาย จิรายุ  สอนนา",
+    "Class": "ป.5/1",
+    "Email": "4485@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4486",
+    "FullName": "เด็กชาย กณกพล  ปรวนแก้วมณี",
+    "Class": "ป.5/1",
+    "Email": "4486@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4487",
+    "FullName": "เด็กชาย ณัฐธชนพงศ์  เต็บเตียง",
+    "Class": "ป.5/1",
+    "Email": "4487@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4489",
+    "FullName": "เด็กชาย พิชญุตม์  สืบติน",
+    "Class": "ป.5/1",
+    "Email": "4489@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4490",
+    "FullName": "เด็กชาย ณัฐกิตติ์  คงเกียรติคีรี",
+    "Class": "ป.5/1",
+    "Email": "4490@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4493",
+    "FullName": "เด็กหญิง วรรณรสา  ยะเปียง",
+    "Class": "ป.5/1",
+    "Email": "4493@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4494",
+    "FullName": "เด็กหญิง ปริยฉัตร  อินพรม",
+    "Class": "ป.5/1",
+    "Email": "4494@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4899",
+    "FullName": "เด็กหญิง วรรณพร  อินอุ่น",
+    "Class": "ป.5/1",
+    "Email": "4899@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4900",
+    "FullName": "เด็กชาย พัชรพงษ์  เทพเทียน",
+    "Class": "ป.5/1",
+    "Email": "4900@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4905",
+    "FullName": "เด็กหญิง พิชญ์สิณี  อินแก้ว",
+    "Class": "ป.5/1",
+    "Email": "4905@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4912",
+    "FullName": "เด็กชาย สุดเขต  เก่งไฉไล",
+    "Class": "ป.5/1",
+    "Email": "4912@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4914",
+    "FullName": "เด็กหญิง พิชญาภัค  แสนเกษตรกร",
+    "Class": "ป.5/1",
+    "Email": "4914@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4931",
+    "FullName": "เด็กหญิง ชัญญา  คีรีพิทักษ์",
+    "Class": "ป.5/1",
+    "Email": "4931@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5138",
+    "FullName": "เด็กหญิง อนัญญา  คำลำปาง",
+    "Class": "ป.5/1",
+    "Email": "5138@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5214",
+    "FullName": "เด็กหญิง สุภาพร  -",
+    "Class": "ป.5/1",
+    "Email": "5214@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5343",
+    "FullName": "เด็กชาย ชนธร  ชลธีสายวิมาน",
+    "Class": "ป.5/1",
+    "Email": "5343@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5344",
+    "FullName": "เด็กชาย กิดากร  วนาไพรศาลสุข",
+    "Class": "ป.5/1",
+    "Email": "5344@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5345",
+    "FullName": "เด็กหญิง อภิสรา  เรืองรองอำนาจ",
+    "Class": "ป.5/1",
+    "Email": "5345@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5350",
+    "FullName": "เด็กชาย ณัฐนนท์  วงษ์อำนาจ",
+    "Class": "ป.5/1",
+    "Email": "5350@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5353",
+    "FullName": "เด็กหญิง ฐิติกา  -",
+    "Class": "ป.5/1",
+    "Email": "5353@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5355",
+    "FullName": "เด็กหญิง เอมิลี่  -",
+    "Class": "ป.5/1",
+    "Email": "5355@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5487",
+    "FullName": "เด็กชาย วุฒิภัทร  ทรงงามเนตร",
+    "Class": "ป.5/1",
+    "Email": "5487@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5613",
+    "FullName": "เด็กหญิง กนกกานต์  ป้องเกษม",
+    "Class": "ป.5/1",
+    "Email": "5613@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5855",
+    "FullName": "เด็กชาย อาชวิน  สิงจันทรดา",
+    "Class": "ป.5/1",
+    "Email": "5855@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5856",
+    "FullName": "เด็กชาย สุเทพ  ไพรกรรมสิทธิ์",
+    "Class": "ป.5/1",
+    "Email": "5856@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5857",
+    "FullName": "เด็กหญิง ณดา  ทรัพย์ขุนดอน",
+    "Class": "ป.5/1",
+    "Email": "5857@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5858",
+    "FullName": "เด็กหญิง อภิญญา  อำไพสายสกุล",
+    "Class": "ป.5/1",
+    "Email": "5858@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5859",
+    "FullName": "เด็กชาย กฤติพงศ์  ไพลินอุทัย",
+    "Class": "ป.5/1",
+    "Email": "5859@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "3927",
+    "FullName": "เด็กชาย สหรัฐ  บุญรัด",
+    "Class": "ป.6/1",
+    "Email": "3927@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3934",
+    "FullName": "เด็กชาย พงศ์ภีระ  พันธ์ปัญญากรกุล",
+    "Class": "ป.6/1",
+    "Email": "3934@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3937",
+    "FullName": "เด็กหญิง กานต์รวี  สำราญไพบูลย์",
+    "Class": "ป.6/1",
+    "Email": "3937@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3958",
+    "FullName": "เด็กหญิง เพ็ญพิญชา  ธาราคีรี",
+    "Class": "ป.6/1",
+    "Email": "3958@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3963",
+    "FullName": "เด็กชาย สรศักดิ์  จันทง",
+    "Class": "ป.6/1",
+    "Email": "3963@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4052",
+    "FullName": "เด็กชาย ปวรคณพศ  ราชรักษ์",
+    "Class": "ป.6/1",
+    "Email": "4052@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4063",
+    "FullName": "เด็กชาย ณัฐคุณ  พงษ์ไทย",
+    "Class": "ป.6/1",
+    "Email": "4063@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4064",
+    "FullName": "เด็กชาย อัตรคุปต์  พรมเทพ",
+    "Class": "ป.6/1",
+    "Email": "4064@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4069",
+    "FullName": "เด็กชาย วริทธิ์  นาคน้อย",
+    "Class": "ป.6/1",
+    "Email": "4069@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4075",
+    "FullName": "เด็กชาย ภูริเดช  ติ๊บลังกา",
+    "Class": "ป.6/1",
+    "Email": "4075@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4083",
+    "FullName": "เด็กชาย ศุภกิตต์  คงลาภทองผกา",
+    "Class": "ป.6/1",
+    "Email": "4083@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4084",
+    "FullName": "เด็กชาย พีรวิชญ์  ทองวัน",
+    "Class": "ป.6/1",
+    "Email": "4084@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4085",
+    "FullName": "เด็กชาย ภูมิรินทร์  ปัญญาเลิศ",
+    "Class": "ป.6/1",
+    "Email": "4085@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4086",
+    "FullName": "เด็กหญิง ขวัญชนก  เพ็ชรกำแหง",
+    "Class": "ป.6/1",
+    "Email": "4086@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4087",
+    "FullName": "เด็กหญิง รุจิรดา  ชายา",
+    "Class": "ป.6/1",
+    "Email": "4087@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4088",
+    "FullName": "เด็กหญิง ปรรภสร  สุ่มนาค",
+    "Class": "ป.6/1",
+    "Email": "4088@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4090",
+    "FullName": "เด็กหญิง ลักษิกา  พจน์พิทักษ์สกุล",
+    "Class": "ป.6/1",
+    "Email": "4090@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4244",
+    "FullName": "เด็กชาย สุสถิต  รักษ์สายนิยม",
+    "Class": "ป.6/1",
+    "Email": "4244@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4247",
+    "FullName": "เด็กชาย ธรรมรัตน์  ก่อบุญนาค",
+    "Class": "ป.6/1",
+    "Email": "4247@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4253",
+    "FullName": "เด็กชาย วัชรพล  อาชาประสิทธิ์",
+    "Class": "ป.6/1",
+    "Email": "4253@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4255",
+    "FullName": "เด็กหญิง ปพิชญา  จีนกิจมั่น",
+    "Class": "ป.6/1",
+    "Email": "4255@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4256",
+    "FullName": "เด็กหญิง กัญจนพร  กองสี",
+    "Class": "ป.6/1",
+    "Email": "4256@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4257",
+    "FullName": "เด็กหญิง อรนุช  อะตอม",
+    "Class": "ป.6/1",
+    "Email": "4257@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4260",
+    "FullName": "เด็กชาย กฤตนัย  ทะนันใจ",
+    "Class": "ป.6/1",
+    "Email": "4260@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4467",
+    "FullName": "เด็กหญิง เอสเทอร์กเร่  -",
+    "Class": "ป.6/1",
+    "Email": "4467@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4610",
+    "FullName": "เด็กชาย บแลซิงเซอทู  -",
+    "Class": "ป.6/1",
+    "Email": "4610@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4612",
+    "FullName": "เด็กชาย เศรษฐศิริ  สมร่าง",
+    "Class": "ป.6/1",
+    "Email": "4612@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4621",
+    "FullName": "เด็กหญิง ตรีทิพยนิภา  พันธ์ราศรี",
+    "Class": "ป.6/1",
+    "Email": "4621@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4622",
+    "FullName": "เด็กหญิง จินตพร  พอน่อ",
+    "Class": "ป.6/1",
+    "Email": "4622@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4697",
+    "FullName": "เด็กชาย ธีรุตม์  บุญเกตุ",
+    "Class": "ป.6/1",
+    "Email": "4697@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4730",
+    "FullName": "เด็กหญิง นันทิชา  ดอยแก้วขาว",
+    "Class": "ป.6/1",
+    "Email": "4730@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4798",
+    "FullName": "เด็กหญิง มนิตา  ถิ่นเรา",
+    "Class": "ป.6/1",
+    "Email": "4798@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4067",
+    "FullName": "เด็กชาย ภัคพงษ์  สงวนจิตร์",
+    "Class": "ป.6/2",
+    "Email": "4067@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4068",
+    "FullName": "เด็กชาย ธนพล  สนศิริ",
+    "Class": "ป.6/2",
+    "Email": "4068@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4070",
+    "FullName": "เด็กชาย วุฒิพงษ์  สถิตพิภพ",
+    "Class": "ป.6/2",
+    "Email": "4070@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4072",
+    "FullName": "เด็กชาย พงศกร  พิเชษฐ์เรืองฤทธิ์",
+    "Class": "ป.6/2",
+    "Email": "4072@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4078",
+    "FullName": "เด็กชาย ชิติพัทธ์  เมืองแสน",
+    "Class": "ป.6/2",
+    "Email": "4078@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4245",
+    "FullName": "เด็กหญิง ธีราพร  ละอองศรี",
+    "Class": "ป.6/2",
+    "Email": "4245@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4258",
+    "FullName": "เด็กหญิง จุฑาทิพย์  เฉลิมมงคลชัย",
+    "Class": "ป.6/2",
+    "Email": "4258@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4262",
+    "FullName": "เด็กชาย วรพล  -",
+    "Class": "ป.6/2",
+    "Email": "4262@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4308",
+    "FullName": "เด็กหญิง ทูวาพอ  -",
+    "Class": "ป.6/2",
+    "Email": "4308@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4466",
+    "FullName": "เด็กหญิง บุษบา  โยธินมณี",
+    "Class": "ป.6/2",
+    "Email": "4466@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4468",
+    "FullName": "เด็กหญิง นัชยา  รุ่งเรืองจารุกิจ",
+    "Class": "ป.6/2",
+    "Email": "4468@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4469",
+    "FullName": "เด็กหญิง เบญจวรรณ  -",
+    "Class": "ป.6/2",
+    "Email": "4469@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4472",
+    "FullName": "เด็กชาย ศุภากร  ใจยานะ",
+    "Class": "ป.6/2",
+    "Email": "4472@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4474",
+    "FullName": "เด็กชาย ชยางกูร  สมวงค์",
+    "Class": "ป.6/2",
+    "Email": "4474@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4614",
+    "FullName": "เด็กชาย มงคล  ชุ่มธิ",
+    "Class": "ป.6/2",
+    "Email": "4614@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4616",
+    "FullName": "เด็กชาย โภคิน  -",
+    "Class": "ป.6/2",
+    "Email": "4616@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4619",
+    "FullName": "เด็กหญิง ทรีซา  -",
+    "Class": "ป.6/2",
+    "Email": "4619@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4623",
+    "FullName": "นางสาว เจนนิเฟอ ทู เหง่  -",
+    "Class": "ป.6/2",
+    "Email": "4623@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4738",
+    "FullName": "เด็กชาย ภาณุวิชญ์  สนั่นเมฆา",
+    "Class": "ป.6/2",
+    "Email": "4738@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4747",
+    "FullName": "เด็กหญิง ธารีรัตน์  บุญสอน",
+    "Class": "ป.6/2",
+    "Email": "4747@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4783",
+    "FullName": "เด็กชาย ชัยชนะ  ปิติสกุลบุญเลิศ",
+    "Class": "ป.6/2",
+    "Email": "4783@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4784",
+    "FullName": "นาย สมพงษ์  -",
+    "Class": "ป.6/2",
+    "Email": "4784@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4897",
+    "FullName": "เด็กหญิง อภิชญา  ทองสี",
+    "Class": "ป.6/2",
+    "Email": "4897@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4898",
+    "FullName": "เด็กหญิง นิรชา  ไพรจำเริญเพียร",
+    "Class": "ป.6/2",
+    "Email": "4898@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4965",
+    "FullName": "เด็กชาย ชลนที  อาจนรากิจ",
+    "Class": "ป.6/2",
+    "Email": "4965@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5144",
+    "FullName": "เด็กชาย ธนกฤต  คำภิระแปง",
+    "Class": "ป.6/2",
+    "Email": "5144@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5172",
+    "FullName": "เด็กหญิง จันทร์วลัย  กันทะถ้ำ",
+    "Class": "ป.6/2",
+    "Email": "5172@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5609",
+    "FullName": "เด็กชาย ชนาธร  เลิศเลขากิจ",
+    "Class": "ป.6/2",
+    "Email": "5609@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5850",
+    "FullName": "เด็กชาย สุรเดช  ปานเกิด",
+    "Class": "ป.6/2",
+    "Email": "5850@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "4983",
+    "FullName": "เด็กชาย ศิรชัช  วงศ์ประเสริฐ",
+    "Class": "ป.6/3",
+    "Email": "4983@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5015",
+    "FullName": "เด็กชาย ชยุต  วนาอโณทัย",
+    "Class": "ป.6/3",
+    "Email": "5015@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5173",
+    "FullName": "เด็กชาย กำพล  แซ่ม้า",
+    "Class": "ป.6/3",
+    "Email": "5173@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5174",
+    "FullName": "เด็กชาย สาโรจน์  แซ่ม้า",
+    "Class": "ป.6/3",
+    "Email": "5174@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5205",
+    "FullName": "เด็กหญิง ลภัสรดา  กาญจนพันธุ์บุญ",
+    "Class": "ป.6/3",
+    "Email": "5205@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5223",
+    "FullName": "เด็กหญิง สุชาดา  เดโชคงลาภ",
+    "Class": "ป.6/3",
+    "Email": "5223@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5330",
+    "FullName": "เด็กชาย อิศม์เดช  สำเภาเล็ก",
+    "Class": "ป.6/3",
+    "Email": "5330@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5331",
+    "FullName": "เด็กหญิง นันท์จิรา  คำฟู",
+    "Class": "ป.6/3",
+    "Email": "5331@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5332",
+    "FullName": "เด็กหญิง เบญญา  กามอทซู",
+    "Class": "ป.6/3",
+    "Email": "5332@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5333",
+    "FullName": "เด็กหญิง อุรัสยา  มามาก",
+    "Class": "ป.6/3",
+    "Email": "5333@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5334",
+    "FullName": "เด็กชาย ธนนันท์  ปัญญาเทพ",
+    "Class": "ป.6/3",
+    "Email": "5334@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5335",
+    "FullName": "เด็กหญิง นภา  -",
+    "Class": "ป.6/3",
+    "Email": "5335@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5336",
+    "FullName": "เด็กชาย ธนากร  ธงทวีทรัพย์",
+    "Class": "ป.6/3",
+    "Email": "5336@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5337",
+    "FullName": "เด็กหญิง ณัฐธิดา  ยี่โถฝรั่ง",
+    "Class": "ป.6/3",
+    "Email": "5337@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5338",
+    "FullName": "เด็กหญิง ชญาภา  บุญทัน",
+    "Class": "ป.6/3",
+    "Email": "5338@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5339",
+    "FullName": "เด็กชาย ชานนท์  ไพรนีรชาติ",
+    "Class": "ป.6/3",
+    "Email": "5339@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5340",
+    "FullName": "เด็กชาย ณัฐภัทร  เปี้ยคำ",
+    "Class": "ป.6/3",
+    "Email": "5340@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5341",
+    "FullName": "เด็กชาย ณัฐ  ไม่มีนามสกุล",
+    "Class": "ป.6/3",
+    "Email": "5341@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5364",
+    "FullName": "เด็กหญิง จารุวรรณ  วดีสุขเกษม",
+    "Class": "ป.6/3",
+    "Email": "5364@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5491",
+    "FullName": "เด็กชาย ดุลภาค  นิกรกูล",
+    "Class": "ป.6/3",
+    "Email": "5491@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5492",
+    "FullName": "เด็กชาย ภาณุวัฒน์  ดินแดนบรรพต",
+    "Class": "ป.6/3",
+    "Email": "5492@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5622",
+    "FullName": "เด็กหญิง พิมชนก  ทะเลคะยา",
+    "Class": "ป.6/3",
+    "Email": "5622@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5623",
+    "FullName": "เด็กหญิง ลดา  ห้วยน้ำรื่นชื่นจิต",
+    "Class": "ป.6/3",
+    "Email": "5623@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5624",
+    "FullName": "เด็กชาย ฐิติกร  สมสุขเสมา",
+    "Class": "ป.6/3",
+    "Email": "5624@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5625",
+    "FullName": "เด็กชาย แอ้ กะ นอ ทู  -",
+    "Class": "ป.6/3",
+    "Email": "5625@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5626",
+    "FullName": "เด็กชาย ต่อตระกูล  แซ่ม้า",
+    "Class": "ป.6/3",
+    "Email": "5626@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5627",
+    "FullName": "เด็กชาย กษิติธร  ขจรกิตติบุญญา",
+    "Class": "ป.6/3",
+    "Email": "5627@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5628",
+    "FullName": "เด็กชาย ศักดิ์ดา  มีสุขเกษม",
+    "Class": "ป.6/3",
+    "Email": "5628@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5629",
+    "FullName": "เด็กชาย กิตติพงศ์  สินไพบูลย์เลิศ",
+    "Class": "ป.6/3",
+    "Email": "5629@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5630",
+    "FullName": "นาย ศิวัช  วนาเฉลิมฝน",
+    "Class": "ป.6/3",
+    "Email": "5630@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5849",
+    "FullName": "เด็กชาย อุดมทรัพย์  ยะปายต๋า",
+    "Class": "ป.6/3",
+    "Email": "5849@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "3912",
+    "FullName": "เด็กชาย จิราพัฒน์  คำอ้าย",
+    "Class": "ม.1/1",
+    "Email": "3912@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3913",
+    "FullName": "เด็กชาย เอกกมล  อุปวรรณา",
+    "Class": "ม.1/1",
+    "Email": "3913@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4061",
+    "FullName": "เด็กหญิง เจหนี่เพอด่าลู่มูโจ่โค่  -",
+    "Class": "ม.1/1",
+    "Email": "4061@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4237",
+    "FullName": "เด็กหญิง ณิชนันทน์  วงค์พิทักษ์",
+    "Class": "ม.1/1",
+    "Email": "4237@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4242",
+    "FullName": "เด็กชาย นันทภัค  สมบุตร",
+    "Class": "ม.1/1",
+    "Email": "4242@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4438",
+    "FullName": "เด็กหญิง วิชญาพร  สมร่างวัจนกุล",
+    "Class": "ม.1/1",
+    "Email": "4438@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4441",
+    "FullName": "เด็กหญิง กัญญาณัฐ  ปัญญา",
+    "Class": "ม.1/1",
+    "Email": "4441@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4454",
+    "FullName": "เด็กชาย ณัฐวุฒิ  เวียงจอมธรรม",
+    "Class": "ม.1/1",
+    "Email": "4454@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4521",
+    "FullName": "นางสาว แชรีเซอทู  -",
+    "Class": "ม.1/1",
+    "Email": "4521@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4524",
+    "FullName": "นาย อธิศ  -",
+    "Class": "ม.1/1",
+    "Email": "4524@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4855",
+    "FullName": "เด็กชาย ไกวิชญ์  นามดีศรีสุข",
+    "Class": "ม.1/1",
+    "Email": "4855@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5202",
+    "FullName": "เด็กหญิง ฤทัย  วังจอมใจ",
+    "Class": "ม.1/1",
+    "Email": "5202@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5203",
+    "FullName": "เด็กชาย ธนกฤต  แสงท้าว",
+    "Class": "ม.1/1",
+    "Email": "5203@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5326",
+    "FullName": "เด็กชาย ณัช  ไพรนีรชาติ",
+    "Class": "ม.1/1",
+    "Email": "5326@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5363",
+    "FullName": "เด็กหญิง ประภัสสร  วดีสุขเกษม",
+    "Class": "ม.1/1",
+    "Email": "5363@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5533",
+    "FullName": "เด็กชาย ภัทรพล  อ้วนเส้ง",
+    "Class": "ม.1/1",
+    "Email": "5533@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5605",
+    "FullName": "เด็กชาย พอเจตน์  วนาวีระจิตร",
+    "Class": "ม.1/1",
+    "Email": "5605@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5804",
+    "FullName": "เด็กชาย ภูเพชร  แซ่ม้า",
+    "Class": "ม.1/1",
+    "Email": "5804@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5807",
+    "FullName": "เด็กชาย ปกรณ์เกียรติ  ชัยรุ่งทวี",
+    "Class": "ม.1/1",
+    "Email": "5807@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5808",
+    "FullName": "เด็กชาย ธีรเมธ  ตุ้ยขม",
+    "Class": "ม.1/1",
+    "Email": "5808@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5809",
+    "FullName": "เด็กชาย จรูณวิทย์  กิตติยังกุล",
+    "Class": "ม.1/1",
+    "Email": "5809@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5818",
+    "FullName": "เด็กหญิง ขวัญศิริ  ยกย่องประชาไพร",
+    "Class": "ม.1/1",
+    "Email": "5818@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5822",
+    "FullName": "เด็กหญิง ฐิติมา  มนัสวิภาวี",
+    "Class": "ม.1/1",
+    "Email": "5822@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5825",
+    "FullName": "เด็กหญิง ภิญญามาศ  มีใจมั่นคง",
+    "Class": "ม.1/1",
+    "Email": "5825@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5831",
+    "FullName": "เด็กหญิง พรทิพย์  เพ็ญพิศมัย",
+    "Class": "ม.1/1",
+    "Email": "5831@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5832",
+    "FullName": "เด็กหญิง ชัชชญา  มูลดี",
+    "Class": "ม.1/1",
+    "Email": "5832@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5836",
+    "FullName": "เด็กหญิง นัชชา  ท้าววัฒนากุล",
+    "Class": "ม.1/1",
+    "Email": "5836@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5838",
+    "FullName": "เด็กหญิง ดรัลพร  หาญอริพ่าย",
+    "Class": "ม.1/1",
+    "Email": "5838@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5839",
+    "FullName": "เด็กชาย เชิญณภัทร  ชื่นชนกพิบูล",
+    "Class": "ม.1/1",
+    "Email": "5839@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5842",
+    "FullName": "เด็กหญิง ธันยพร  เฉียบแหลม",
+    "Class": "ม.1/1",
+    "Email": "5842@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5843",
+    "FullName": "เด็กหญิง นาระดา  ศรีภูธร",
+    "Class": "ม.1/1",
+    "Email": "5843@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5844",
+    "FullName": "เด็กหญิง กัญญาภัค  ดินแดนวนา",
+    "Class": "ม.1/1",
+    "Email": "5844@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5845",
+    "FullName": "เด็กชาย ภาคิน  พิชัยความดี",
+    "Class": "ม.1/1",
+    "Email": "5845@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5848",
+    "FullName": "เด็กหญิง อนัญญา  พัฒนาพฤกษา",
+    "Class": "ม.1/1",
+    "Email": "5848@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "3681",
+    "FullName": "เด็กหญิง กัลยรัตน์  ยั่งยืนความดี",
+    "Class": "ม.1/2",
+    "Email": "3681@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3721",
+    "FullName": "เด็กชาย กนกพล  เจียมไธสง",
+    "Class": "ม.1/2",
+    "Email": "3721@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3731",
+    "FullName": "เด็กชาย ภูทอง  กมลกวีภัสสร",
+    "Class": "ม.1/2",
+    "Email": "3731@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3911",
+    "FullName": "เด็กชาย วรพงษ์  ศักดิ์ศรีไพบูลย์",
+    "Class": "ม.1/2",
+    "Email": "3911@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3915",
+    "FullName": "เด็กชาย พงศภัค  พาซู",
+    "Class": "ม.1/2",
+    "Email": "3915@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3941",
+    "FullName": "เด็กหญิง มุนินทร์  สุวินัยกิจ",
+    "Class": "ม.1/2",
+    "Email": "3941@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3959",
+    "FullName": "เด็กหญิง เพ็ญพิชชา  ตะวันใกล้รุ่ง",
+    "Class": "ม.1/2",
+    "Email": "3959@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4049",
+    "FullName": "เด็กหญิง อัญชิสา  ประทับใจ",
+    "Class": "ม.1/2",
+    "Email": "4049@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4458",
+    "FullName": "เด็กชาย ธนศักดิ์  ภูผาอารักษ์",
+    "Class": "ม.1/2",
+    "Email": "4458@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4459",
+    "FullName": "เด็กชาย ปรวัฒน์  มุ่งสุดใจ",
+    "Class": "ม.1/2",
+    "Email": "4459@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4460",
+    "FullName": "เด็กหญิง มินท์ธิดา  หม่อนกันทา",
+    "Class": "ม.1/2",
+    "Email": "4460@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4528",
+    "FullName": "เด็กหญิง ดาไล  -",
+    "Class": "ม.1/2",
+    "Email": "4528@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4532",
+    "FullName": "เด็กชาย ธรรมกิจ  ใจทะเล",
+    "Class": "ม.1/2",
+    "Email": "4532@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4694",
+    "FullName": "เด็กหญิง แววดาว  แววพิราม",
+    "Class": "ม.1/2",
+    "Email": "4694@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4695",
+    "FullName": "เด็กหญิง ญานิกา  แซ่ลี",
+    "Class": "ม.1/2",
+    "Email": "4695@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4726",
+    "FullName": "เด็กหญิง กานต์พิชชา  คุณาวงษ์",
+    "Class": "ม.1/2",
+    "Email": "4726@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5207",
+    "FullName": "เด็กชาย ยศกร  -",
+    "Class": "ม.1/2",
+    "Email": "5207@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5324",
+    "FullName": "เด็กหญิง วิมลสิริ  ธาราจำกัด",
+    "Class": "ม.1/2",
+    "Email": "5324@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5328",
+    "FullName": "เด็กหญิง วรดา  ถิ่นเรา",
+    "Class": "ม.1/2",
+    "Email": "5328@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5604",
+    "FullName": "เด็กชาย ณัฐชัย  ปรการสกุล",
+    "Class": "ม.1/2",
+    "Email": "5604@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5771",
+    "FullName": "เด็กหญิง สุวรรณี  พงษ์เรืองไร",
+    "Class": "ม.1/2",
+    "Email": "5771@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5805",
+    "FullName": "เด็กชาย สุกฤษฏิ์  ดุกสุกแก้ว",
+    "Class": "ม.1/2",
+    "Email": "5805@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5806",
+    "FullName": "เด็กชาย ก้องภพ  สุนารัตน์",
+    "Class": "ม.1/2",
+    "Email": "5806@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5810",
+    "FullName": "เด็กชาย ธนาวัฒน์  กมลปราณี",
+    "Class": "ม.1/2",
+    "Email": "5810@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5812",
+    "FullName": "เด็กหญิง กัญญาณัฐ  แซ๊ะเบอร์",
+    "Class": "ม.1/2",
+    "Email": "5812@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5815",
+    "FullName": "เด็กหญิง พิชชานันท์  ศรนพรัตน์",
+    "Class": "ม.1/2",
+    "Email": "5815@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5819",
+    "FullName": "เด็กหญิง ปาลิตา  แสงเสือไพสิน",
+    "Class": "ม.1/2",
+    "Email": "5819@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5820",
+    "FullName": "เด็กหญิง เบญญา  ชาตรีวินิจทอง",
+    "Class": "ม.1/2",
+    "Email": "5820@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5824",
+    "FullName": "เด็กหญิง ศศินันท์  สว่างศรีรัตนากร",
+    "Class": "ม.1/2",
+    "Email": "5824@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5826",
+    "FullName": "เด็กหญิง ชนิภรณ์  ภัสสรวิสิฐ",
+    "Class": "ม.1/2",
+    "Email": "5826@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5827",
+    "FullName": "เด็กหญิง ณัฎฐณิชา  รุ่งเรืองเกิดคุณ",
+    "Class": "ม.1/2",
+    "Email": "5827@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5828",
+    "FullName": "เด็กหญิง กัญญภา  กองพร",
+    "Class": "ม.1/2",
+    "Email": "5828@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5829",
+    "FullName": "เด็กหญิง อาทิตยา  วิโรจน์วนากุล",
+    "Class": "ม.1/2",
+    "Email": "5829@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5830",
+    "FullName": "เด็กหญิง อรพิน  กุศลตระกูลทวี",
+    "Class": "ม.1/2",
+    "Email": "5830@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5833",
+    "FullName": "เด็กหญิง ธาริณี  พินิจศุภโชค",
+    "Class": "ม.1/2",
+    "Email": "5833@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5834",
+    "FullName": "เด็กหญิง กมลรส  ปานนพภา",
+    "Class": "ม.1/2",
+    "Email": "5834@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "3908",
+    "FullName": "เด็กชาย บัญญวัต  เปี้ยน้ำล้อม",
+    "Class": "ม.1/3",
+    "Email": "3908@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3920",
+    "FullName": "เด็กหญิง มณีพร  เวียงวนาวัลย์",
+    "Class": "ม.1/3",
+    "Email": "3920@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3924",
+    "FullName": "เด็กหญิง นันทิชา  บุบผะศิริ",
+    "Class": "ม.1/3",
+    "Email": "3924@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3929",
+    "FullName": "เด็กชาย พิชญะ  จันแก้วปง",
+    "Class": "ม.1/3",
+    "Email": "3929@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3939",
+    "FullName": "เด็กหญิง ปรียาณัน  คำนะ",
+    "Class": "ม.1/3",
+    "Email": "3939@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3940",
+    "FullName": "เด็กหญิง ฑิฆัมพร  หม่อนกันทา",
+    "Class": "ม.1/3",
+    "Email": "3940@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3942",
+    "FullName": "เด็กหญิง ณัฐธยาน์  ตาคำไช",
+    "Class": "ม.1/3",
+    "Email": "3942@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3948",
+    "FullName": "เด็กชาย กิตติศักดิ์  โคะเจ",
+    "Class": "ม.1/3",
+    "Email": "3948@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4053",
+    "FullName": "เด็กชาย ยศวรรธน์  ปภาปิยวรโชติ",
+    "Class": "ม.1/3",
+    "Email": "4053@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4056",
+    "FullName": "เด็กชาย ธนัชพร  เที่ยงธรรม",
+    "Class": "ม.1/3",
+    "Email": "4056@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4238",
+    "FullName": "นาย เอกสิทธิ์  ซื่อตรงพงไพร",
+    "Class": "ม.1/3",
+    "Email": "4238@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4240",
+    "FullName": "เด็กหญิง บัวแก้ว  เสน่ห์อนุรักษ์",
+    "Class": "ม.1/3",
+    "Email": "4240@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4437",
+    "FullName": "เด็กหญิง พิชมน  ปินนิล",
+    "Class": "ม.1/3",
+    "Email": "4437@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4439",
+    "FullName": "เด็กหญิง อุรัสพร  สมร่างวัจนกุล",
+    "Class": "ม.1/3",
+    "Email": "4439@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4461",
+    "FullName": "เด็กชาย คาวิน  พวงโกเมน",
+    "Class": "ม.1/3",
+    "Email": "4461@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4523",
+    "FullName": "เด็กชาย เลเกล่อ  -",
+    "Class": "ม.1/3",
+    "Email": "4523@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4605",
+    "FullName": "เด็กชาย จิรกร  หนึ่งชัชวาล",
+    "Class": "ม.1/3",
+    "Email": "4605@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5140",
+    "FullName": "เด็กชาย ธนภัทร  รักษ์แม่ละเมา",
+    "Class": "ม.1/3",
+    "Email": "5140@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5216",
+    "FullName": "เด็กหญิง นภัสสร  พิทักษ์พนาไพร",
+    "Class": "ม.1/3",
+    "Email": "5216@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5302",
+    "FullName": "เด็กหญิง พิมพ์วิมล  แซ่กือ",
+    "Class": "ม.1/3",
+    "Email": "5302@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5515",
+    "FullName": "เด็กชาย ธนภัทร  กำแทง",
+    "Class": "ม.1/3",
+    "Email": "5515@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5603",
+    "FullName": "เด็กชาย หัฏฐกร  สีพาชัย",
+    "Class": "ม.1/3",
+    "Email": "5603@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5607",
+    "FullName": "เด็กหญิง ณิชา  สุขธาดาทรัพย์",
+    "Class": "ม.1/3",
+    "Email": "5607@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5608",
+    "FullName": "เด็กหญิง ธิดารัตน์  ใจมา",
+    "Class": "ม.1/3",
+    "Email": "5608@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5772",
+    "FullName": "นางสาว ญาณิศา  ชัชวาลวงศ์บุญ",
+    "Class": "ม.1/3",
+    "Email": "5772@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5813",
+    "FullName": "เด็กหญิง พรทิพา  วนาอายุธ",
+    "Class": "ม.1/3",
+    "Email": "5813@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5814",
+    "FullName": "เด็กหญิง ธิดาพร  มีสุขเกษม",
+    "Class": "ม.1/3",
+    "Email": "5814@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5816",
+    "FullName": "เด็กหญิง ทิพต์ปญา  ดวงแก้วไพลิน",
+    "Class": "ม.1/3",
+    "Email": "5816@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5817",
+    "FullName": "เด็กหญิง ณัฐวันย์  แม่หละเจริญพร",
+    "Class": "ม.1/3",
+    "Email": "5817@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5821",
+    "FullName": "เด็กหญิง รุ่งทิพย์  ทัศนละวาด",
+    "Class": "ม.1/3",
+    "Email": "5821@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5823",
+    "FullName": "เด็กหญิง ภัทรธิดา  ทวีทรัพยากร",
+    "Class": "ม.1/3",
+    "Email": "5823@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5835",
+    "FullName": "เด็กหญิง อารีรัตน์  ศิริกุลรังสรรค์",
+    "Class": "ม.1/3",
+    "Email": "5835@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5846",
+    "FullName": "เด็กหญิง นลพรรณ  แสนคำหล้า",
+    "Class": "ม.1/3",
+    "Email": "5846@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5847",
+    "FullName": "เด็กชาย กฤษณพงค์  ไพลินอุทัย",
+    "Class": "ม.1/3",
+    "Email": "5847@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "3674",
+    "FullName": "เด็กหญิง ภัทรธิดา  กาญจนพันธุ์บุญ",
+    "Class": "ม.2/1",
+    "Email": "3674@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3679",
+    "FullName": "เด็กหญิง ขนิษฐา  สงวนจิตร์",
+    "Class": "ม.2/1",
+    "Email": "3679@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3680",
+    "FullName": "เด็กชาย เรวัต  ตาใจ",
+    "Class": "ม.2/1",
+    "Email": "3680@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3692",
+    "FullName": "เด็กหญิง ปภาดา  พิเชษฐ์เรืองฤทธิ์",
+    "Class": "ม.2/1",
+    "Email": "3692@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3698",
+    "FullName": "เด็กชาย ศุภฤกษ์  หล้าพรหม",
+    "Class": "ม.2/1",
+    "Email": "3698@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3876",
+    "FullName": "เด็กชาย จิตรกร  ทวีทรัพย์ใหม่",
+    "Class": "ม.2/1",
+    "Email": "3876@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3884",
+    "FullName": "เด็กหญิง ศกลรัตน์  บุญสืบสาย",
+    "Class": "ม.2/1",
+    "Email": "3884@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3885",
+    "FullName": "เด็กหญิง ณัฎฐาชล  มุ่ยจันตา",
+    "Class": "ม.2/1",
+    "Email": "3885@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3888",
+    "FullName": "เด็กชาย ธนนันท์  ทองแก้วคงคา",
+    "Class": "ม.2/1",
+    "Email": "3888@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3901",
+    "FullName": "เด็กหญิง อรรัมภา  ไพรมงคลธรรม",
+    "Class": "ม.2/1",
+    "Email": "3901@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3903",
+    "FullName": "เด็กหญิง กัญญาพัทธิ์  สมบูรณ์",
+    "Class": "ม.2/1",
+    "Email": "3903@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4044",
+    "FullName": "เด็กหญิง กชกร  วิมานคีรี",
+    "Class": "ม.2/1",
+    "Email": "4044@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4221",
+    "FullName": "นาย พัชรพล  เวชชินนะ",
+    "Class": "ม.2/1",
+    "Email": "4221@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4223",
+    "FullName": "เด็กหญิง นิษฐกานต์  สุรางวัด",
+    "Class": "ม.2/1",
+    "Email": "4223@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4229",
+    "FullName": "เด็กชาย ณัฐวัฒน์  ยะธิเป็ง",
+    "Class": "ม.2/1",
+    "Email": "4229@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4316",
+    "FullName": "นาย อทีชา  จอมลักษณา",
+    "Class": "ม.2/1",
+    "Email": "4316@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4433",
+    "FullName": "เด็กหญิง ปาริตา  คำโย",
+    "Class": "ม.2/1",
+    "Email": "4433@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4435",
+    "FullName": "เด็กชาย ฑิฆายุ  ศีขรปิยะไพร",
+    "Class": "ม.2/1",
+    "Email": "4435@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4793",
+    "FullName": "เด็กหญิง พอโด้มู  -",
+    "Class": "ม.2/1",
+    "Email": "4793@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4851",
+    "FullName": "เด็กหญิง อนัญพร  นาไร่สีเงิน",
+    "Class": "ม.2/1",
+    "Email": "4851@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4892",
+    "FullName": "เด็กหญิง วาริน  รุ่งระวีรุ่งโรจน์",
+    "Class": "ม.2/1",
+    "Email": "4892@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5149",
+    "FullName": "เด็กชาย ธิติ  ตาดำ",
+    "Class": "ม.2/1",
+    "Email": "5149@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5554",
+    "FullName": "เด็กชาย พงษ์พิสุทธิ์  เกี๋ยงวงษ์",
+    "Class": "ม.2/1",
+    "Email": "5554@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5559",
+    "FullName": "เด็กชาย ภัทรกร  คีรีพิพัฒน์",
+    "Class": "ม.2/1",
+    "Email": "5559@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5568",
+    "FullName": "เด็กชาย สุริยา  กาญจนาพงศา",
+    "Class": "ม.2/1",
+    "Email": "5568@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5584",
+    "FullName": "เด็กหญิง ณัฐินีพร  ก้อนแหวน",
+    "Class": "ม.2/1",
+    "Email": "5584@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5593",
+    "FullName": "เด็กหญิง ขวัญชนก  กมลปราณี",
+    "Class": "ม.2/1",
+    "Email": "5593@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5594",
+    "FullName": "เด็กหญิง ณัฐธิดา  นิลกัลยากร",
+    "Class": "ม.2/1",
+    "Email": "5594@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5797",
+    "FullName": "เด็กชาย ปิยะ  ปรางค์ทวี",
+    "Class": "ม.2/1",
+    "Email": "5797@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5798",
+    "FullName": "เด็กหญิง สุภัสสรา  กันทะ",
+    "Class": "ม.2/1",
+    "Email": "5798@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "3689",
+    "FullName": "เด็กชาย ณัฐวุฒิ  พัธรกิตติกุล",
+    "Class": "ม.2/2",
+    "Email": "3689@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3695",
+    "FullName": "เด็กชาย ปาฎิหาริย์  สิริหทัย",
+    "Class": "ม.2/2",
+    "Email": "3695@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3881",
+    "FullName": "เด็กหญิง กมลชนก  ปรีชาญชัย",
+    "Class": "ม.2/2",
+    "Email": "3881@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3891",
+    "FullName": "เด็กชาย ณัฐพัตร์  ปู่อ้าย",
+    "Class": "ม.2/2",
+    "Email": "3891@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3902",
+    "FullName": "เด็กชาย ภาวิต  -",
+    "Class": "ม.2/2",
+    "Email": "3902@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4225",
+    "FullName": "นางสาว ญาณากร  พนาขุนเขา",
+    "Class": "ม.2/2",
+    "Email": "4225@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4226",
+    "FullName": "นาย เซโด้ทู  -",
+    "Class": "ม.2/2",
+    "Email": "4226@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4235",
+    "FullName": "นางสาว เบญญาภา  ไพรแสงทอง",
+    "Class": "ม.2/2",
+    "Email": "4235@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4236",
+    "FullName": "นาย วิรัฒน์  เสน่ห์อนุรักษ์",
+    "Class": "ม.2/2",
+    "Email": "4236@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5143",
+    "FullName": "เด็กชาย เมธพนธ์  ไพรกล้าธรรม",
+    "Class": "ม.2/2",
+    "Email": "5143@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5168",
+    "FullName": "เด็กชาย นันทยศ  ถนัดอาชา",
+    "Class": "ม.2/2",
+    "Email": "5168@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5313",
+    "FullName": "เด็กชาย ธนวัฒน์  แซ่ม้า",
+    "Class": "ม.2/2",
+    "Email": "5313@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5315",
+    "FullName": "เด็กชาย ชานน  ชลธีสายวิมาน",
+    "Class": "ม.2/2",
+    "Email": "5315@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5318",
+    "FullName": "เด็กหญิง ปิยนุช  ไหม่วงษ์",
+    "Class": "ม.2/2",
+    "Email": "5318@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5321",
+    "FullName": "เด็กชาย สมพงษ์  -",
+    "Class": "ม.2/2",
+    "Email": "5321@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5322",
+    "FullName": "เด็กหญิง วัลฐกานต์  โยธาธร",
+    "Class": "ม.2/2",
+    "Email": "5322@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5524",
+    "FullName": "เด็กชาย ชาติ  -",
+    "Class": "ม.2/2",
+    "Email": "5524@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5555",
+    "FullName": "เด็กชาย ณัฐกิจ  ปิยพัทธ์สกุล",
+    "Class": "ม.2/2",
+    "Email": "5555@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5558",
+    "FullName": "เด็กชาย แอ้ะตะดา  -",
+    "Class": "ม.2/2",
+    "Email": "5558@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5566",
+    "FullName": "เด็กชาย ศุภกิตติ์  วชิรญาณวงศ์",
+    "Class": "ม.2/2",
+    "Email": "5566@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5567",
+    "FullName": "เด็กชาย ทวิภพ  มั่นคงเจริญกุล",
+    "Class": "ม.2/2",
+    "Email": "5567@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5573",
+    "FullName": "เด็กชาย เอกรัตน์  ภัทร์นิตินันท์",
+    "Class": "ม.2/2",
+    "Email": "5573@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5580",
+    "FullName": "เด็กหญิง นารีรัตน์  ใจจันตา",
+    "Class": "ม.2/2",
+    "Email": "5580@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5581",
+    "FullName": "เด็กหญิง ทับทิม  ต๊ะทา",
+    "Class": "ม.2/2",
+    "Email": "5581@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5582",
+    "FullName": "เด็กหญิง ธีริศรา  เกิดมูล",
+    "Class": "ม.2/2",
+    "Email": "5582@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5587",
+    "FullName": "เด็กหญิง กชอร  เก่งไฉไล",
+    "Class": "ม.2/2",
+    "Email": "5587@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5590",
+    "FullName": "นางสาว วิชญาพร  สังข์ก้องเดชา",
+    "Class": "ม.2/2",
+    "Email": "5590@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5591",
+    "FullName": "เด็กหญิง หทัยภัทร  ทาเกลาะ",
+    "Class": "ม.2/2",
+    "Email": "5591@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5597",
+    "FullName": "เด็กหญิง เบญญาภา  กล่ำทา",
+    "Class": "ม.2/2",
+    "Email": "5597@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5599",
+    "FullName": "เด็กหญิง สุทธิดา  ศรีคีรีราษฎร์",
+    "Class": "ม.2/2",
+    "Email": "5599@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5600",
+    "FullName": "เด็กหญิง พิชชาอร  ทัพพ์อนันต์",
+    "Class": "ม.2/2",
+    "Email": "5600@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5773",
+    "FullName": "เด็กชาย ชานน  วิชาภัทร",
+    "Class": "ม.2/2",
+    "Email": "5773@sjmr.ac.th",
+    "Status": "นักเรียนเก่าเข้าใหม่"
+  },
+  {
+    "Student_ID": "3687",
+    "FullName": "เด็กชาย จักรพงศ์  พรมวงษ์ป้อ",
+    "Class": "ม.2/3",
+    "Email": "3687@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3893",
+    "FullName": "เด็กชาย ธีรเดช  แสงศิริรักษ์",
+    "Class": "ม.2/3",
+    "Email": "3893@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3900",
+    "FullName": "เด็กชาย วิชญ์วัชร  สถิตพิภพ",
+    "Class": "ม.2/3",
+    "Email": "3900@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4045",
+    "FullName": "เด็กหญิง กวินทิพย์  ตันทา",
+    "Class": "ม.2/3",
+    "Email": "4045@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4107",
+    "FullName": "เด็กหญิง ลลิตภัทร  ภูเขาใหญ่",
+    "Class": "ม.2/3",
+    "Email": "4107@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4321",
+    "FullName": "เด็กหญิง พัชรวิมล  เอี้ยงหมี",
+    "Class": "ม.2/3",
+    "Email": "4321@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4893",
+    "FullName": "เด็กหญิง จรินทร์พร  แซ่เฮอ",
+    "Class": "ม.2/3",
+    "Email": "4893@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5314",
+    "FullName": "เด็กหญิง เกวลิน  แซ่ม้า",
+    "Class": "ม.2/3",
+    "Email": "5314@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5317",
+    "FullName": "เด็กหญิง นิรชา  ธงทวีทรัพย์",
+    "Class": "ม.2/3",
+    "Email": "5317@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5561",
+    "FullName": "เด็กชาย ณัฐวุฒิ  ตระกูลกล้าณรงค์",
+    "Class": "ม.2/3",
+    "Email": "5561@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5562",
+    "FullName": "เด็กชาย คุณานนต์  พิสมัยโกศล",
+    "Class": "ม.2/3",
+    "Email": "5562@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5563",
+    "FullName": "เด็กชาย กญสิทธิ์  ศรีเมือง",
+    "Class": "ม.2/3",
+    "Email": "5563@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5564",
+    "FullName": "เด็กชาย ธนดล  ชลนาทีเกิดคุณ",
+    "Class": "ม.2/3",
+    "Email": "5564@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5565",
+    "FullName": "เด็กชาย ลิขิต  สุพงษ์เกื้อกุล",
+    "Class": "ม.2/3",
+    "Email": "5565@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5570",
+    "FullName": "เด็กชาย สิรวิชญ์  วชิรญาณวงศ์",
+    "Class": "ม.2/3",
+    "Email": "5570@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5571",
+    "FullName": "เด็กชาย วงศธร  อาชาวัฒนกุล",
+    "Class": "ม.2/3",
+    "Email": "5571@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5572",
+    "FullName": "เด็กชาย วุฒิภัทร  อาชาวัฒนกุล",
+    "Class": "ม.2/3",
+    "Email": "5572@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5585",
+    "FullName": "เด็กหญิง ณัฐณิชา  พนาไพร",
+    "Class": "ม.2/3",
+    "Email": "5585@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5586",
+    "FullName": "เด็กหญิง อรปรียา  วิกาใจ",
+    "Class": "ม.2/3",
+    "Email": "5586@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5589",
+    "FullName": "เด็กหญิง ธนวดี  คุลีมาณ",
+    "Class": "ม.2/3",
+    "Email": "5589@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5592",
+    "FullName": "เด็กหญิง ศุภรดา  กองพร",
+    "Class": "ม.2/3",
+    "Email": "5592@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5595",
+    "FullName": "เด็กหญิง อลิตา  เสริมมติวงศ์",
+    "Class": "ม.2/3",
+    "Email": "5595@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5596",
+    "FullName": "เด็กหญิง วรรนิสา  หล่าเพีย",
+    "Class": "ม.2/3",
+    "Email": "5596@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5598",
+    "FullName": "เด็กหญิง กัญญารัตน์  พานปฐมกุล",
+    "Class": "ม.2/3",
+    "Email": "5598@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5800",
+    "FullName": "เด็กหญิง ชญานิศ  ทรัพย์ไพรทอง",
+    "Class": "ม.2/3",
+    "Email": "5800@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5801",
+    "FullName": "เด็กหญิง ญารินดา  ทรัพย์ไพรทอง",
+    "Class": "ม.2/3",
+    "Email": "5801@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5802",
+    "FullName": "เด็กหญิง สุพัตรตา  ศรีศิลป์",
+    "Class": "ม.2/3",
+    "Email": "5802@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5803",
+    "FullName": "เด็กหญิง ขวัญชนก  วงษ์กิจ",
+    "Class": "ม.2/3",
+    "Email": "5803@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "3443",
+    "FullName": "นาย ธนโชติ  อาจนรากิจ",
+    "Class": "ม.3/1",
+    "Email": "3443@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3462",
+    "FullName": "นาย กันตพล  กันทิยะ",
+    "Class": "ม.3/1",
+    "Email": "3462@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3463",
+    "FullName": "เด็กชาย เตชิต  จำนงค์รัตน์",
+    "Class": "ม.3/1",
+    "Email": "3463@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3476",
+    "FullName": "นาย พิทวัส  สนั่นเมฆา",
+    "Class": "ม.3/1",
+    "Email": "3476@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3483",
+    "FullName": "เด็กชาย การัณยภาส  ทาหว่างกัน",
+    "Class": "ม.3/1",
+    "Email": "3483@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3488",
+    "FullName": "เด็กชาย นนทกร  กล้าแกร่งอาชา",
+    "Class": "ม.3/1",
+    "Email": "3488@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3665",
+    "FullName": "นาย ธีรเมธ  กุลนะบุญมา",
+    "Class": "ม.3/1",
+    "Email": "3665@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3718",
+    "FullName": "นาย สมชาย  ทวีทรัพย์ใหม่",
+    "Class": "ม.3/1",
+    "Email": "3718@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3846",
+    "FullName": "เด็กหญิง ศิริยา  รัศมีประกายคีรี",
+    "Class": "ม.3/1",
+    "Email": "3846@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4037",
+    "FullName": "เด็กชาย อชิระ  ปวงคำใจ",
+    "Class": "ม.3/1",
+    "Email": "4037@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4039",
+    "FullName": "นาย พีณตะวัน  กันทะนูน",
+    "Class": "ม.3/1",
+    "Email": "4039@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4425",
+    "FullName": "นาย กิตตินันท์  สมเกียรติคีรี",
+    "Class": "ม.3/1",
+    "Email": "4425@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4718",
+    "FullName": "นางสาว นริศรา  พันธ์ปัญญากรกุล",
+    "Class": "ม.3/1",
+    "Email": "4718@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4836",
+    "FullName": "นาย เทพฤทธิ์  อรงเดช",
+    "Class": "ม.3/1",
+    "Email": "4836@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5200",
+    "FullName": "นาย ภาสกร  -",
+    "Class": "ม.3/1",
+    "Email": "5200@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5270",
+    "FullName": "นาย ณรงค์วิทย์  คงเกียรติคีรี",
+    "Class": "ม.3/1",
+    "Email": "5270@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5271",
+    "FullName": "นาย จูไลน์  -",
+    "Class": "ม.3/1",
+    "Email": "5271@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5272",
+    "FullName": "นางสาว กวินทิพย์  สิงห์เถื่อน",
+    "Class": "ม.3/1",
+    "Email": "5272@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5273",
+    "FullName": "นางสาว วิราสินี  ดีสม",
+    "Class": "ม.3/1",
+    "Email": "5273@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5274",
+    "FullName": "เด็กหญิง จิรารัตน์  บุญโกย",
+    "Class": "ม.3/1",
+    "Email": "5274@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5275",
+    "FullName": "นาย ศุภชัย  เฉลิมพรดำรง",
+    "Class": "ม.3/1",
+    "Email": "5275@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5278",
+    "FullName": "นางสาว รสินทรา  ยิ่งยศคงอนันต์",
+    "Class": "ม.3/1",
+    "Email": "5278@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5280",
+    "FullName": "นางสาว ฝนทิพย์  ทัศนละวาด",
+    "Class": "ม.3/1",
+    "Email": "5280@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5281",
+    "FullName": "นางสาว สุวรรณา  คีรีพิริยะ",
+    "Class": "ม.3/1",
+    "Email": "5281@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5283",
+    "FullName": "นางสาว ชุดา  สุขธาดาทรัพย์",
+    "Class": "ม.3/1",
+    "Email": "5283@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5284",
+    "FullName": "นางสาว กัญญาภัค  งามระรื่น",
+    "Class": "ม.3/1",
+    "Email": "5284@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5285",
+    "FullName": "เด็กชาย อนุชาติ  ชนาธิปสกุล",
+    "Class": "ม.3/1",
+    "Email": "5285@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5288",
+    "FullName": "นางสาว ศศิชา  สุจริต",
+    "Class": "ม.3/1",
+    "Email": "5288@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5291",
+    "FullName": "นางสาว ธันยพร  ธนภูมิพานิช",
+    "Class": "ม.3/1",
+    "Email": "5291@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5293",
+    "FullName": "นางสาว ธนัสถา  ธาราจำกัด",
+    "Class": "ม.3/1",
+    "Email": "5293@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5295",
+    "FullName": "เด็กหญิง รัชฏาภรณ์  ปัญญาสถิต",
+    "Class": "ม.3/1",
+    "Email": "5295@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5296",
+    "FullName": "เด็กหญิง ปิยพร  คำลำปาง",
+    "Class": "ม.3/1",
+    "Email": "5296@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5301",
+    "FullName": "นางสาว พฤทธิพร  ตลับทอง",
+    "Class": "ม.3/1",
+    "Email": "5301@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5303",
+    "FullName": "นางสาว ฟ้าใส  แสงเสือไพสิน",
+    "Class": "ม.3/1",
+    "Email": "5303@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5311",
+    "FullName": "นางสาว จรรยวรรธน์  ต๊ะคำชัย",
+    "Class": "ม.3/1",
+    "Email": "5311@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5531",
+    "FullName": "นาย รัฐภาค  แซ่ยั้ง",
+    "Class": "ม.3/1",
+    "Email": "5531@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5550",
+    "FullName": "เด็กชาย สุริยัน  ทวีบุญปัญญาสุข",
+    "Class": "ม.3/1",
+    "Email": "5550@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5551",
+    "FullName": "นางสาว ศรัณย์พร  เขียววงษ์",
+    "Class": "ม.3/1",
+    "Email": "5551@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5777",
+    "FullName": "นาย กอแสง  นุดา",
+    "Class": "ม.3/1",
+    "Email": "5777@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3475",
+    "FullName": "เด็กชาย กฤตยชญ์  ใจพรมมินทร์",
+    "Class": "ม.3/2",
+    "Email": "3475@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3484",
+    "FullName": "เด็กหญิง วริศรา  คำลำปาง",
+    "Class": "ม.3/2",
+    "Email": "3484@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3517",
+    "FullName": "เด็กชาย ชยธร  พันยุโดด",
+    "Class": "ม.3/2",
+    "Email": "3517@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3518",
+    "FullName": "นางสาว วิรัญชนา  ชายา",
+    "Class": "ม.3/2",
+    "Email": "3518@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3667",
+    "FullName": "นาย วรัญชิต  อาชาวินัย",
+    "Class": "ม.3/2",
+    "Email": "3667@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3669",
+    "FullName": "นาย ศิวกร  จันธิดา",
+    "Class": "ม.3/2",
+    "Email": "3669@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3856",
+    "FullName": "นางสาว ธนารีย์  พงษ์พานิช",
+    "Class": "ม.3/2",
+    "Email": "3856@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3875",
+    "FullName": "นาย ธีรภัทร  แซ่ว้าง",
+    "Class": "ม.3/2",
+    "Email": "3875@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3878",
+    "FullName": "นาย ธีรพงศ์  เลิศล้ำสุริยา",
+    "Class": "ม.3/2",
+    "Email": "3878@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3954",
+    "FullName": "นางสาว กชกร  อาภรณ์จำรัสมาส",
+    "Class": "ม.3/2",
+    "Email": "3954@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4030",
+    "FullName": "เด็กชาย จิรวัฒน์  ขามคำ",
+    "Class": "ม.3/2",
+    "Email": "4030@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4215",
+    "FullName": "นาย ทรรศนันท์  อารมย์",
+    "Class": "ม.3/2",
+    "Email": "4215@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4424",
+    "FullName": "นางสาว ณัฏฐณิชา  สุวรรณพนา",
+    "Class": "ม.3/2",
+    "Email": "4424@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4429",
+    "FullName": "เด็กหญิง ดรัลพร  ธีรเดชคีรี",
+    "Class": "ม.3/2",
+    "Email": "4429@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4606",
+    "FullName": "นางสาว สลิลทิพย์  ทิพย์พาราชน",
+    "Class": "ม.3/2",
+    "Email": "4606@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4837",
+    "FullName": "นาย จอทูเจ  -",
+    "Class": "ม.3/2",
+    "Email": "4837@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4885",
+    "FullName": "นาย ธงสุข  รณวิชาญ",
+    "Class": "ม.3/2",
+    "Email": "4885@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5013",
+    "FullName": "เด็กหญิง จิราภรณ์  ปรการสกุล",
+    "Class": "ม.3/2",
+    "Email": "5013@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5017",
+    "FullName": "นางสาว นวลจันทร์  ธรรมธนสกุล",
+    "Class": "ม.3/2",
+    "Email": "5017@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5178",
+    "FullName": "เด็กหญิง สุพรรณี  ไพรบุญศีล",
+    "Class": "ม.3/2",
+    "Email": "5178@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5199",
+    "FullName": "นางสาว กัลยาพร  กุลกวีกมลาศ",
+    "Class": "ม.3/2",
+    "Email": "5199@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5276",
+    "FullName": "นาย พรชัย  วงศ์อุษา",
+    "Class": "ม.3/2",
+    "Email": "5276@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5277",
+    "FullName": "เด็กชาย ณัฐพล  -",
+    "Class": "ม.3/2",
+    "Email": "5277@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5286",
+    "FullName": "เด็กชาย มนุเชษฐ์  ทาวงษ์",
+    "Class": "ม.3/2",
+    "Email": "5286@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5287",
+    "FullName": "นางสาว อนัญพร  พงศกรเกริกไกร",
+    "Class": "ม.3/2",
+    "Email": "5287@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5290",
+    "FullName": "นางสาว ณัชชา  เพิ่มนิธิสกุล",
+    "Class": "ม.3/2",
+    "Email": "5290@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5300",
+    "FullName": "เด็กชาย ณัฐภัทร  ถวิลวิวัฒน์",
+    "Class": "ม.3/2",
+    "Email": "5300@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5304",
+    "FullName": "เด็กชาย กันตาวัฒน์  มรุตบริสุทธิ์",
+    "Class": "ม.3/2",
+    "Email": "5304@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5305",
+    "FullName": "นาย ศรัญญู  ทำลิ้",
+    "Class": "ม.3/2",
+    "Email": "5305@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5306",
+    "FullName": "นางสาว ชลธิชา  วงษ์อำนาจ",
+    "Class": "ม.3/2",
+    "Email": "5306@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5307",
+    "FullName": "นาย จัสติน  วงศ์พานิชย์กุล",
+    "Class": "ม.3/2",
+    "Email": "5307@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5552",
+    "FullName": "นางสาว ประกายดาว  พงศ์อดิศา",
+    "Class": "ม.3/2",
+    "Email": "5552@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5601",
+    "FullName": "เด็กหญิง ศิรดา  เกียรติสุพจน์",
+    "Class": "ม.3/2",
+    "Email": "5601@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5602",
+    "FullName": "เด็กหญิง ชนัญญา  วนาทัศไนย",
+    "Class": "ม.3/2",
+    "Email": "5602@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5779",
+    "FullName": "นางสาว อาพอวา  -",
+    "Class": "ม.3/2",
+    "Email": "5779@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3152",
+    "FullName": "นาย ณัฐภัทร  ศรีคีรีราษฎร์",
+    "Class": "ม.4/1",
+    "Email": "3152@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3169",
+    "FullName": "นาย วรชิต  พันธ์ปัญญากรกุล",
+    "Class": "ม.4/1",
+    "Email": "3169@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3172",
+    "FullName": "นาย ณชกุล  ควรคง",
+    "Class": "ม.4/1",
+    "Email": "3172@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3319",
+    "FullName": "นางสาว รมิตา  ภัทรกิจสกุล",
+    "Class": "ม.4/1",
+    "Email": "3319@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3321",
+    "FullName": "นางสาว พิชชาอร  กมลาศโกมุท",
+    "Class": "ม.4/1",
+    "Email": "3321@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3442",
+    "FullName": "นาย ศิริศักดิ์  โคะเจ",
+    "Class": "ม.4/1",
+    "Email": "3442@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3446",
+    "FullName": "นางสาว ณัฐกานต์  ถนัดอาชา",
+    "Class": "ม.4/1",
+    "Email": "3446@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3451",
+    "FullName": "นางสาว มึแย่แพสิริกิต  -",
+    "Class": "ม.4/1",
+    "Email": "3451@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3452",
+    "FullName": "นาย นพคุณ  สงวนจิตร์",
+    "Class": "ม.4/1",
+    "Email": "3452@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3453",
+    "FullName": "นาย คริสโตเฟอร์  แซ่ฟู",
+    "Class": "ม.4/1",
+    "Email": "3453@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3454",
+    "FullName": "นาย ธีรภัทร  ภัทรกิจสกุล",
+    "Class": "ม.4/1",
+    "Email": "3454@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3455",
+    "FullName": "นางสาว กัลยาลักษณ์  อ่วมพิทยา",
+    "Class": "ม.4/1",
+    "Email": "3455@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3457",
+    "FullName": "นางสาว ขวัญพร  -",
+    "Class": "ม.4/1",
+    "Email": "3457@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3461",
+    "FullName": "นางสาว ปัทมพร  พิเชษฐ์เรืองฤทธิ์",
+    "Class": "ม.4/1",
+    "Email": "3461@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3492",
+    "FullName": "นาย ภูมินทร์  กมลกวีภัสสร",
+    "Class": "ม.4/1",
+    "Email": "3492@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3659",
+    "FullName": "นางสาว สุพิชญา  ไพรมงคลธรรม",
+    "Class": "ม.4/1",
+    "Email": "3659@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3662",
+    "FullName": "นางสาว รตี  -",
+    "Class": "ม.4/1",
+    "Email": "3662@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3850",
+    "FullName": "นางสาว ปพิชชานันท์  มุ่งสุดใจ",
+    "Class": "ม.4/1",
+    "Email": "3850@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3855",
+    "FullName": "นางสาว จิรปาณ  ปภาปิยวรโชติ",
+    "Class": "ม.4/1",
+    "Email": "3855@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3857",
+    "FullName": "นางสาว จิรัชญา  รัศมีประกายคีรี",
+    "Class": "ม.4/1",
+    "Email": "3857@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3865",
+    "FullName": "นาย จิราวัฒน์  มาพร้อม",
+    "Class": "ม.4/1",
+    "Email": "3865@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4209",
+    "FullName": "นางสาว รดา  เฉลิมมงคลชัย",
+    "Class": "ม.4/1",
+    "Email": "4209@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4416",
+    "FullName": "นางสาว ชวัลรัตน์  ศรีคีรีราษฎร์",
+    "Class": "ม.4/1",
+    "Email": "4416@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5035",
+    "FullName": "นาย รัฐธนชาติ  วาสีประไพ",
+    "Class": "ม.4/1",
+    "Email": "5035@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5037",
+    "FullName": "นาย ธีรัช  -",
+    "Class": "ม.4/1",
+    "Email": "5037@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5040",
+    "FullName": "นางสาว ฐิดาพร  สมภพพิสมัย",
+    "Class": "ม.4/1",
+    "Email": "5040@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5044",
+    "FullName": "นางสาว ธัญชนก  ไพรกล้าธรรม",
+    "Class": "ม.4/1",
+    "Email": "5044@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5046",
+    "FullName": "นางสาว อัญรินทร์  วนาธรรมเจริญ",
+    "Class": "ม.4/1",
+    "Email": "5046@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5048",
+    "FullName": "นาย เอกรินทร์  สมร่างวัจนกุล",
+    "Class": "ม.4/1",
+    "Email": "5048@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5060",
+    "FullName": "นางสาว ธัญมน  สองยางเจริญสุข",
+    "Class": "ม.4/1",
+    "Email": "5060@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5126",
+    "FullName": "นางสาว ณัฐชา  อินอ๋อม",
+    "Class": "ม.4/1",
+    "Email": "5126@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5127",
+    "FullName": "นางสาว วราภรณ์  มณีศิลาวงศ์",
+    "Class": "ม.4/1",
+    "Email": "5127@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5128",
+    "FullName": "นางสาว จามจุรี  ถนอมพนา",
+    "Class": "ม.4/1",
+    "Email": "5128@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5261",
+    "FullName": "นางสาว สายน้ำ  เวียงป่าสัก",
+    "Class": "ม.4/1",
+    "Email": "5261@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5549",
+    "FullName": "นาย ณฐนนท์  อินทุทรัพย์",
+    "Class": "ม.4/1",
+    "Email": "5549@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5788",
+    "FullName": "นางสาว บุณณดา  จันธิมา",
+    "Class": "ม.4/1",
+    "Email": "5788@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5789",
+    "FullName": "นางสาว จารุภา  เรืองรองรักพนา",
+    "Class": "ม.4/1",
+    "Email": "5789@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5791",
+    "FullName": "นางสาว พรหมชญพร  ปาเตียง",
+    "Class": "ม.4/1",
+    "Email": "5791@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5792",
+    "FullName": "นางสาว ลักษิกา  สุขเสรีมั่นคง",
+    "Class": "ม.4/1",
+    "Email": "5792@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5794",
+    "FullName": "นางสาว วสินี  วนเกษตรกุล",
+    "Class": "ม.4/1",
+    "Email": "5794@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "3157",
+    "FullName": "นางสาว นวภัทร  สบเมยสาละวิน",
+    "Class": "ม.4/2",
+    "Email": "3157@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3308",
+    "FullName": "นาย ณัฐภัทร  ภูผาอนุรักษ์",
+    "Class": "ม.4/2",
+    "Email": "3308@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3351",
+    "FullName": "นางสาว มนัสนันท์  บุญรัด",
+    "Class": "ม.4/2",
+    "Email": "3351@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3858",
+    "FullName": "นางสาว กันตยา  สิงห์สิทธิกร",
+    "Class": "ม.4/2",
+    "Email": "3858@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3862",
+    "FullName": "นาย ราเชนทร์  ชาวนา",
+    "Class": "ม.4/2",
+    "Email": "3862@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3869",
+    "FullName": "นาย เทพพงศ์  เลิศล้ำสุริยา",
+    "Class": "ม.4/2",
+    "Email": "3869@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3870",
+    "FullName": "นางสาว ณัฏฐภัทร  ป้องเกษม",
+    "Class": "ม.4/2",
+    "Email": "3870@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4420",
+    "FullName": "นางสาว นราทิพย์  คีรีสะอาด",
+    "Class": "ม.4/2",
+    "Email": "4420@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4602",
+    "FullName": "นาย ณัฏฐชัย  วาที",
+    "Class": "ม.4/2",
+    "Email": "4602@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5057",
+    "FullName": "นางสาว รัตติกันต์  ยี่โถฝรั่ง",
+    "Class": "ม.4/2",
+    "Email": "5057@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5211",
+    "FullName": "นาย ปณิธิ  สุพงษ์เกื้อกูล",
+    "Class": "ม.4/2",
+    "Email": "5211@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5264",
+    "FullName": "นางสาว ชนิดา  ตุ้ยขม",
+    "Class": "ม.4/2",
+    "Email": "5264@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5361",
+    "FullName": "นางสาว เสาวนิตย์  แซ่เฮ่อ",
+    "Class": "ม.4/2",
+    "Email": "5361@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5506",
+    "FullName": "นางสาว ณัฐพร  แซ่ย่าง",
+    "Class": "ม.4/2",
+    "Email": "5506@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5518",
+    "FullName": "นางสาว ธาราทิพย์  แผ้วศาสตร์",
+    "Class": "ม.4/2",
+    "Email": "5518@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5787",
+    "FullName": "นางสาว วรรณิดา  มะโนสร",
+    "Class": "ม.4/2",
+    "Email": "5787@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5790",
+    "FullName": "นางสาว จันทนา  สวยสมศิลป์",
+    "Class": "ม.4/2",
+    "Email": "5790@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5837",
+    "FullName": "นางสาว ชนัญญา  ชาติทุ่ง",
+    "Class": "ม.4/2",
+    "Email": "5837@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5841",
+    "FullName": "นางสาว แสงรวี  มือเหนอ",
+    "Class": "ม.4/2",
+    "Email": "5841@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5877",
+    "FullName": "นางสาว จุลาทิพย์  แก้วดี",
+    "Class": "ม.4/2",
+    "Email": "5877@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "3092",
+    "FullName": "นาย ปรัตถกร  สุนันต๊ะ",
+    "Class": "ม.5/1",
+    "Email": "3092@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3093",
+    "FullName": "นาย พีรภัทร  หม่อนกันทา",
+    "Class": "ม.5/1",
+    "Email": "3093@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3101",
+    "FullName": "นางสาว นวพร  ศิรเดชอุดม",
+    "Class": "ม.5/1",
+    "Email": "3101@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3654",
+    "FullName": "นางสาว สายไหม  ชมนามล",
+    "Class": "ม.5/1",
+    "Email": "3654@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3957",
+    "FullName": "นางสาว ญาณิกา  ปินตาฟุ่น",
+    "Class": "ม.5/1",
+    "Email": "3957@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4029",
+    "FullName": "นาย ณัฏฐพล  พิทักษ์พัฒน์ผล",
+    "Class": "ม.5/1",
+    "Email": "4029@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4410",
+    "FullName": "นาย ธีรโชติ  แซ่ย่าง",
+    "Class": "ม.5/1",
+    "Email": "4410@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4411",
+    "FullName": "นางสาว มัณฑิตา  ถลาเริงรมย์",
+    "Class": "ม.5/1",
+    "Email": "4411@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4412",
+    "FullName": "นางสาว รุ่งทิวา  รุ่งเรืองมณีเจริญ",
+    "Class": "ม.5/1",
+    "Email": "4412@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4609",
+    "FullName": "นาย ไตรทศ  มะพร้าวอ่อน",
+    "Class": "ม.5/1",
+    "Email": "4609@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4755",
+    "FullName": "นางสาว ศุภวรรณ  เสือสงสาร",
+    "Class": "ม.5/1",
+    "Email": "4755@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4812",
+    "FullName": "นาย อัครเดช  แซ่หลอ",
+    "Class": "ม.5/1",
+    "Email": "4812@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4821",
+    "FullName": "นางสาว สุดธิดา  สังข์ก้องเดชา",
+    "Class": "ม.5/1",
+    "Email": "4821@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4823",
+    "FullName": "นางสาว ปิ่นประภา  คงมั่นกวีสุข",
+    "Class": "ม.5/1",
+    "Email": "4823@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4829",
+    "FullName": "นาย อนุราช  ถนอมพนา",
+    "Class": "ม.5/1",
+    "Email": "4829@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4832",
+    "FullName": "นางสาว ฐิติรัตน์  สองยางเจริญสุข",
+    "Class": "ม.5/1",
+    "Email": "4832@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4833",
+    "FullName": "นางสาว ภัทรธิดา  ถวิลชาวไร่",
+    "Class": "ม.5/1",
+    "Email": "4833@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4835",
+    "FullName": "นาย ศิริวัฒน์  แก้วบุญมา",
+    "Class": "ม.5/1",
+    "Email": "4835@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4842",
+    "FullName": "นางสาว ศิริรัตน์  -",
+    "Class": "ม.5/1",
+    "Email": "4842@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4847",
+    "FullName": "นางสาว ธัญพิชชา  จันลา",
+    "Class": "ม.5/1",
+    "Email": "4847@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4852",
+    "FullName": "นางสาว ญาณิกา  ดอยแก้วขาว",
+    "Class": "ม.5/1",
+    "Email": "4852@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4859",
+    "FullName": "นาย วรวิทย์  ตระกูลวนาภัทร",
+    "Class": "ม.5/1",
+    "Email": "4859@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4869",
+    "FullName": "นาย สงกรานต์  แก้วยะวงษ์",
+    "Class": "ม.5/1",
+    "Email": "4869@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4870",
+    "FullName": "นาย โชคทวี  วงษ์แก้ว",
+    "Class": "ม.5/1",
+    "Email": "4870@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4875",
+    "FullName": "นาย อิสเรียว  -",
+    "Class": "ม.5/1",
+    "Email": "4875@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5004",
+    "FullName": "นาย ณัฐกิตติ์  สีวิลาด",
+    "Class": "ม.5/1",
+    "Email": "5004@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5111",
+    "FullName": "นางสาว ธีรดา  ทบศรี",
+    "Class": "ม.5/1",
+    "Email": "5111@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5164",
+    "FullName": "นาย ภูริณัฐ  เสมอใจ",
+    "Class": "ม.5/1",
+    "Email": "5164@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5256",
+    "FullName": "นางสาว เจนสุดา  ขวัญกิจการ",
+    "Class": "ม.5/1",
+    "Email": "5256@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5543",
+    "FullName": "นางสาว มโนมัย  มานะคีรีกุล",
+    "Class": "ม.5/1",
+    "Email": "5543@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5544",
+    "FullName": "นาย สมชาย  โสภณวิลาศ",
+    "Class": "ม.5/1",
+    "Email": "5544@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5547",
+    "FullName": "นางสาว ฝนทิพย์  ปรางค์ทวี",
+    "Class": "ม.5/1",
+    "Email": "5547@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5548",
+    "FullName": "นางสาว อชิระ  เสริมมติวงศ์",
+    "Class": "ม.5/1",
+    "Email": "5548@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5785",
+    "FullName": "นาย วีระศักดิ์  ศรีวนาตระกูล",
+    "Class": "ม.5/1",
+    "Email": "5785@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "5933",
+    "FullName": "นางสาว ทัตพิชา  จารุกระสินธุ์",
+    "Class": "ม.5/1",
+    "Email": "5933@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "3650",
+    "FullName": "นาย ก้องภพ  อิษฏา",
+    "Class": "ม.5/2",
+    "Email": "3650@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3845",
+    "FullName": "นาย กฤตภัทร  ปรีชาญชัย",
+    "Class": "ม.5/2",
+    "Email": "3845@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4857",
+    "FullName": "นางสาว บุษกร  แก้วขวัญกานน",
+    "Class": "ม.5/2",
+    "Email": "4857@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4865",
+    "FullName": "นาย ศรีพิชัย  ยายืน",
+    "Class": "ม.5/2",
+    "Email": "4865@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4995",
+    "FullName": "นางสาว สุพิชญา  สุขสันต์คีรี",
+    "Class": "ม.5/2",
+    "Email": "4995@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5258",
+    "FullName": "นางสาว แก้วเกต  พงศ์โชติสาคร",
+    "Class": "ม.5/2",
+    "Email": "5258@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5538",
+    "FullName": "นางสาว วีรอร  โชติรสอนุตรกุล",
+    "Class": "ม.5/2",
+    "Email": "5538@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5539",
+    "FullName": "นางสาว สุพิชญา  อินทุทรัพย์",
+    "Class": "ม.5/2",
+    "Email": "5539@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5541",
+    "FullName": "นางสาว สุขใจ  วนากรองบุญ",
+    "Class": "ม.5/2",
+    "Email": "5541@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5545",
+    "FullName": "นาย ภูชิต  ไพรพุฒิเวช",
+    "Class": "ม.5/2",
+    "Email": "5545@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5546",
+    "FullName": "นางสาว วิภา  สินไพบูลย์เลิศ",
+    "Class": "ม.5/2",
+    "Email": "5546@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5755",
+    "FullName": "นาย เดทูโพ  -",
+    "Class": "ม.5/2",
+    "Email": "5755@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5763",
+    "FullName": "นางสาว พลอยชมพู  อัฑฒ์อภิชัจ",
+    "Class": "ม.5/2",
+    "Email": "5763@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5882",
+    "FullName": "เด็กหญิง ธัญพิมล  หม่อเก่",
+    "Class": "ม.5/2",
+    "Email": "5882@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "2792",
+    "FullName": "นาย วชิรวิชญ์  วิชญาฐิติพัทธ์",
+    "Class": "ม.6/1",
+    "Email": "2792@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "2900",
+    "FullName": "นางสาว น้ำริน  ยะปายต๋า",
+    "Class": "ม.6/1",
+    "Email": "2900@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "2972",
+    "FullName": "นาย ชิษณุพงศ์  กิตติโชติพิศุทธิ์",
+    "Class": "ม.6/1",
+    "Email": "2972@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3194",
+    "FullName": "นางสาว ณัฐณิชา  ตันยศ",
+    "Class": "ม.6/1",
+    "Email": "3194@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3318",
+    "FullName": "นางสาว จีระนันท์  ภัทรกิจสกุล",
+    "Class": "ม.6/1",
+    "Email": "3318@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3437",
+    "FullName": "นาย นฤเบศ  พานนิรมล",
+    "Class": "ม.6/1",
+    "Email": "3437@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3439",
+    "FullName": "นางสาว ศิรดา  รักษาชื่อสกุล",
+    "Class": "ม.6/1",
+    "Email": "3439@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3631",
+    "FullName": "นางสาว ศิรดา  ภัคจิรัฐิติกาล",
+    "Class": "ม.6/1",
+    "Email": "3631@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3632",
+    "FullName": "นางสาว กมลวรรณ  แซ่ม้า",
+    "Class": "ม.6/1",
+    "Email": "3632@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3637",
+    "FullName": "นางสาว ณัชชานันท์  คีรีสุธาลัย",
+    "Class": "ม.6/1",
+    "Email": "3637@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3839",
+    "FullName": "นาย ภัทรดล  ปัญญารักษา",
+    "Class": "ม.6/1",
+    "Email": "3839@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "3841",
+    "FullName": "นางสาว ศุภิสรา  ปินตาแก้ว",
+    "Class": "ม.6/1",
+    "Email": "3841@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4561",
+    "FullName": "นาย ธนโชติ  ปัญญานันท์",
+    "Class": "ม.6/1",
+    "Email": "4561@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4568",
+    "FullName": "นางสาว อสมาภรณ์  คงเกียรติคีรี",
+    "Class": "ม.6/1",
+    "Email": "4568@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4569",
+    "FullName": "นางสาว อรภา  สวัสดิ์โรคา",
+    "Class": "ม.6/1",
+    "Email": "4569@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4570",
+    "FullName": "นางสาว นภารัตน์  ปวงดอกจี๋",
+    "Class": "ม.6/1",
+    "Email": "4570@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4572",
+    "FullName": "นางสาว ปริญญาพร  คงมั่นกวีสุข",
+    "Class": "ม.6/1",
+    "Email": "4572@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4578",
+    "FullName": "นางสาว พรรณนารา  พิทักษ์ภูพาน",
+    "Class": "ม.6/1",
+    "Email": "4578@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4581",
+    "FullName": "นางสาว เพ็ญพิชชา  อภิบาลพนาลัย",
+    "Class": "ม.6/1",
+    "Email": "4581@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4586",
+    "FullName": "นางสาว ภัททิยา  อุ้มโอบรักคีรี",
+    "Class": "ม.6/1",
+    "Email": "4586@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4592",
+    "FullName": "นางสาว ปิ่นปินัทธ์  ฉัตรบวรพิทักษ์",
+    "Class": "ม.6/1",
+    "Email": "4592@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4686",
+    "FullName": "นางสาว สุปราณี  ตระกูลวนาภัทร",
+    "Class": "ม.6/1",
+    "Email": "4686@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4742",
+    "FullName": "นางสาว ชาลิสา  พจน์พิทักษ์สกุล",
+    "Class": "ม.6/1",
+    "Email": "4742@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4816",
+    "FullName": "นางสาว เมษา  แซ่กือ",
+    "Class": "ม.6/1",
+    "Email": "4816@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5142",
+    "FullName": "นาย พชร  ขัตธรรมศรี",
+    "Class": "ม.6/1",
+    "Email": "5142@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5242",
+    "FullName": "นางสาว บุษบา  รักษ์แม่ละเมา",
+    "Class": "ม.6/1",
+    "Email": "5242@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5250",
+    "FullName": "นางสาว ชลดา  แก้วปา",
+    "Class": "ม.6/1",
+    "Email": "5250@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5795",
+    "FullName": "นางสาว ปนัทดา  หนูอิ่ม",
+    "Class": "ม.6/1",
+    "Email": "5795@sjmr.ac.th",
+    "Status": "นักเรียนเข้าใหม่"
+  },
+  {
+    "Student_ID": "4312",
+    "FullName": "นางสาว ชนิกานต์  พลีชีพเพื่อเผ่า",
+    "Class": "ม.6/2",
+    "Email": "4312@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4405",
+    "FullName": "นางสาว ฐิตาภร  แววพิราม",
+    "Class": "ม.6/2",
+    "Email": "4405@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4574",
+    "FullName": "นางสาว ณาณัฐชา  ทะเลคะยา",
+    "Class": "ม.6/2",
+    "Email": "4574@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4575",
+    "FullName": "นางสาว นิภาวรรณ  พบแก้วเก้า",
+    "Class": "ม.6/2",
+    "Email": "4575@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4598",
+    "FullName": "นางสาว สิริวิมล  กงกังวานไพร",
+    "Class": "ม.6/2",
+    "Email": "4598@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4685",
+    "FullName": "นางสาว ธิติมา  รุ้งริมลำธาร",
+    "Class": "ม.6/2",
+    "Email": "4685@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4817",
+    "FullName": "นางสาว มนพร  พนาไพรเอกรัฐ",
+    "Class": "ม.6/2",
+    "Email": "4817@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5241",
+    "FullName": "นางสาว ณัฐนรี  ทัศนละวาด",
+    "Class": "ม.6/2",
+    "Email": "5241@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5243",
+    "FullName": "นางสาว สุทธดา  เวียงป่าสัก",
+    "Class": "ม.6/2",
+    "Email": "5243@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5522",
+    "FullName": "นางสาว ชลลดา  รักษ์ชลธี",
+    "Class": "ม.6/2",
+    "Email": "5522@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "4374",
+    "FullName": "นางสาว กุลธิดา  สกุลชัยศิริ",
+    "Class": "ม.6/2",
+    "Email": "4374@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5244",
+    "FullName": "นางสาว จัสมิน  -",
+    "Class": "ม.6/2",
+    "Email": "5244@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5245",
+    "FullName": "นางสาว อารยา  ดวงใจลิขิต",
+    "Class": "ม.6/2",
+    "Email": "5245@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5247",
+    "FullName": "นางสาว จารวี  -",
+    "Class": "ม.6/2",
+    "Email": "5247@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5253",
+    "FullName": "นางสาว วาสนา  ห้วยไพจิตร",
+    "Class": "ม.6/2",
+    "Email": "5253@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  },
+  {
+    "Student_ID": "5299",
+    "FullName": "นาย พาทิศ  วณาพาสุข",
+    "Class": "ม.6/2",
+    "Email": "5299@sjmr.ac.th",
+    "Status": "กำลังศึกษาอยู่"
+  }
+]

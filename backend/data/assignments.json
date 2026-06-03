@@ -1,0 +1,23 @@
+[
+  {
+    "Assignment_ID": "A001",
+    "Assignment_Name": "Coding Project 1 (การเขียนโค้ดเบื้องต้น)",
+    "Due_Date": "2026-06-15",
+    "Max_Score": 10,
+    "QR_Link": "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=A001"
+  },
+  {
+    "Assignment_ID": "A002",
+    "Assignment_Name": "Scratch Game Creation (สร้างเกมสร้างสรรค์ด้วย Scratch)",
+    "Due_Date": "2026-06-22",
+    "Max_Score": 20,
+    "QR_Link": "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=A002"
+  },
+  {
+    "Assignment_ID": "A003",
+    "Assignment_Name": "HTML Personal Website (สร้างเว็บไซต์แนะนำตัว)",
+    "Due_Date": "2026-06-30",
+    "Max_Score": 15,
+    "QR_Link": "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=A003"
+  }
+]

@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SJMR Student Submission System - ระบบส่งงานนักเรียน</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sarabun:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- html5-qrcode library for barcode & QR scanning -->
+  <script src="https://unpkg.com/html5-qrcode"></script>
+  <!-- Vanilla CSS Link -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="dark-theme">
+  <!-- Canvas Background for dynamic mesh gradient -->
+  <div class="gradient-bg">
+    <div class="g1"></div>
+    <div class="g2"></div>
+    <div class="g3"></div>
+  </div>
+
+  <div class="app-container">
+    <!-- Header -->
+    <header class="glass-header">
+      <div class="brand">
+        <div class="logo-icon">
+          <i class="fa-solid fa-graduation-cap"></i>
+        </div>
+        <div class="brand-text">
+          <h1>SJMR Submission Portal</h1>
+          <p>ระบบส่งงานโรงเรียนเซนต์โยเซฟแม่ระมาด</p>
+        </div>
+      </div>
+      
+      <div class="header-actions">
+        <!-- Theme Toggle Button -->
+        <button id="btn-theme-toggle" class="theme-toggle-btn" title="เปลี่ยนธีมสี">
+          <i class="fa-solid fa-circle-half-stroke"></i> <span>ธีมพาสเทล</span>
+        </button>
+
+        <!-- Switch mode toggle -->
+        <div class="mode-toggle-container">
+          <button id="btn-student-mode" class="toggle-btn active">
+            <i class="fa-solid fa-user-graduate"></i> นักเรียน
+          </button>
+          <button id="btn-teacher-mode" class="toggle-btn">
+            <i class="fa-solid fa-chalkboard-user"></i> คุณครู
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      
+      <!-- ================= STUDENT VIEW ================= -->
+      <section id="student-view" class="view-section active">
+        <!-- Step 1: Login Verification -->
+        <div id="student-auth-card" class="glass-card auth-card animate-fade-in">
+          <div class="card-header text-center">
+            <i class="fa-solid fa-keyauth-icon fa-circle-user avatar-icon"></i>
+            <h2>เข้าสู่ระบบส่งงาน</h2>
+            <p>กรุณากรอกหรือสแกนรหัสประจำตัวนักเรียนของคุณ</p>
+          </div>
+          <form id="student-login-form" class="auth-form">
+            <div class="input-group">
+              <label for="student-id-input"><i class="fa-solid fa-id-card"></i> รหัสประจำตัวนักเรียน</label>
+              <div class="input-with-action">
+                <input type="text" id="student-id-input" placeholder="ตัวอย่าง: 3152, 2792" required autocomplete="off">
+                <button type="button" id="btn-scan-student-id" class="input-action-btn" title="สแกนบาร์โค้ดบัตรนักเรียน">
+                  <i class="fa-solid fa-camera"></i>
+                </button>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">
+              <span>ตรวจสอบรายชื่อ</span> <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </form>
+          <div class="auth-info-note">
+            <i class="fa-solid fa-circle-info"></i>
+            <span>ข้อมูลนักเรียนจะซิงก์จากรายชื่อโรงเรียนโดยอัตโนมัติ</span>
+          </div>
+        </div>
+
+        <!-- Step 2: Student Dashboard -->
+        <div id="student-dashboard" class="dashboard-layout hidden animate-fade-in">
+          <!-- Student Profile Sidebar -->
+          <aside class="student-sidebar glass-card">
+            <div class="profile-summary">
+              <div class="profile-avatar">
+                <span id="student-avatar-letter">S</span>
+              </div>
+              <h3 id="student-name-display">กำลังโหลด...</h3>
+              <p id="student-class-display" class="badge-class">ชั้นเรียน: -</p>
+              <div class="profile-details">
+                <div class="detail-item">
+                  <span class="label">รหัสนักเรียน</span>
+                  <span id="student-id-display" class="value">-</span>
+                </div>
+                <div class="detail-item">
+                  <span class="label">อีเมลโรงเรียน</span>
+                  <span id="student-email-display" class="value">-</span>
+                </div>
+              </div>
+            </div>
+            <button id="btn-student-logout" class="btn btn-secondary btn-block">
+              <i class="fa-solid fa-right-from-bracket"></i> ออกจากระบบ
+            </button>
+          </aside>
+
+          <!-- Assignments & Work List -->
+          <div class="student-main-panel">
+            <div class="panel-header">
+              <h2><i class="fa-solid fa-list-check"></i> รายการภาระงาน / การบ้าน</h2>
+              <span id="assignment-count" class="badge">0 งาน</span>
+            </div>
+
+            <!-- List Grid -->
+            <div id="student-assignments-grid" class="assignments-grid">
+              <!-- Cards dynamically inserted here -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= TEACHER VIEW ================= -->
+      <section id="teacher-view" class="view-section">
+        <!-- Admin Dashboard Panel -->
+        <div class="teacher-dashboard-layout animate-fade-in">
+          <!-- Stats Summary Bar -->
+          <div class="stats-row">
+            <div class="stat-card glass-card">
+              <div class="stat-icon icon-blue"><i class="fa-solid fa-users"></i></div>
+              <div class="stat-info">
+                <h3>นักเรียนทั้งหมด</h3>
+                <p id="stat-total-students">0 คน</p>
+              </div>
+            </div>
+            <div class="stat-card glass-card">
+              <div class="stat-icon icon-purple"><i class="fa-solid fa-book-open"></i></div>
+              <div class="stat-info">
+                <h3>การบ้านทั้งหมด</h3>
+                <p id="stat-total-assignments">0 งาน</p>
+              </div>
+            </div>
+            <div class="stat-card glass-card">
+              <div class="stat-icon icon-yellow"><i class="fa-solid fa-file-arrow-up"></i></div>
+              <div class="stat-info">
+                <h3>ส่งงานแล้ว</h3>
+                <p id="stat-total-submissions">0 รายการ</p>
+              </div>
+            </div>
+            <div class="stat-card glass-card">
+              <div class="stat-icon icon-green"><i class="fa-solid fa-square-check"></i></div>
+              <div class="stat-info">
+                <h3>ตรวจคะแนนแล้ว</h3>
+                <p id="stat-graded-submissions">0 รายการ</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Master Control Controls & Form Section -->
+          <div class="teacher-controls-grid">
+            <!-- Left Panel: Submission lists & Student Directory -->
+            <div class="teacher-main-panel glass-card">
+              
+              <!-- Tab Selector for Teacher Panel (NEW) -->
+              <div class="panel-tabs">
+                <button id="tab-submissions" class="tab-link active"><i class="fa-solid fa-clipboard-list"></i> รายการส่งงานของนักเรียน</button>
+                <button id="tab-students" class="tab-link"><i class="fa-solid fa-address-book"></i> ทะเบียนรายชื่อนักเรียนทั้งหมด</button>
+              </div>
+
+              <!-- View 1: Submissions Table -->
+              <div id="panel-submissions-view" class="tab-view active">
+                <div class="panel-header" style="margin-top: 15px;">
+                  <div class="filter-actions">
+                    <div class="search-box">
+                      <i class="fa-solid fa-magnifying-glass"></i>
+                      <input type="text" id="teacher-search" placeholder="ค้นหาชื่อ, รหัสนักเรียน...">
+                    </div>
+                    
+                    <select id="filter-class">
+                      <option value="">ชั้นเรียนทั้งหมด</option>
+                    </select>
+
+                    <select id="filter-assignment">
+                      <option value="">การบ้านทั้งหมด</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="table-container">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>วัน-เวลาที่ส่ง</th>
+                        <th>รหัสนักเรียน</th>
+                        <th>ชื่อ-นามสกุล</th>
+                        <th>ชั้นเรียน</th>
+                        <th>รหัสการบ้าน</th>
+                        <th>ลิงก์/ไฟล์งาน</th>
+                        <th>คะแนน</th>
+                        <th>สถานะ</th>
+                        <th>การจัดการ</th>
+                      </tr>
+                    </thead>
+                    <tbody id="submissions-table-body">
+                      <tr>
+                        <td colspan="9" class="text-center">กำลังโหลดข้อมูล...</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- View 2: Student Directory Table (NEW) -->
+              <div id="panel-students-view" class="tab-view">
+                <div class="panel-header" style="margin-top: 15px;">
+                  <div class="filter-actions">
+                    <div class="search-box">
+                      <i class="fa-solid fa-magnifying-glass"></i>
+                      <input type="text" id="student-dir-search" placeholder="ค้นหาชื่อ หรือ รหัสนักเรียน...">
+                    </div>
+                    <select id="filter-dir-class">
+                      <option value="">ชั้นเรียนทั้งหมด</option>
+                    </select>
+                  </div>
+                  <span id="student-dir-count" class="badge">0 คน</span>
+                </div>
+
+                <div class="table-container">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>รูปภาพ</th>
+                        <th>รหัสนักเรียน</th>
+                        <th>ชื่อ-นามสกุล</th>
+                        <th>ชั้นเรียน</th>
+                        <th>อีเมล</th>
+                        <th>สถานะ</th>
+                        <th>การจัดการ</th>
+                      </tr>
+                    </thead>
+                    <tbody id="students-dir-table-body">
+                      <tr>
+                        <td colspan="7" class="text-center">กำลังโหลดข้อมูล...</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Right Panel: Admin Settings & Actions -->
+            <div class="teacher-sidebar-panel">
+              <!-- Quick Scan Grader Card -->
+              <div class="glass-card admin-action-card">
+                <h3><i class="fa-solid fa-qrcode text-green"></i> ระบบสแกนตรวจงานด่วน</h3>
+                <div class="quick-scan-form">
+                  <div class="input-group">
+                    <label for="scan-assign-select">ตรวจการบ้านชิ้นไหน?</label>
+                    <select id="scan-assign-select">
+                      <!-- Dynamic assignments options -->
+                    </select>
+                  </div>
+                  <div class="input-group">
+                    <label for="scan-score-input">คะแนนที่จะบันทึกเมื่อสแกนผ่าน</label>
+                    <input type="number" id="scan-score-input" min="0" step="0.5" value="10" placeholder="10">
+                  </div>
+                  
+                  <div class="scanner-wrapper">
+                    <!-- Scanner Preview Camera -->
+                    <div id="teacher-qr-reader" class="scanner-preview"></div>
+                    <div class="scanner-laser hidden" id="laser-line"></div>
+                    
+                    <!-- HUD Overlay for 5-Second Student Info -->
+                    <div id="scan-hud-overlay" class="scan-hud-overlay hidden">
+                      <div class="hud-card">
+                        <div class="hud-success-icon"><i class="fa-solid fa-circle-check animate-scale"></i></div>
+                        <img id="hud-student-photo" src="" alt="Student Avatar" class="hud-avatar">
+                        <h3 id="hud-student-name">-</h3>
+                        <p id="hud-student-id">รหัส: -</p>
+                        <p id="hud-student-class">ชั้นเรียน: -</p>
+                        <div class="hud-score-badge">
+                          + <span id="hud-student-score">10</span> คะแนน
+                        </div>
+                        <div class="hud-progress-container">
+                          <div class="hud-progress-bar" id="hud-progress-bar"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <button id="btn-toggle-teacher-scanner" class="btn btn-green btn-block btn-icon-left">
+                    <i class="fa-solid fa-camera"></i> <span>เปิดกล้องสแกนตรวจงาน</span>
+                  </button>
+
+                  <!-- Scanner Simulator -->
+                  <div class="scanner-simulator">
+                    <h4><i class="fa-solid fa-laptop-code text-purple"></i> ตัวจำลองการสแกน (จำลองสแกนด่วน)</h4>
+                    <div class="sim-actions-grid">
+                      <button type="button" class="btn btn-secondary btn-sim-scan" data-id="3152">สแกน 3152</button>
+                      <button type="button" class="btn btn-secondary btn-sim-scan" data-id="2792">สแกน 2792</button>
+                      <button type="button" class="btn btn-secondary btn-sim-scan" data-id="2500">สแกน นร.ใหม่</button>
+                    </div>
+                    <div class="input-with-action" style="margin-top: 10px;">
+                      <input type="text" id="sim-id-input" placeholder="พิมพ์รหัสเพื่อจำลองส่ง/ตรวจ..." autocomplete="off">
+                      <button type="button" id="btn-trigger-sim-scan" class="input-action-btn" title="จำลองสแกน">
+                        <i class="fa-solid fa-barcode"></i>
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <!-- Last Scanned Display -->
+                  <div id="last-scanned-result" class="scan-result-card hidden">
+                    <div class="scan-result-icon"><i class="fa-solid fa-check"></i></div>
+                    <div class="scan-result-info">
+                      <h4>บันทึกสำเร็จ</h4>
+                      <p id="last-scanned-text">-</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Create Assignment Card -->
+              <div class="glass-card admin-action-card">
+                <h3><i class="fa-solid fa-folder-plus text-purple"></i> สร้างภาระงานใหม่</h3>
+                <form id="create-assignment-form" class="admin-form">
+                  <div class="input-group">
+                    <label for="new-assign-id">รหัสการบ้าน (เช่น A004)</label>
+                    <input type="text" id="new-assign-id" placeholder="A004" required autocomplete="off">
+                  </div>
+                  <div class="input-group">
+                    <label for="new-assign-name">ชื่อภาระงาน / หัวข้อ</label>
+                    <input type="text" id="new-assign-name" placeholder="ระบุชื่อการบ้าน..." required autocomplete="off">
+                  </div>
+                  <div class="form-row">
+                    <div class="input-group">
+                      <label for="new-assign-due">วันครบกำหนด</label>
+                      <input type="date" id="new-assign-due" required>
+                    </div>
+                    <div class="input-group">
+                      <label for="new-assign-score">คะแนนเต็ม</label>
+                      <input type="number" id="new-assign-score" min="1" max="100" placeholder="10" required>
+                    </div>
+                  </div>
+                  <button type="submit" class="btn btn-purple btn-block">
+                    <i class="fa-solid fa-plus"></i> เพิ่มการบ้านใหม่
+                  </button>
+                </form>
+              </div>
+
+              <!-- Data Management Card -->
+              <div class="glass-card admin-action-card">
+                <h3><i class="fa-solid fa-database text-blue"></i> จัดการฐานข้อมูลและซิงก์</h3>
+                <div class="db-actions-list">
+                  <button id="btn-import-excel" class="btn btn-purple btn-block btn-icon-left">
+                    <i class="fa-solid fa-file-import"></i> <span>นำเข้า/รีโหลดนักเรียนจาก Excel</span>
+                  </button>
+
+                  <button id="btn-export-excel" class="btn btn-green btn-block btn-icon-left">
+                    <i class="fa-solid fa-file-excel"></i> <span>ส่งออกรายงานลง Excel Desktop</span>
+                  </button>
+                  
+                  <button id="btn-sync-sheets" class="btn btn-blue btn-block btn-icon-left">
+                    <i class="fa-brands fa-google-drive"></i> <span>ซิงก์ Google Sheets API</span>
+                  </button>
+                </div>
+                <div class="db-status-info">
+                  <p><i class="fa-solid fa-clock"></i> ไฟล์รายงานล่าสุดถูกเก็บที่:</p>
+                  <code class="file-path">02_งานบริหารและทะเบียน/SJMR_Student_Submissions_Report.xlsx</code>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ================= MODALS & POPUPS ================= -->
+
+  <!-- Edit Student Profile Modal (NEW) -->
+  <div id="student-edit-modal" class="modal-overlay">
+    <div class="modal-container glass-card modal-medium animate-zoom-in">
+      <div class="modal-header">
+        <h2><i class="fa-solid fa-user-pen text-purple"></i> แก้ไขข้อมูลนักเรียนรายบุคคล</h2>
+        <button id="btn-close-edit-modal" class="btn-close-modal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="student-edit-form" enctype="multipart/form-data">
+          
+          <div class="edit-profile-avatar-row">
+            <img id="edit-hud-avatar-preview" src="" alt="Student Avatar" class="edit-avatar-preview">
+            <div class="input-group">
+              <label for="edit-photo-input"><i class="fa-solid fa-image"></i> อัปโหลดรูปภาพนักเรียนใหม่</label>
+              <input type="file" id="edit-photo-input" name="photo" accept="image/*">
+              <small class="hint-text">เลือกไฟล์รูปภาพจริง (.jpg, .png) เพื่อเปลี่ยนรูปถ่ายแทนอวาตาร์</small>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="input-group">
+              <label for="edit-student-id-display-only">รหัสประจำตัวนักเรียน (แก้ไขไม่ได้)</label>
+              <input type="text" id="edit-student-id-display-only" readonly style="background: rgba(255,255,255,0.05); color: var(--text-muted);">
+              <input type="hidden" id="edit-student-id" name="Student_ID">
+            </div>
+            <div class="input-group">
+              <label for="edit-student-name">ชื่อ - นามสกุล</label>
+              <input type="text" id="edit-student-name" name="FullName" required autocomplete="off">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="input-group">
+              <label for="edit-student-class">ชั้นเรียน (เช่น ม.3/1, ม.4/1)</label>
+              <input type="text" id="edit-student-class" name="Class" required autocomplete="off">
+            </div>
+            <div class="input-group">
+              <label for="edit-student-email">อีเมล</label>
+              <input type="text" id="edit-student-email" name="Email" required autocomplete="off">
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary btn-close-edit-modal-btn">ยกเลิก</button>
+            <button type="submit" class="btn btn-purple">
+              <i class="fa-solid fa-circle-check"></i> บันทึกข้อมูลนักเรียน
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Student Barcode Scanner Modal -->
+  <div id="student-scanner-modal" class="modal-overlay">
+    <div class="modal-container glass-card modal-small animate-zoom-in">
+      <div class="modal-header">
+        <h2><i class="fa-solid fa-camera text-primary"></i> สแกนบัตรนักเรียน</h2>
+        <button id="btn-close-student-scanner" class="btn-close-modal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="scanner-wrapper">
+          <div id="student-qr-reader" class="scanner-preview"></div>
+          <div class="scanner-laser" id="student-laser-line"></div>
+        </div>
+        <div class="text-center hint-text" style="margin-top: 15px;">
+          นำบาร์โค้ด หรือคิวอาร์โค้ดรหัสนักเรียนมาจ่อหน้ากล้อง
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Student Submission Modal -->
+  <div id="submit-modal" class="modal-overlay">
+    <div class="modal-container glass-card animate-zoom-in">
+      <div class="modal-header">
+        <h2 id="modal-assignment-title">ส่งงาน: ...</h2>
+        <button class="btn-close-modal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="submission-form" enctype="multipart/form-data">
+          <!-- Student Data (Hidden) -->
+          <input type="hidden" id="submit-student-id">
+          <input type="hidden" id="submit-assignment-id">
+
+          <div class="assignment-due-badge">
+            <i class="fa-solid fa-calendar-day"></i> กำหนดส่ง: <span id="modal-assignment-due">-</span> | คะแนนเต็ม: <span id="modal-assignment-score">-</span> คะแนน
+          </div>
+
+          <!-- File Upload Box -->
+          <div class="upload-zone" id="drop-zone">
+            <i class="fa-solid fa-cloud-arrow-up cloud-icon"></i>
+            <h3>ลากและวางไฟล์ของคุณที่นี่ หรือคลิกเพื่อเลือกไฟล์</h3>
+            <p>ขนาดไฟล์ไม่เกิน 20MB (รองรับรูปภาพ, PDF, zip, docx, xlsx, mp4)</p>
+            <input type="file" id="submit-file-input" name="file" required style="display: none;">
+            <div id="file-preview-container" class="file-preview hidden">
+              <i class="fa-regular fa-file-lines file-icon"></i>
+              <span id="selected-file-name" class="filename">filename.png</span>
+              <button type="button" id="btn-remove-file" class="btn-remove"><i class="fa-solid fa-circle-xmark"></i></button>
+            </div>
+          </div>
+
+          <!-- Optional Notes -->
+          <div class="input-group">
+            <label for="submit-notes">บันทึกข้อความถึงครู (ถ้ามี)</label>
+            <textarea id="submit-notes" rows="3" placeholder="ระบุลิงก์งานอื่นๆ หรือบันทึกเพิ่มเติม..."></textarea>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary btn-close-modal-btn">ยกเลิก</button>
+            <button type="submit" class="btn btn-primary" id="btn-submit-work">
+              <i class="fa-solid fa-paper-plane"></i> ยืนยันการส่งงาน
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Teacher Password Modal -->
+  <div id="password-modal" class="modal-overlay">
+    <div class="modal-container glass-card modal-small animate-zoom-in">
+      <div class="modal-header">
+        <h2><i class="fa-solid fa-lock text-yellow"></i> สิทธิ์การเข้าถึงครู</h2>
+        <button class="btn-close-pwd-modal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="pwd-form">
+          <div class="input-group">
+            <label for="pwd-input">กรุณากรอกรหัสผ่านเพื่อเข้าหน้าคุณครู</label>
+            <input type="password" id="pwd-input" placeholder="กรอกรหัสผ่าน..." required autocomplete="off">
+            <small class="hint-text">(คำใบ้รหัสผ่านเริ่มต้น: 1234)</small>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary btn-close-pwd-modal-btn">ยกเลิก</button>
+            <button type="submit" class="btn btn-yellow">ยืนยันรหัสผ่าน</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Grading Modal -->
+  <div id="grade-modal" class="modal-overlay">
+    <div class="modal-container glass-card modal-medium animate-zoom-in">
+      <div class="modal-header">
+        <h2><i class="fa-solid fa-marker text-yellow"></i> ตรวจให้คะแนนและคำแนะนำ</h2>
+        <button class="btn-close-grade-modal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="grade-form">
+          <input type="hidden" id="grade-sub-id">
+          
+          <div class="student-details-preview">
+            <div class="p-item"><strong>ชื่อนักเรียน:</strong> <span id="grade-student-name">-</span></div>
+            <div class="p-item"><strong>ชั้นเรียน:</strong> <span id="grade-student-class">-</span></div>
+            <div class="p-item"><strong>การบ้าน:</strong> <span id="grade-assignment-name">-</span></div>
+          </div>
+
+          <div class="grade-work-preview-box">
+            <h4>ไฟล์งานที่นักเรียนส่ง:</h4>
+            <div class="file-action-bar">
+              <a href="#" id="grade-file-link" target="_blank" class="btn btn-blue btn-icon-left">
+                <i class="fa-solid fa-up-right-from-square"></i> เปิดดูไฟล์ในแท็บใหม่
+              </a>
+              <span id="grade-notes-label" class="notes-badge">มีบันทึกเพิ่มเติม</span>
+            </div>
+            <div id="grade-student-notes" class="notes-content">
+              -
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="input-group">
+              <label for="grade-score-input">คะแนนที่ได้ (เต็ม <span id="grade-max-score-display">-</span> คะแนน)</label>
+              <input type="number" id="grade-score-input" min="0" step="0.5" required placeholder="0">
+            </div>
+            <div class="input-group">
+              <label for="grade-status-select">สถานะผลการตรวจ</label>
+              <select id="grade-status-select">
+                <option value="Graded">ตรวจแล้ว (ผ่าน)</option>
+                <option value="Need_Correction">ต้องแก้ไขใหม่ (ปรับปรุง)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary btn-close-grade-modal-btn">ยกเลิก</button>
+            <button type="submit" class="btn btn-green">
+              <i class="fa-solid fa-circle-check"></i> บันทึกผลการตรวจ
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Toast Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Main JavaScript File -->
+  <script src="app.js"></script>
+</body>
+</html>
