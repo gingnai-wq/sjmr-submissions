@@ -368,10 +368,11 @@ app.post('/api/import-photos-zip', upload.single('zip'), (req, res) => {
       const fileName = path.basename(entry.entryName);
       if (fileName.startsWith('._') || fileName.startsWith('~$')) return; // Ignore macOS metadata/temp files
       
-      const ext = path.extname(fileName).toLowerCase();
+      const origExt = path.extname(fileName);
+      const ext = origExt.toLowerCase();
       if (ext !== '.jpg' && ext !== '.jpeg' && ext !== '.png') return;
       
-      const baseName = path.basename(fileName, ext).trim();
+      const baseName = path.basename(fileName, origExt).trim();
       
       // If the baseName corresponds to a valid student ID
       if (studentMap[baseName]) {
@@ -486,10 +487,11 @@ app.post('/api/import-photos-drive', (req, res) => {
 
       const matchCandidates = [];
       files.forEach(file => {
-        const ext = path.extname(file.name).toLowerCase();
+        const origExt = path.extname(file.name);
+        const ext = origExt.toLowerCase();
         if (ext !== '.jpg' && ext !== '.jpeg' && ext !== '.png') return;
         
-        const baseName = path.basename(file.name, ext).trim();
+        const baseName = path.basename(file.name, origExt).trim();
         if (studentMap[baseName]) {
           matchCandidates.push({
             studentId: baseName,
