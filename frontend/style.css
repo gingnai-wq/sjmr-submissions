@@ -2327,5 +2327,22 @@ body.pastel-theme .theme-toggle-btn:hover {
   }
 }
 
+/* Student Submission Method Tabs */
+.method-tab {
+  color: var(--text-muted) !important;
+  background: transparent !important;
+}
+
+.method-tab.active {
+  background: var(--primary) !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.method-tab:hover:not(.active) {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: var(--text-primary) !important;
+}
+
 
 

@@ -672,16 +672,47 @@
             <i class="fa-solid fa-calendar-day"></i> กำหนดส่ง: <span id="modal-assignment-due">-</span> | คะแนนเต็ม: <span id="modal-assignment-score">-</span> คะแนน
           </div>
 
-          <!-- File Upload Box -->
+          <!-- Submission Method Tabs -->
+          <div class="submission-method-tabs" style="display: flex; gap: 8px; margin-bottom: 15px; background: rgba(0,0,0,0.15); padding: 4px; border-radius: 8px; border: 1px solid var(--glass-border);">
+            <button type="button" class="method-tab active" data-method="file" style="flex: 1; padding: 8px; border: none; border-radius: 6px; background: transparent; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; font-weight: bold; transition: all 0.3s;"><i class="fa-solid fa-file-arrow-up"></i> อัปโหลดไฟล์</button>
+            <button type="button" class="method-tab" data-method="camera" style="flex: 1; padding: 8px; border: none; border-radius: 6px; background: transparent; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; font-weight: bold; transition: all 0.3s;"><i class="fa-solid fa-camera"></i> ถ่ายภาพ</button>
+            <button type="button" class="method-tab" data-method="link" style="flex: 1; padding: 8px; border: none; border-radius: 6px; background: transparent; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; font-weight: bold; transition: all 0.3s;"><i class="fa-solid fa-link"></i> ส่งลิงก์</button>
+          </div>
+
+          <!-- File Upload Panel -->
           <div class="upload-zone" id="drop-zone">
             <i class="fa-solid fa-cloud-arrow-up cloud-icon"></i>
             <h3>ลากและวางไฟล์ของคุณที่นี่ หรือคลิกเพื่อเลือกไฟล์</h3>
-            <p>ขนาดไฟล์ไม่เกิน 20MB (รองรับรูปภาพ, PDF, zip, docx, xlsx, mp4)</p>
-            <input type="file" id="submit-file-input" name="file" required style="display: none;">
+            <p>ขนาดไฟล์ไม่เกิน 20MB (รองรับรูปภาพ, PDF, zip, docx, xlsx, mp4, sb3 และไฟล์เขียนโปรแกรมต่างๆ)</p>
+            <input type="file" id="submit-file-input" name="file" style="display: none;">
             <div id="file-preview-container" class="file-preview hidden">
               <i class="fa-regular fa-file-lines file-icon"></i>
               <span id="selected-file-name" class="filename">filename.png</span>
               <button type="button" id="btn-remove-file" class="btn-remove"><i class="fa-solid fa-circle-xmark"></i></button>
+            </div>
+          </div>
+
+          <!-- Camera Capture Panel -->
+          <div class="camera-zone hidden" id="camera-zone" style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 12px; border: 1px solid var(--glass-border); text-align: center; margin-bottom: 15px;">
+            <div id="camera-stream-container" style="position: relative; width: 100%; max-width: 320px; margin: 0 auto; border-radius: 8px; overflow: hidden; background: #000; aspect-ratio: 4/3;">
+              <video id="camera-video" autoplay playsinline style="width: 100%; height: 100%; object-fit: cover;"></video>
+              <canvas id="camera-canvas" style="display: none;"></canvas>
+            </div>
+            <div id="camera-captured-preview-container" class="hidden" style="width: 100%; max-width: 320px; margin: 0 auto; border-radius: 8px; overflow: hidden; aspect-ratio: 4/3; background: #000;">
+              <img id="camera-captured-img" src="" alt="Captured Photo" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            <div style="margin-top: 15px; display: flex; justify-content: center; gap: 10px;">
+              <button type="button" id="btn-camera-capture" class="btn btn-purple" style="padding: 6px 12px; font-size: 0.85rem;"><i class="fa-solid fa-camera"></i> ถ่ายรูป</button>
+              <button type="button" id="btn-camera-retake" class="btn btn-secondary hidden" style="padding: 6px 12px; font-size: 0.85rem;"><i class="fa-solid fa-rotate-left"></i> ถ่ายใหม่</button>
+              <button type="button" id="btn-camera-toggle-facing" class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.85rem;"><i class="fa-solid fa-camera-rotate"></i> สลับกล้อง</button>
+            </div>
+          </div>
+
+          <!-- Link Submission Panel -->
+          <div class="link-zone hidden" id="link-zone" style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 12px; border: 1px solid var(--glass-border); margin-bottom: 15px;">
+            <div class="input-group" style="margin-bottom: 0;">
+              <label for="submit-link-input"><i class="fa-solid fa-link text-purple"></i> ลิงก์ผลงานของคุณ</label>
+              <input type="url" id="submit-link-input" placeholder="ใส่ลิงก์ชิ้นงาน (เช่น ลิงก์ Scratch, Google Drive, Canva...)" style="background: var(--bg-secondary); border: 1px solid var(--glass-border); padding: 10px; border-radius: 6px; width: 100%; color: var(--text-primary); font-size: 0.9rem; box-sizing: border-box;">
             </div>
           </div>
 

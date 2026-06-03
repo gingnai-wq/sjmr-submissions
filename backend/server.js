@@ -243,7 +243,7 @@ app.post('/api/assignments', (req, res) => {
 
 // 4. Submit assignment (Student)
 app.post('/api/submit', upload.single('file'), (req, res) => {
-  const { Student_ID, Assignment_ID, Notes } = req.body;
+  const { Student_ID, Assignment_ID, Notes, Link } = req.body;
   const file = req.file;
 
   if (!Student_ID || !Assignment_ID) {
@@ -257,7 +257,7 @@ app.post('/api/submit', upload.single('file'), (req, res) => {
     return res.status(404).json({ success: false, message: 'ไม่พบรหัสนักเรียน' });
   }
 
-  const fileLink = file ? `/uploads/${file.filename}` : '';
+  const fileLink = file ? `/uploads/${file.filename}` : (Link || '');
   const submissions = db.getSubmissions();
   const existingSubIdx = submissions.findIndex(s => s.Student_ID === Student_ID && s.Assignment_ID === Assignment_ID);
 

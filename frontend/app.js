@@ -472,6 +472,143 @@ function renderStudentAssignments() {
   });
 }
 
+// Student Submission Method and Webcam Setup
+let currentStream = null;
+let activeMethod = 'file';
+let cameraFacingMode = 'user'; // 'user' or 'environment'
+
+function switchSubmissionMethod(method) {
+  activeMethod = method;
+  
+  document.querySelectorAll('.method-tab').forEach(tab => {
+    if (tab.dataset.method === method) {
+      tab.classList.add('active');
+    } else {
+      tab.classList.remove('active');
+    }
+  });
+  
+  const dropZone = document.getElementById('drop-zone');
+  const cameraZone = document.getElementById('camera-zone');
+  const linkZone = document.getElementById('link-zone');
+  
+  if (method === 'file') {
+    dropZone.classList.remove('hidden');
+    cameraZone.classList.add('hidden');
+    linkZone.classList.add('hidden');
+    stopCamera();
+  } else if (method === 'camera') {
+    dropZone.classList.add('hidden');
+    cameraZone.classList.remove('hidden');
+    linkZone.classList.add('hidden');
+    startCamera();
+  } else if (method === 'link') {
+    dropZone.classList.add('hidden');
+    cameraZone.classList.add('hidden');
+    linkZone.classList.remove('hidden');
+    stopCamera();
+  }
+}
+
+// Attach event listeners to method tabs
+document.querySelectorAll('.method-tab').forEach(tab => {
+  tab.addEventListener('click', (e) => {
+    switchSubmissionMethod(e.currentTarget.dataset.method);
+  });
+});
+
+async function startCamera() {
+  stopCamera(); // Reset stream first
+  
+  const video = document.getElementById('camera-video');
+  const streamContainer = document.getElementById('camera-stream-container');
+  const previewContainer = document.getElementById('camera-captured-preview-container');
+  const btnCapture = document.getElementById('btn-camera-capture');
+  const btnRetake = document.getElementById('btn-camera-retake');
+  const btnToggleFacing = document.getElementById('btn-camera-toggle-facing');
+  
+  streamContainer.classList.remove('hidden');
+  previewContainer.classList.add('hidden');
+  btnCapture.classList.remove('hidden');
+  btnToggleFacing.classList.remove('hidden');
+  btnRetake.classList.add('hidden');
+  
+  try {
+    const constraints = {
+      video: {
+        facingMode: cameraFacingMode,
+        width: { ideal: 640 },
+        height: { ideal: 480 }
+      },
+      audio: false
+    };
+    
+    currentStream = await navigator.mediaDevices.getUserMedia(constraints);
+    video.srcObject = currentStream;
+  } catch (err) {
+    console.error('Camera access error:', err);
+    showToast('ไม่สามารถเปิดกล้องได้: ' + err.message, 'error');
+  }
+}
+
+function stopCamera() {
+  if (currentStream) {
+    currentStream.getTracks().forEach(track => track.stop());
+    currentStream = null;
+  }
+  const video = document.getElementById('camera-video');
+  if (video) {
+    video.srcObject = null;
+  }
+}
+
+// Camera Action Handlers
+document.getElementById('btn-camera-capture').addEventListener('click', () => {
+  const video = document.getElementById('camera-video');
+  const canvas = document.getElementById('camera-canvas');
+  const streamContainer = document.getElementById('camera-stream-container');
+  const previewContainer = document.getElementById('camera-captured-preview-container');
+  const capturedImg = document.getElementById('camera-captured-img');
+  const btnCapture = document.getElementById('btn-camera-capture');
+  const btnRetake = document.getElementById('btn-camera-retake');
+  const btnToggleFacing = document.getElementById('btn-camera-toggle-facing');
+  
+  if (!video.srcObject) return;
+  
+  const width = video.videoWidth || 640;
+  const height = video.videoHeight || 480;
+  canvas.width = width;
+  canvas.height = height;
+  
+  const ctx = canvas.getContext('2d');
+  if (cameraFacingMode === 'user') {
+    ctx.translate(width, 0);
+    ctx.scale(-1, 1);
+  }
+  ctx.drawImage(video, 0, 0, width, height);
+  ctx.setTransform(1, 0, 0, 1, 0, 0); // reset
+  
+  const dataUrl = canvas.toDataURL('image/jpeg');
+  capturedImg.src = dataUrl;
+  
+  stopCamera();
+  
+  streamContainer.classList.add('hidden');
+  previewContainer.classList.remove('hidden');
+  btnCapture.classList.add('hidden');
+  btnToggleFacing.classList.add('hidden');
+  btnRetake.classList.remove('hidden');
+});
+
+document.getElementById('btn-camera-retake').addEventListener('click', () => {
+  startCamera();
+});
+
+document.getElementById('btn-camera-toggle-facing').addEventListener('click', () => {
+  cameraFacingMode = cameraFacingMode === 'user' ? 'environment' : 'user';
+  startCamera();
+});
+
 // Drag and drop upload zone events
 const dropZone = document.getElementById('drop-zone');
 const fileInput = document.getElementById('submit-file-input');
@@ -527,17 +664,17 @@ function resetFileSelection() {
 
 function resetSubmitForm() {
   document.getElementById('submit-notes').value = '';
+  document.getElementById('submit-link-input').value = '';
+  document.getElementById('camera-captured-img').src = '';
+  stopCamera();
+  switchSubmissionMethod('file');
   resetFileSelection();
 }
 
 // Submit assignment action
 document.getElementById('submission-form').addEventListener('submit', async (e) => {
   e.preventDefault();
-  if (!state.selectedFile) {
-    showToast('กรุณาอัปโหลดไฟล์ผลงานก่อนกดยืนยัน', 'error');
-    return;
-  }
-
+  
   const studentId = document.getElementById('submit-student-id').value;
   const assignmentId = document.getElementById('submit-assignment-id').value;
   const notes = document.getElementById('submit-notes').value.trim();
@@ -546,7 +683,42 @@ document.getElementById('submission-form').addEventListener('submit', async (e) 
   formData.append('Student_ID', studentId);
   formData.append('Assignment_ID', assignmentId);
   formData.append('Notes', notes);
-  formData.append('file', state.selectedFile);
+
+  if (activeMethod === 'file') {
+    if (!state.selectedFile) {
+      showToast('กรุณาอัปโหลดไฟล์ผลงานก่อนกดยืนยัน', 'error');
+      return;
+    }
+    formData.append('file', state.selectedFile);
+  } else if (activeMethod === 'camera') {
+    const capturedImg = document.getElementById('camera-captured-img');
+    if (!capturedImg.src || capturedImg.src === window.location.href || capturedImg.src.startsWith('data:image/gif')) {
+      showToast('กรุณากดถ่ายภาพผลงานก่อนกดยืนยัน', 'error');
+      return;
+    }
+    
+    const dataUrl = capturedImg.src;
+    try {
+      const fetchRes = await fetch(dataUrl);
+      const blob = await fetchRes.blob();
+      formData.append('file', blob, 'submission_camera.jpg');
+    } catch (err) {
+      console.error('Failed to convert base64 image:', err);
+      showToast('เกิดข้อผิดพลาดในการประมวลผลรูปภาพ', 'error');
+      return;
+    }
+  } else if (activeMethod === 'link') {
+    const linkInput = document.getElementById('submit-link-input').value.trim();
+    if (!linkInput) {
+      showToast('กรุณากรอกลิงก์ผลงานก่อนส่ง', 'error');
+      return;
+    }
+    if (!linkInput.startsWith('http://') && !linkInput.startsWith('https://')) {
+      showToast('กรุณากรอกลิงก์ที่ถูกต้อง (ขึ้นต้นด้วย http:// หรือ https://)', 'error');
+      return;
+    }
+    formData.append('Link', linkInput);
+  }
 
   const btnSubmit = document.getElementById('btn-submit-work');
   const btnOriginalText = btnSubmit.innerHTML;
