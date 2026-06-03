@@ -1,10 +1,70 @@
 const fs = require('fs');
 const path = require('path');
 const xlsx = require('xlsx');
+const os = require('os');
 
 const STUDENT_LIST_PATH = 'c:/Users/User/OneDrive/Desktop/02_งานบริหารและทะเบียน/สำเนาของ รายชื่อนักเรียน-15Sep68.xlsx';
 const TEMPLATE_PATH = 'c:/Users/User/OneDrive/Desktop/02_งานบริหารและทะเบียน/SJMR_Student_Submission_Template.xlsx';
 const EXPORT_PATH = 'c:/Users/User/OneDrive/Desktop/02_งานบริหารและทะเบียน/SJMR_Student_Submissions_Report.xlsx';
+
+function findLatestStudentExcel() {
+  const home = os.homedir();
+  const searchDirs = [
+    path.join(home, 'Videos'),
+    path.join(home, 'Downloads'),
+    path.join(home, 'OneDrive/Desktop/02_งานบริหารและทะเบียน'),
+    path.join(home, 'OneDrive/Desktop'),
+    path.join(home, 'Desktop')
+  ];
+
+  let candidates = [];
+
+  searchDirs.forEach(dir => {
+    if (!fs.existsSync(dir)) return;
+    try {
+      const files = fs.readdirSync(dir);
+      files.forEach(file => {
+        if (file.startsWith('~$')) return; // Ignore temporary excel files
+        const ext = path.extname(file).toLowerCase();
+        if (ext !== '.xlsx') return;
+
+        const lowerName = file.toLowerCase();
+        const isStudentFile = lowerName.includes('รายชื่อ') || lowerName.includes('student');
+        const isIgnoredFile = lowerName.includes('report') || 
+                              lowerName.includes('submission') || 
+                              lowerName.includes('export') || 
+                              lowerName.includes('template') ||
+                              lowerName.includes('ผลสอบ') ||
+                              lowerName.includes('คะแนน');
+                              
+        if (isStudentFile && !isIgnoredFile) {
+          const fullPath = path.join(dir, file);
+          try {
+            const stats = fs.statSync(fullPath);
+            if (stats.isFile()) {
+              candidates.push({
+                path: fullPath,
+                mtime: stats.mtimeMs
+              });
+            }
+          } catch (e) {
+            // Ignore stat error
+          }
+        }
+      });
+    } catch (err) {
+      // Ignore read error
+    }
+  });
+
+  if (candidates.length === 0) {
+    return null;
+  }
+
+  // Sort candidates by modification time descending
+  candidates.sort((a, b) => b.mtime - a.mtime);
+  return candidates[0].path;
+}
 
 // Photos directories
 const EXCEL_PHOTOS_DIR = 'c:/Users/User/OneDrive/Desktop/02_งานบริหารและทะเบียน/photos';
@@ -67,14 +127,21 @@ function detectBlocks(row, idColIdx, nameColIdx, classColIdx, roomColIdx, status
   return blocks;
 }
 
-function importStudents(filePath = STUDENT_LIST_PATH) {
-  if (!fs.existsSync(filePath)) {
-    console.warn(`Student list file not found at ${filePath}. Using empty/default students list.`);
+function importStudents(filePath = null) {
+  let targetPath = filePath;
+  if (!targetPath) {
+    targetPath = findLatestStudentExcel() || STUDENT_LIST_PATH;
+  }
+  
+  console.log(`Importing students from Excel file: ${targetPath}`);
+
+  if (!fs.existsSync(targetPath)) {
+    console.warn(`Student list file not found at ${targetPath}. Using empty/default students list.`);
     return [];
   }
 
   try {
-    const wb = xlsx.readFile(filePath);
+    const wb = xlsx.readFile(targetPath);
     const allStudents = [];
 
     // Filter sheets: Parse all sheets except ignored metadata/report/utility sheets
