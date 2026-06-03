@@ -112,6 +112,7 @@ function importStudents(filePath = STUDENT_LIST_PATH) {
 
         if (!headerRowFound) {
           let tempIdIdx = -1;
+          let tempIdPriority = 0;
           let tempNameIdx = -1;
           let tempFirstNameIdx = -1;
           let tempLastNameIdx = -1;
@@ -124,66 +125,112 @@ function importStudents(filePath = STUDENT_LIST_PATH) {
             if (!val) return;
             const cleanVal = val.toLowerCase().replace(/[\s_-]/g, '');
 
-            // 1. Check Student ID (avoid national ID card)
-            if (!cleanVal.includes('ประชาชน') && !cleanVal.includes('บัตร') && (
-              cleanVal.includes('เลขประจำตัวนักเรียน') ||
-              cleanVal.includes('เลขประจำตัว') ||
-              cleanVal.includes('รหัสประจำตัว') ||
-              cleanVal.includes('รหัสนักเรียน') ||
-              cleanVal.includes('รหัสผู้เรียน') ||
-              cleanVal.includes('รหัส') ||
-              cleanVal.includes('studentid') ||
-              cleanVal.includes('stdid') ||
-              cleanVal === 'id' ||
-              cleanVal === 'code' ||
-              cleanVal === 'no' ||
-              cleanVal === 'stdno'
-            )) {
-              tempIdIdx = idx;
+            // 1. Check Student ID (avoid parent IDs, postcodes, fingerprints, national IDs)
+            const isIgnoredId = cleanVal.includes('ประชาชน') || 
+                                cleanVal.includes('บัตร') || 
+                                cleanVal.includes('ไปรษณีย์') || 
+                                cleanVal.includes('ประจำบ้าน') || 
+                                cleanVal.includes('ลายนิ้วมือ') || 
+                                cleanVal.includes('ผู้ปกครอง') || 
+                                cleanVal.includes('บิดา') || 
+                                cleanVal.includes('มารดา');
+                                
+            if (!isIgnoredId) {
+              if (
+                cleanVal === 'รหัสนักศึกษา' ||
+                cleanVal === 'รหัสนักเรียน' ||
+                cleanVal === 'เลขประจำตัวนักศึกษา' ||
+                cleanVal === 'เลขประจำตัวนักเรียน' ||
+                cleanVal === 'studentid' ||
+                cleanVal === 'studentcode'
+              ) {
+                tempIdIdx = idx;
+                tempIdPriority = 2; // High priority exact match
+              } else if (
+                cleanVal.includes('เลขประจำตัว') ||
+                cleanVal.includes('รหัสประจำตัว') ||
+                cleanVal.includes('รหัสผู้เรียน') ||
+                cleanVal.includes('รหัส') ||
+                cleanVal === 'id' ||
+                cleanVal === 'code'
+              ) {
+                if (tempIdPriority < 2) {
+                  tempIdIdx = idx;
+                  tempIdPriority = 1; // Low priority match
+                }
+              }
             }
 
-            // 2. Check Name (combined or first name)
-            if (
-              cleanVal.includes('ชื่อนามสกุล') ||
-              cleanVal.includes('ชื่อสกุล') ||
-              cleanVal.includes('ชื่อผู้เรียน') ||
-              cleanVal.includes('ชื่อนักเรียน') ||
-              cleanVal.includes('fullname') ||
-              cleanVal === 'name' ||
-              cleanVal === 'studentname' ||
-              cleanVal === 'ชื่อ-สกุล' ||
-              cleanVal === 'ชื่อ-นามสกุล'
-            ) {
-              tempNameIdx = idx;
-            } else if (cleanVal === 'ชื่อ' || cleanVal === 'firstname' || cleanVal === 'first_name') {
-              tempFirstNameIdx = idx;
+            // 2. Check Name (combined or first name) (ignore parents/teachers names)
+            const isIgnoredName = cleanVal.includes('ผู้ปกครอง') || 
+                                  cleanVal.includes('บิดา') || 
+                                  cleanVal.includes('มารดา') || 
+                                  cleanVal.includes('อังกฤษ') || 
+                                  cleanVal.includes('english') ||
+                                  cleanVal.includes('ครู') ||
+                                  cleanVal.includes('อาจารย์');
+
+            if (!isIgnoredName) {
+              if (
+                cleanVal.includes('ชื่อนามสกุล') ||
+                cleanVal.includes('ชื่อสกุล') ||
+                cleanVal.includes('ชื่อผู้เรียน') ||
+                cleanVal.includes('ชื่อนักเรียน') ||
+                cleanVal.includes('fullname') ||
+                cleanVal === 'studentname' ||
+                cleanVal === 'ชื่อ-สกุล' ||
+                cleanVal === 'ชื่อ-นามสกุล'
+              ) {
+                if (tempNameIdx === -1) {
+                  tempNameIdx = idx; // Choose the first matching (leftmost)
+                }
+              } else if (cleanVal === 'ชื่อ' || cleanVal === 'firstname' || cleanVal === 'first_name') {
+                if (tempFirstNameIdx === -1) {
+                  tempFirstNameIdx = idx; // Choose the first matching (leftmost)
+                }
+              }
             }
 
-            // 3. Check Last Name
-            if (
-              cleanVal.includes('นามสกุล') ||
-              cleanVal === 'สกุล' ||
-              cleanVal === 'lastname' ||
-              cleanVal === 'last_name' ||
-              cleanVal === 'surname'
-            ) {
-              tempLastNameIdx = idx;
+            // 3. Check Last Name (ignore parents/English translations)
+            const isIgnoredLastName = cleanVal.includes('ผู้ปกครอง') || 
+                                      cleanVal.includes('บิดา') || 
+                                      cleanVal.includes('มารดา') || 
+                                      cleanVal.includes('อังกฤษ') || 
+                                      cleanVal.includes('english');
+            if (!isIgnoredLastName) {
+              if (
+                cleanVal.includes('นามสกุล') ||
+                cleanVal === 'สกุล' ||
+                cleanVal === 'lastname' ||
+                cleanVal === 'last_name' ||
+                cleanVal === 'surname'
+              ) {
+                if (tempLastNameIdx === -1) {
+                  tempLastNameIdx = idx; // Choose the first matching (leftmost)
+                }
+              }
             }
 
-            // 4. Check Prefix
-            if (
-              cleanVal.includes('คำนำหน้า') ||
-              cleanVal === 'title' ||
-              cleanVal === 'prefix'
-            ) {
-              tempPrefixIdx = idx;
+            // 4. Check Prefix (ignore parents)
+            const isIgnoredPrefix = cleanVal.includes('ผู้ปกครอง') || 
+                                    cleanVal.includes('บิดา') || 
+                                    cleanVal.includes('มารดา');
+            if (!isIgnoredPrefix) {
+              if (
+                cleanVal.includes('คำนำหน้า') ||
+                cleanVal === 'title' ||
+                cleanVal === 'prefix'
+              ) {
+                if (tempPrefixIdx === -1) {
+                  tempPrefixIdx = idx; // Choose the first matching (leftmost)
+                }
+              }
             }
 
-            // 5. Check Class
+            // 5. Check Class (support "ชั้น/ห้อง" or any column with "ชั้น")
             if (
-              cleanVal.includes('ชั้นเรียน') ||
+              cleanVal.includes('ชั้น') ||
               cleanVal.includes('ระดับชั้น') ||
-              cleanVal === 'ชั้น' ||
               cleanVal === 'class' ||
               cleanVal === 'grade'
             ) {
