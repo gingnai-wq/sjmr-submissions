@@ -2259,8 +2259,10 @@ function generateIndividualReport(studentId, subjectId, period, resultsPanel, pr
   }
   
   const reportHtml = `
-    <div style="display: flex; gap: 10px; margin-bottom: 20px; align-self: flex-start;">
+    <div class="report-actions-bar" style="display: flex; gap: 10px; margin-bottom: 20px; align-self: flex-start; flex-wrap: wrap;">
       <button id="btn-print-active-report" class="btn btn-purple"><i class="fa-solid fa-print"></i> พิมพ์รายงานสรุป A4</button>
+      <button id="btn-excel-active-report" class="btn btn-green"><i class="fa-solid fa-file-excel"></i> ส่งออกเป็น Excel</button>
+      <button id="btn-close-active-report" class="btn btn-secondary"><i class="fa-solid fa-xmark"></i> ปิดรายงาน</button>
     </div>
     <div class="report-paper-preview">
       <div class="report-header">
@@ -2379,11 +2381,115 @@ function generateIndividualReport(studentId, subjectId, period, resultsPanel, pr
   resultsPanel.innerHTML = reportHtml;
   resultsPanel.style.background = 'transparent';
   resultsPanel.style.border = 'none';
+  resultsPanel.style.display = 'block';
+  resultsPanel.style.width = '100%';
+  resultsPanel.style.overflowX = 'auto';
   
   printArea.innerHTML = resultsPanel.querySelector('.report-paper-preview').outerHTML;
   
   document.getElementById('btn-print-active-report').addEventListener('click', () => {
     window.print();
+  });
+  
+  document.getElementById('btn-excel-active-report').addEventListener('click', () => {
+    if (typeof XLSX === 'undefined') {
+      showToast('ไม่สามารถโหลดระบบส่งออก Excel ได้ กรุณาลองใหม่อีกครั้ง', 'error');
+      return;
+    }
+    
+    try {
+      const wb = XLSX.utils.book_new();
+      
+      // Sheet 1: Metadata & Submission Table
+      const ws1Data = [
+        ["รายงานสรุปผลรายบุคคล - ข้อมูลการส่งงาน"],
+        [`ชื่อ-นามสกุล: ${student.FullName}`, `รหัสประจำตัว: ${student.Student_ID}`],
+        [`ชั้นเรียน: ${student.Class || '-'}`, `อีเมล: ${student.Email || '-'}`],
+        [`วันที่ออกรายงาน: ${new Date().toLocaleDateString('th-TH')}`],
+        [],
+        ["สรุปการส่งงาน"],
+        ["ภาระงานทั้งหมด", "ส่งแล้ว", "งานค้างส่ง", "คะแนนรวม", "คะแนนเต็ม", "คะแนนเฉลี่ย"],
+        [totalTasks, submittedTasks, pendingTasks, scoreSum, scoreMax, scoreAvg],
+        [],
+        ["รายการผลการส่งงานและการบ้าน"],
+        ["รหัสการบ้าน", "ชื่อภาระงาน / วิชา", "กำหนดส่ง", "คะแนน", "สถานะ"]
+      ];
+      
+      const tables = resultsPanel.querySelectorAll('.report-table');
+      const taskTable = tables[0];
+      const attTable = tables[1];
+      
+      const taskRows = taskTable ? taskTable.querySelectorAll('tbody tr') : [];
+      taskRows.forEach(row => {
+        const cols = row.querySelectorAll('td');
+        if (cols.length >= 5) {
+          ws1Data.push([
+            cols[0].innerText.trim(),
+            cols[1].innerText.trim(),
+            cols[2].innerText.trim(),
+            cols[3].innerText.trim(),
+            cols[4].innerText.trim()
+          ]);
+        }
+      });
+      
+      const ws1 = XLSX.utils.aoa_to_sheet(ws1Data);
+      XLSX.utils.book_append_sheet(wb, ws1, "ข้อมูลการส่งงาน");
+      
+      // Sheet 2: Attendance Table
+      const ws2Data = [
+        ["รายงานสรุปผลรายบุคคล - ประวัติการเข้าเรียน"],
+        [`ชื่อ-นามสกุล: ${student.FullName}`, `รหัสประจำตัว: ${student.Student_ID}`],
+        [`ชั้นเรียน: ${student.Class || '-'}`, `วันที่ออกรายงาน: ${new Date().toLocaleDateString('th-TH')}`],
+        [],
+        ["สรุปการเข้าเรียน"],
+        ["คาบเรียนทั้งหมด", "มาเรียน", "ขาดเรียน", "อัตราการเข้าเรียน"],
+        [totalAtt, presentAtt, absentAtt, `${attPercent}%`],
+        [],
+        ["ประวัติการเข้าเรียน (ล่าสุด 10 คาบ)"],
+        ["วันที่", "รหัสวิชา - รายวิชา", "สถานะ", "บันทึกโดย"]
+      ];
+      
+      const attRows = attTable ? attTable.querySelectorAll('tbody tr') : [];
+      attRows.forEach(row => {
+        const cols = row.querySelectorAll('td');
+        if (cols.length >= 4) {
+          ws2Data.push([
+            cols[0].innerText.trim(),
+            cols[1].innerText.trim(),
+            cols[2].innerText.trim(),
+            cols[3].innerText.trim()
+          ]);
+        } else if (cols.length === 1) {
+          ws2Data.push([cols[0].innerText.trim()]);
+        }
+      });
+      
+      const ws2 = XLSX.utils.aoa_to_sheet(ws2Data);
+      XLSX.utils.book_append_sheet(wb, ws2, "ประวัติการเข้าเรียน");
+      
+      XLSX.writeFile(wb, `Report_Individual_${student.Student_ID}_${student.FullName}.xlsx`);
+      showToast('ส่งออกไฟล์ Excel สำเร็จ', 'success');
+    } catch (err) {
+      console.error(err);
+      showToast('เกิดข้อผิดพลาดในการส่งออก Excel: ' + err.message, 'error');
+    }
+  });
+  
+  document.getElementById('btn-close-active-report').addEventListener('click', () => {
+    resultsPanel.innerHTML = `
+      <i class="fa-solid fa-chart-bar" style="font-size: 3rem; color: var(--text-muted); opacity: 0.5; margin-bottom: 12px;"></i>
+      <p style="color: var(--text-muted);">กรุณากดปุ่ม <strong>"ดึงรายงาน"</strong> เพื่อประมวลผลสรุปข้อมูล</p>
+    `;
+    resultsPanel.style.background = 'var(--glass-bg)';
+    resultsPanel.style.border = '1px solid var(--glass-border)';
+    resultsPanel.style.display = 'flex';
+    resultsPanel.style.flexDirection = 'column';
+    resultsPanel.style.justifyContent = 'center';
+    resultsPanel.style.alignItems = 'center';
+    resultsPanel.style.overflowX = 'visible';
+    
+    printArea.innerHTML = '';
   });
 }
 
@@ -2476,8 +2582,10 @@ function generateClassReport(selectedClass, subjectId, period, resultsPanel, pri
   const classPendingCount = totalPossibleSubmissions - totalSubmissionsCount;
   
   const reportHtml = `
-    <div style="display: flex; gap: 10px; margin-bottom: 20px; align-self: flex-start;">
+    <div class="report-actions-bar" style="display: flex; gap: 10px; margin-bottom: 20px; align-self: flex-start; flex-wrap: wrap;">
       <button id="btn-print-active-report" class="btn btn-purple"><i class="fa-solid fa-print"></i> พิมพ์รายงานสรุป A4</button>
+      <button id="btn-excel-active-report" class="btn btn-green"><i class="fa-solid fa-file-excel"></i> ส่งออกเป็น Excel</button>
+      <button id="btn-close-active-report" class="btn btn-secondary"><i class="fa-solid fa-xmark"></i> ปิดรายงาน</button>
     </div>
     <div class="report-paper-preview">
       <div class="report-header">
@@ -2564,11 +2672,77 @@ function generateClassReport(selectedClass, subjectId, period, resultsPanel, pri
   resultsPanel.innerHTML = reportHtml;
   resultsPanel.style.background = 'transparent';
   resultsPanel.style.border = 'none';
+  resultsPanel.style.display = 'block';
+  resultsPanel.style.width = '100%';
+  resultsPanel.style.overflowX = 'auto';
   
   printArea.innerHTML = resultsPanel.querySelector('.report-paper-preview').outerHTML;
   
   document.getElementById('btn-print-active-report').addEventListener('click', () => {
     window.print();
+  });
+  
+  document.getElementById('btn-excel-active-report').addEventListener('click', () => {
+    if (typeof XLSX === 'undefined') {
+      showToast('ไม่สามารถโหลดระบบส่งออก Excel ได้ กรุณาลองใหม่อีกครั้ง', 'error');
+      return;
+    }
+    
+    try {
+      const wb = XLSX.utils.book_new();
+      
+      const wsData = [
+        ["รายงานสรุปผลภาพรวมห้องเรียน"],
+        [`ชั้นเรียน: ${selectedClass}`, `วันที่ออกรายงาน: ${new Date().toLocaleDateString('th-TH')}`],
+        [],
+        ["ข้อมูลภาพรวมห้องเรียน"],
+        ["นักเรียนทั้งหมด", "อัตราเข้าเรียนเฉลี่ย", "คะแนนเฉลี่ยห้อง", "การบ้านทั้งหมด", "อัตราการส่งงาน", "งานค้างส่งรวม"],
+        [classStudents.length, `${avgAttendance}%`, avgScore, classTotalTasks, `${classSubmittedPercent}%`, classPendingCount],
+        [],
+        ["ตารางวิเคราะห์ข้อมูลนักเรียนรายบุคคลในห้องเรียน"],
+        ["รหัสนักเรียน", "ชื่อ-นามสกุล", "เข้าเรียน (ครั้ง)", "ส่งงาน / ทั้งหมด", "คะแนนเฉลี่ย"]
+      ];
+      
+      const classTable = resultsPanel.querySelector('.report-table');
+      const classRows = classTable ? classTable.querySelectorAll('tbody tr') : [];
+      classRows.forEach(row => {
+        const cols = row.querySelectorAll('td');
+        if (cols.length >= 5) {
+          wsData.push([
+            cols[0].innerText.trim(),
+            cols[1].innerText.trim(),
+            cols[2].innerText.trim(),
+            cols[3].innerText.trim(),
+            cols[4].innerText.trim()
+          ]);
+        }
+      });
+      
+      const ws = XLSX.utils.aoa_to_sheet(wsData);
+      XLSX.utils.book_append_sheet(wb, ws, "ภาพรวมห้องเรียน");
+      
+      XLSX.writeFile(wb, `Report_Class_${selectedClass}.xlsx`);
+      showToast('ส่งออกไฟล์ Excel สำเร็จ', 'success');
+    } catch (err) {
+      console.error(err);
+      showToast('เกิดข้อผิดพลาดในการส่งออก Excel: ' + err.message, 'error');
+    }
+  });
+  
+  document.getElementById('btn-close-active-report').addEventListener('click', () => {
+    resultsPanel.innerHTML = `
+      <i class="fa-solid fa-chart-bar" style="font-size: 3rem; color: var(--text-muted); opacity: 0.5; margin-bottom: 12px;"></i>
+      <p style="color: var(--text-muted);">กรุณากดปุ่ม <strong>"ดึงรายงาน"</strong> เพื่อประมวลผลสรุปข้อมูล</p>
+    `;
+    resultsPanel.style.background = 'var(--glass-bg)';
+    resultsPanel.style.border = '1px solid var(--glass-border)';
+    resultsPanel.style.display = 'flex';
+    resultsPanel.style.flexDirection = 'column';
+    resultsPanel.style.justifyContent = 'center';
+    resultsPanel.style.alignItems = 'center';
+    resultsPanel.style.overflowX = 'visible';
+    
+    printArea.innerHTML = '';
   });
 }
 

@@ -12,6 +12,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- html5-qrcode library for barcode & QR scanning -->
   <script src="https://unpkg.com/html5-qrcode"></script>
+  <!-- SheetJS for Export to Excel -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <!-- Vanilla CSS Link -->
   <link rel="stylesheet" href="style.css">
 </head>
@@ -408,7 +410,7 @@
                 </div>
 
                 <!-- Report Display Content -->
-                <div id="report-results-panel" style="margin-top: 15px; border-radius: 12px; border: 1px solid var(--glass-border); background: var(--glass-bg); padding: 24px; min-height: 250px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                <div id="report-results-panel" style="margin-top: 15px; border-radius: 12px; border: 1px solid var(--glass-border); background: var(--glass-bg); padding: 24px; min-height: 250px; display: flex; flex-direction: column; justify-content: center; align-items: center; max-width: 100%; overflow-x: auto; box-sizing: border-box;">
                   <i class="fa-solid fa-chart-bar" style="font-size: 3rem; color: var(--text-muted); opacity: 0.5; margin-bottom: 12px;"></i>
                   <p style="color: var(--text-muted);">กรุณากดปุ่ม <strong>"ดึงรายงาน"</strong> เพื่อประมวลผลสรุปข้อมูล</p>
                 </div>
