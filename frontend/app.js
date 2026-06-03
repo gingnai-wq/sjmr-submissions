@@ -1942,18 +1942,24 @@ document.getElementById('student-edit-form').addEventListener('submit', async (e
 });
 
 // Initialize immediately on script execution (Includes automatic backend configuration sync handshake & persistence restore)
-function initApp() {
+async function initApp() {
   checkQueryParams();
   
   // Sync locally saved cloud configs to server on startup (Real-time sync handshake)
   const scriptUrl = localStorage.getItem('drive_script_url');
   const folderId = localStorage.getItem('drive_folder_id');
   if (scriptUrl && folderId) {
-    fetch('/api/save-config', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ scriptUrl, folderId })
-    }).catch(err => console.error('Handshake config sync to cloud database failed:', err));
+    try {
+      console.log('Sending handshake to load database from Google Drive...');
+      await fetch('/api/save-config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ scriptUrl, folderId })
+      });
+      console.log('Google Drive database sync handshake completed successfully.');
+    } catch (err) {
+      console.error('Handshake config sync to cloud database failed:', err);
+    }
   }
   
   // Restore persistent login sessions (NEW)
@@ -2663,6 +2669,7 @@ if (addSubjectForm) {
         closeModal(addSubjectModal);
         
         await loadTeacherDashboard(); 
+        await loadSubjectsTable();
       } else {
         showToast(res.message, 'error');
       }
@@ -2692,6 +2699,7 @@ document.getElementById('panel-teachers-view').addEventListener('click', async (
           showToast(res.message, 'success');
           logAgentEvent('delete_subject', 'Teacher', { subjectId });
           await loadTeacherDashboard(); 
+          await loadSubjectsTable();
         } else {
           showToast(res.message, 'error');
         }

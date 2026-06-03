@@ -55,8 +55,112 @@ const photoStorage = multer.diskStorage({
 });
 const uploadPhoto = multer({ storage: photoStorage });
 
+// Helper to restore missing student photos from Google Drive
+function syncPhotosFromDrive(scriptUrl, folderId, callback) {
+  if (!scriptUrl || !folderId) {
+    if (callback) callback(new Error('ข้อมูลไม่ครบถ้วน'));
+    return;
+  }
+
+  const url = `${scriptUrl}?folderId=${folderId}`;
+  
+  downloadJson(url, (err, body) => {
+    if (err) {
+      console.error('Error fetching file list from Google Apps Script:', err);
+      if (callback) callback(err);
+      return;
+    }
+    
+    try {
+      const parsed = JSON.parse(body);
+      if (!parsed.success) {
+        if (callback) callback(new Error(parsed.error || 'เกิดข้อผิดพลาดจาก Google Drive'));
+        return;
+      }
+      
+      const files = parsed.files || [];
+      const studentsList = db.getStudents();
+      const studentMap = {};
+      studentsList.forEach(s => {
+        studentMap[s.Student_ID] = s;
+      });
+
+      const matchCandidates = [];
+      files.forEach(file => {
+        const origExt = path.extname(file.name);
+        const ext = origExt.toLowerCase();
+        if (ext !== '.jpg' && ext !== '.jpeg' && ext !== '.png') return;
+        
+        const baseName = path.basename(file.name, origExt).trim();
+        if (studentMap[baseName]) {
+          const targetFileName = `${baseName}${ext}`;
+          const targetPath = path.join(SERVER_PHOTOS_DIR, targetFileName);
+          if (!fs.existsSync(targetPath)) {
+            matchCandidates.push({
+              studentId: baseName,
+              ext: ext,
+              id: file.id
+            });
+          }
+        }
+      });
+
+      if (matchCandidates.length === 0) {
+        if (callback) callback(null, 0);
+        return;
+      }
+
+      console.log(`Downloading ${matchCandidates.length} missing student photos from Google Drive...`);
+      let downloaded = 0;
+      let successCount = 0;
+
+      function downloadNext() {
+        if (downloaded >= matchCandidates.length) {
+          db.setStudents(studentsList); // Save updated student list to database
+          if (callback) callback(null, successCount);
+          return;
+        }
+
+        const candidate = matchCandidates[downloaded];
+        const targetFileName = `${candidate.studentId}${candidate.ext}`;
+        const targetPath = path.join(SERVER_PHOTOS_DIR, targetFileName);
+        const downloadUrl = `https://docs.google.com/uc?export=download&id=${candidate.id}`;
+
+        downloadFile(downloadUrl, targetPath, (downloadErr) => {
+          if (!downloadErr) {
+            studentMap[candidate.studentId].Photo = `/uploads/photos/${targetFileName}`;
+            successCount++;
+          } else {
+            console.error(`Error downloading image for student ${candidate.studentId}:`, downloadErr);
+          }
+          downloaded++;
+          downloadNext();
+        });
+      }
+
+      downloadNext();
+    } catch (parseErr) {
+      console.error('Error parsing JSON from Apps Script:', parseErr);
+      if (callback) callback(parseErr);
+    }
+  });
+}
+
 // Initialize database with students from Excel if database is empty
-function initDb() {
+async function initDb() {
+  // Sync with Google Drive first if config is set to retrieve any previously saved data
+  if (db.getConfig().scriptUrl && db.getConfig().folderId) {
+    console.log('Attempting initial Google Drive sync on startup...');
+    try {
+      await db.syncDrive();
+      // Restore missing student photos in background
+      console.log('Starting background restore of missing student photos...');
+      syncPhotosFromDrive(db.getConfig().scriptUrl, db.getConfig().folderId);
+    } catch (e) {
+      console.error('Initial Google Drive sync failed:', e);
+    }
+  }
+
   const currentStudents = db.getStudents();
   if (currentStudents.length === 0) {
     console.log('Database is empty. Attempting to seed students from Excel...');
@@ -501,78 +605,11 @@ app.post('/api/import-photos-drive', (req, res) => {
   // Auto-save/update cloud database configuration
   db.updateConfig(scriptUrl, folderId);
 
-  const url = `${scriptUrl}?folderId=${folderId}`;
-  
-  downloadJson(url, (err, body) => {
+  syncPhotosFromDrive(scriptUrl, folderId, (err, count) => {
     if (err) {
-      console.error('Error fetching file list from Google Apps Script:', err);
-      return res.status(500).json({ success: false, message: 'ไม่สามารถติดต่อ Google Apps Script ได้ กรุณาตรวจสอบ URL หรือการแชร์โฟลเดอร์' });
+      return res.status(500).json({ success: false, message: 'ไม่สามารถซิงก์รูปถ่ายจาก Google Drive ได้: ' + err.message });
     }
-    
-    try {
-      const parsed = JSON.parse(body);
-      if (!parsed.success) {
-        return res.status(400).json({ success: false, message: parsed.error || 'เกิดข้อผิดพลาดในการดึงข้อมูลจาก Google Drive' });
-      }
-      
-      const files = parsed.files || [];
-      const studentsList = db.getStudents();
-      const studentMap = {};
-      studentsList.forEach(s => {
-        studentMap[s.Student_ID] = s;
-      });
-
-      const matchCandidates = [];
-      files.forEach(file => {
-        const origExt = path.extname(file.name);
-        const ext = origExt.toLowerCase();
-        if (ext !== '.jpg' && ext !== '.jpeg' && ext !== '.png') return;
-        
-        const baseName = path.basename(file.name, origExt).trim();
-        if (studentMap[baseName]) {
-          matchCandidates.push({
-            studentId: baseName,
-            ext: ext,
-            id: file.id
-          });
-        }
-      });
-
-      if (matchCandidates.length === 0) {
-        return res.status(400).json({ success: false, message: 'ไม่พบไฟล์รูปถ่ายที่ตั้งชื่อตามรหัสประจำตัวนักเรียนใน Google Drive Folder (ตัวอย่าง: 6032.jpg)' });
-      }
-
-      let downloaded = 0;
-      let successCount = 0;
-
-      function downloadNext() {
-        if (downloaded >= matchCandidates.length) {
-          db.setStudents(studentsList); // Save updated student list to database
-          return res.json({ success: true, message: `ซิงก์รูปถ่ายนักเรียนจาก Google Drive สำเร็จ ${successCount} รูป` });
-        }
-
-        const candidate = matchCandidates[downloaded];
-        const targetFileName = `${candidate.studentId}${candidate.ext}`;
-        const targetPath = path.join(SERVER_PHOTOS_DIR, targetFileName);
-        const downloadUrl = `https://docs.google.com/uc?export=download&id=${candidate.id}`;
-
-        downloadFile(downloadUrl, targetPath, (downloadErr) => {
-          if (!downloadErr) {
-            studentMap[candidate.studentId].Photo = `/uploads/photos/${targetFileName}`;
-            successCount++;
-          } else {
-            console.error(`Error downloading image for student ${candidate.studentId}:`, downloadErr);
-          }
-          downloaded++;
-          downloadNext();
-        });
-      }
-
-      downloadNext();
-    } catch (parseErr) {
-      console.error('Error parsing JSON from Apps Script:', parseErr, body);
-      res.status(500).json({ success: false, message: 'ข้อมูลที่ส่งกลับมาจาก Google Apps Script ไม่ถูกต้อง (ไม่ใช่ JSON รูปแบบที่กำหนด)' });
-    }
+    res.json({ success: true, message: `ซิงก์รูปถ่ายนักเรียนจาก Google Drive สำเร็จ ${count} รูป` });
   });
 });
 
@@ -720,12 +757,21 @@ app.get('/api/students', (req, res) => {
 });
 
 // 13. Save Config Endpoint (NEW)
-app.post('/api/save-config', (req, res) => {
+app.post('/api/save-config', async (req, res) => {
   const { scriptUrl, folderId } = req.body;
   if (!scriptUrl || !folderId) {
     return res.status(400).json({ success: false, message: 'กรุณาระบุ URL ของ Google Apps Script และ Folder ID' });
   }
   const config = db.updateConfig(scriptUrl, folderId);
+  try {
+    console.log('Awaiting initial Drive sync for save-config handshake...');
+    await db.syncDrive();
+    // Also trigger background restore of missing student photos
+    console.log('Starting background restore of missing student photos...');
+    syncPhotosFromDrive(scriptUrl, folderId);
+  } catch (err) {
+    console.error('Error during syncDrive in save-config:', err);
+  }
   res.json({ success: true, message: 'บันทึกการเชื่อมโยงระบบคลาวด์สำเร็จ!', config });
 });
 
@@ -918,9 +964,9 @@ app.get('/api/logs', (req, res) => {
 });
 
 // Start the server
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`=========================================`);
   console.log(` Server is running on: http://localhost:${PORT}`);
   console.log(`=========================================`);
-  initDb();
+  await initDb();
 });
