@@ -996,6 +996,32 @@ createAssignmentForm.addEventListener('submit', async (e) => {
   }
 });
 
+// Database Actions (Sync from local Desktop Excel) (NEW)
+const btnReloadLocalExcel = document.getElementById('btn-reload-local-excel');
+if (btnReloadLocalExcel) {
+  btnReloadLocalExcel.addEventListener('click', async () => {
+    const btnOriginalText = btnReloadLocalExcel.innerHTML;
+    btnReloadLocalExcel.disabled = true;
+    btnReloadLocalExcel.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังซิงก์ข้อมูล...';
+
+    try {
+      const res = await fetch('/api/import-excel', { method: 'POST' }).then(r => r.json());
+      if (res.success) {
+        showToast(res.message, 'success');
+        await loadTeacherDashboard(); // Refresh data
+      } else {
+        showToast(res.message, 'error');
+      }
+    } catch (err) {
+      console.error(err);
+      showToast('เกิดข้อผิดพลาดในการดึงข้อมูลจากไฟล์ Excel บนเดสก์ท็อป', 'error');
+    } finally {
+      btnReloadLocalExcel.disabled = false;
+      btnReloadLocalExcel.innerHTML = btnOriginalText;
+    }
+  });
+}
+
 // Database Actions (Import from Excel File)
 const excelFileInput = document.getElementById('excel-file-input');
 

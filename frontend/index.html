@@ -359,8 +359,12 @@
               <div class="glass-card admin-action-card">
                 <h3><i class="fa-solid fa-database text-blue"></i> จัดการฐานข้อมูลและซิงก์</h3>
                 <div class="db-actions-list">
-                  <button id="btn-import-excel" class="btn btn-purple btn-block btn-icon-left">
-                    <i class="fa-solid fa-file-import"></i> <span>นำเข้าข้อมูลจากไฟล์ Excel (.xlsx)</span>
+                  <button id="btn-reload-local-excel" class="btn btn-purple btn-block btn-icon-left">
+                    <i class="fa-solid fa-rotate"></i> <span>ซิงก์จาก Excel บน Desktop ทันที</span>
+                  </button>
+
+                  <button id="btn-import-excel" class="btn btn-secondary btn-block btn-icon-left" style="margin-top: 8px; margin-bottom: 8px;">
+                    <i class="fa-solid fa-file-import"></i> <span>อัปโหลดไฟล์ Excel (.xlsx) อื่นๆ</span>
                   </button>
                   <input type="file" id="excel-file-input" accept=".xlsx, .xls" style="display: none;">
 
