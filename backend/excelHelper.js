@@ -15,6 +15,58 @@ if (!fs.existsSync(SERVER_PHOTOS_DIR)) {
   fs.mkdirSync(SERVER_PHOTOS_DIR, { recursive: true });
 }
 
+function detectBlocks(row, idColIdx, nameColIdx, classColIdx, roomColIdx, statusColIdx) {
+  const blocks = [{
+    idColIdx,
+    nameColIdx,
+    classColIdx,
+    roomColIdx,
+    statusColIdx
+  }];
+
+  if (idColIdx === -1 || nameColIdx === -1) return blocks;
+
+  const firstId = String(row[idColIdx] || '').trim();
+  if (!firstId || firstId.length < 3) return blocks;
+
+  const rowLength = row.length;
+  
+  // Try different block widths from 4 to 12
+  for (let width = 4; width <= 12; width++) {
+    let nextIdIdx = idColIdx + width;
+    let nextNameIdx = nameColIdx + width;
+    
+    if (nextIdIdx < rowLength && nextNameIdx < rowLength) {
+      const nextId = String(row[nextIdIdx] || '').trim();
+      const nextName = String(row[nextNameIdx] || '').trim();
+      
+      const isIdLike = nextId && nextId.length >= 3 && nextId.length <= 15 && !isNaN(Number(nextId));
+      const isNameLike = nextName && nextName.length > 2 && isNaN(Number(nextName)) && !nextName.includes('/') && !nextName.includes('ห้อง');
+      
+      if (isIdLike && isNameLike) {
+        // Generate blocks based on this width
+        for (let idx = idColIdx + width; idx < rowLength; idx += width) {
+          const testIdIdx = idx;
+          const testNameIdx = nameColIdx + (idx - idColIdx);
+          if (testIdIdx < rowLength && testNameIdx < rowLength) {
+            blocks.push({
+              idColIdx: testIdIdx,
+              nameColIdx: testNameIdx,
+              classColIdx: classColIdx !== -1 ? classColIdx + (testIdIdx - idColIdx) : -1,
+              roomColIdx: roomColIdx !== -1 ? roomColIdx + (testIdIdx - idColIdx) : -1,
+              statusColIdx: statusColIdx !== -1 ? statusColIdx + (testIdIdx - idColIdx) : -1
+            });
+          }
+        }
+        console.log(`Detected side-by-side block pattern: width = ${width}, total blocks = ${blocks.length}`);
+        break;
+      }
+    }
+  }
+
+  return blocks;
+}
+
 function importStudents(filePath = STUDENT_LIST_PATH) {
   if (!fs.existsSync(filePath)) {
     console.warn(`Student list file not found at ${filePath}. Using empty/default students list.`);
@@ -25,101 +77,267 @@ function importStudents(filePath = STUDENT_LIST_PATH) {
     const wb = xlsx.readFile(filePath);
     const allStudents = [];
 
-    wb.SheetNames.forEach(sheetName => {
-      if (!sheetName.startsWith('ม.') && !sheetName.startsWith('ป.')) {
-        return;
-      }
+    // Filter sheets: Prefer sheets starting with ม. or ป.
+    let sheetsToParse = wb.SheetNames.filter(sheetName => {
+      const name = sheetName.trim();
+      return name.startsWith('ม.') || name.startsWith('ป.') || name.startsWith('ม') || name.startsWith('ป');
+    });
 
+    if (sheetsToParse.length === 0) {
+      // Fallback: use all sheets except ignored metadata sheets
+      const IGNORED_SHEETS = ['assignment_list', 'submissions_master', 'sheetinfo', 'metadata', 'report', 'student_master'];
+      sheetsToParse = wb.SheetNames.filter(sheetName => {
+        const lowerName = sheetName.trim().toLowerCase();
+        return !IGNORED_SHEETS.some(ignored => lowerName.includes(ignored));
+      });
+    }
+
+    sheetsToParse.forEach(sheetName => {
       const sheet = wb.Sheets[sheetName];
       const rows = xlsx.utils.sheet_to_json(sheet, { header: 1 });
 
       let idColIdx = -1;
       let nameColIdx = -1;
+      let firstNameColIdx = -1;
+      let lastNameColIdx = -1;
+      let prefixColIdx = -1;
       let classColIdx = -1;
+      let roomColIdx = -1;
       let statusColIdx = -1;
       let headerRowFound = false;
+      let blocks = [];
 
       for (let r = 0; r < rows.length; r++) {
         const row = rows[r];
         if (!row || row.length === 0) continue;
 
+        const rowStr = row.map(c => String(c || '').trim());
+
         if (!headerRowFound) {
-          const rowStr = row.map(c => String(c || '').trim());
-          const hasIdHeader = rowStr.some(c => c.includes('เลขประจำตัวนักเรียน') || c.includes('เลขประจำตัว'));
-          const hasNameHeader = rowStr.some(c => c.includes('ชื่อ - นามสกุล') || c.includes('ชื่อ-นามสกุล') || c.includes('ชื่อ'));
+          let tempIdIdx = -1;
+          let tempNameIdx = -1;
+          let tempFirstNameIdx = -1;
+          let tempLastNameIdx = -1;
+          let tempPrefixIdx = -1;
+          let tempClassIdx = -1;
+          let tempRoomIdx = -1;
+          let tempStatusIdx = -1;
 
-          if (hasIdHeader && hasNameHeader) {
+          rowStr.forEach((val, idx) => {
+            if (!val) return;
+            const cleanVal = val.toLowerCase().replace(/[\s_-]/g, '');
+
+            // 1. Check Student ID (avoid national ID card)
+            if (!cleanVal.includes('ประชาชน') && !cleanVal.includes('บัตร') && (
+              cleanVal.includes('เลขประจำตัวนักเรียน') ||
+              cleanVal.includes('เลขประจำตัว') ||
+              cleanVal.includes('รหัสประจำตัว') ||
+              cleanVal.includes('รหัสนักเรียน') ||
+              cleanVal.includes('รหัสผู้เรียน') ||
+              cleanVal.includes('รหัส') ||
+              cleanVal.includes('studentid') ||
+              cleanVal.includes('stdid') ||
+              cleanVal === 'id' ||
+              cleanVal === 'code' ||
+              cleanVal === 'no' ||
+              cleanVal === 'stdno'
+            )) {
+              tempIdIdx = idx;
+            }
+
+            // 2. Check Name (combined or first name)
+            if (
+              cleanVal.includes('ชื่อนามสกุล') ||
+              cleanVal.includes('ชื่อสกุล') ||
+              cleanVal.includes('ชื่อผู้เรียน') ||
+              cleanVal.includes('ชื่อนักเรียน') ||
+              cleanVal.includes('fullname') ||
+              cleanVal === 'name' ||
+              cleanVal === 'studentname' ||
+              cleanVal === 'ชื่อ-สกุล' ||
+              cleanVal === 'ชื่อ-นามสกุล'
+            ) {
+              tempNameIdx = idx;
+            } else if (cleanVal === 'ชื่อ' || cleanVal === 'firstname' || cleanVal === 'first_name') {
+              tempFirstNameIdx = idx;
+            }
+
+            // 3. Check Last Name
+            if (
+              cleanVal.includes('นามสกุล') ||
+              cleanVal === 'สกุล' ||
+              cleanVal === 'lastname' ||
+              cleanVal === 'last_name' ||
+              cleanVal === 'surname'
+            ) {
+              tempLastNameIdx = idx;
+            }
+
+            // 4. Check Prefix
+            if (
+              cleanVal.includes('คำนำหน้า') ||
+              cleanVal === 'title' ||
+              cleanVal === 'prefix'
+            ) {
+              tempPrefixIdx = idx;
+            }
+
+            // 5. Check Class
+            if (
+              cleanVal.includes('ชั้นเรียน') ||
+              cleanVal.includes('ระดับชั้น') ||
+              cleanVal === 'ชั้น' ||
+              cleanVal === 'class' ||
+              cleanVal === 'grade'
+            ) {
+              tempClassIdx = idx;
+            }
+
+            // 6. Check Room
+            if (
+              cleanVal.includes('ห้องเรียน') ||
+              cleanVal === 'ห้อง' ||
+              cleanVal === 'room'
+            ) {
+              tempRoomIdx = idx;
+            }
+
+            // 7. Check Status
+            if (
+              cleanVal.includes('สถานะ') ||
+              cleanVal === 'status'
+            ) {
+              tempStatusIdx = idx;
+            }
+          });
+
+          // A valid header row must have ID and at least some name column
+          const hasId = tempIdIdx !== -1;
+          const hasName = tempNameIdx !== -1 || tempFirstNameIdx !== -1;
+
+          if (hasId && hasName) {
             headerRowFound = true;
-            rowStr.forEach((val, idx) => {
-              if (val.includes('เลขประจำตัวนักเรียน') || val.includes('เลขประจำตัว') && !val.includes('ประชาชน')) {
-                idColIdx = idx;
-              }
-              if (val.includes('ชื่อ') && val.includes('นามสกุล')) {
-                nameColIdx = idx;
-              }
-              if (val.includes('ชั้นเรียน') || val.includes('ชั้น')) {
-                classColIdx = idx;
-              }
-              if (val.includes('สถานะ')) {
-                statusColIdx = idx;
-              }
-            });
-            if (idColIdx === -1) {
-              idColIdx = rowStr.findIndex(c => c.includes('เลขประจำตัว'));
-            }
+            idColIdx = tempIdIdx;
+            nameColIdx = tempNameIdx !== -1 ? tempNameIdx : tempFirstNameIdx;
+            firstNameColIdx = tempFirstNameIdx;
+            lastNameColIdx = tempLastNameIdx;
+            prefixColIdx = tempPrefixIdx;
+            classColIdx = tempClassIdx;
+            roomColIdx = tempRoomIdx;
+            statusColIdx = tempStatusIdx;
           }
           continue;
         }
 
-        const studentId = String(row[idColIdx] || '').trim();
-        const fullName = String(row[nameColIdx] || '').trim();
-        
-        if (!studentId || isNaN(Number(studentId)) || studentId.length < 3) {
-          continue;
+        // If we just found the header and haven't initialized blocks list
+        if (blocks.length === 0) {
+          blocks = detectBlocks(row, idColIdx, nameColIdx, classColIdx, roomColIdx, statusColIdx);
         }
 
-        if (!fullName || fullName.includes('ชื่อ - นามสกุล')) {
-          continue;
-        }
+        // Process data row with all detected blocks
+        blocks.forEach(block => {
+          if (block.idColIdx >= row.length) return;
 
-        const className = classColIdx !== -1 && row[classColIdx] 
-          ? String(row[classColIdx]).trim() 
-          : sheetName;
+          const studentId = String(row[block.idColIdx] || '').trim();
+          if (!studentId || studentId.length < 3) {
+            return;
+          }
 
-        const status = statusColIdx !== -1 && row[statusColIdx]
-          ? String(row[statusColIdx]).trim()
-          : 'กำลังศึกษาอยู่';
+          // Determine full name
+          let fullName = '';
+          if (block.nameColIdx !== -1 && block.nameColIdx < row.length) {
+            if (block.nameColIdx !== firstNameColIdx + (block.idColIdx - idColIdx)) {
+              // Combined name
+              fullName = String(row[block.nameColIdx] || '').trim();
+            } else {
+              // Separate name
+              const offset = block.idColIdx - idColIdx;
+              const pIdx = prefixColIdx !== -1 ? prefixColIdx + offset : -1;
+              const fIdx = firstNameColIdx !== -1 ? firstNameColIdx + offset : -1;
+              const lIdx = lastNameColIdx !== -1 ? lastNameColIdx + offset : -1;
 
-        // Check if there is a local photo for this student ID
-        let photoLink = '';
-        if (fs.existsSync(EXCEL_PHOTOS_DIR)) {
-          // Check for .jpg, .jpeg, .png extensions
-          const extensions = ['.jpg', '.jpeg', '.png'];
-          for (let ext of extensions) {
-            const localPhotoPath = path.join(EXCEL_PHOTOS_DIR, `${studentId}${ext}`);
-            if (fs.existsSync(localPhotoPath)) {
-              // Copy to server uploads/photos directory
-              const serverPhotoName = `${studentId}${ext}`;
-              const serverPhotoPath = path.join(SERVER_PHOTOS_DIR, serverPhotoName);
-              try {
-                fs.copyFileSync(localPhotoPath, serverPhotoPath);
-                photoLink = `/uploads/photos/${serverPhotoName}`;
-                console.log(`Copied photo for student ${studentId} from Excel photos folder.`);
-              } catch (copyErr) {
-                console.error(`Error copying photo for student ${studentId}:`, copyErr);
+              const prefix = pIdx !== -1 && pIdx < row.length ? String(row[pIdx] || '').trim() : '';
+              const firstName = fIdx !== -1 && fIdx < row.length ? String(row[fIdx] || '').trim() : '';
+              const lastName = lIdx !== -1 && lIdx < row.length ? String(row[lIdx] || '').trim() : '';
+              
+              if (firstName || lastName) {
+                fullName = `${prefix} ${firstName} ${lastName}`.replace(/\s+/g, ' ').trim();
               }
-              break; // Found photo, no need to check other extensions
             }
           }
-        }
 
-        allStudents.push({
-          Student_ID: studentId,
-          FullName: fullName,
-          Class: className,
-          Email: `${studentId}@sjmr.ac.th`,
-          Status: status,
-          Photo: photoLink || '' // Will fall back to avatar if blank
+          // Skip rows with invalid name or placeholders
+          if (!fullName || fullName === 'ชื่อ' || fullName === 'ชื่อ - นามสกุล' || fullName === 'ชื่อ-นามสกุล') {
+            return;
+          }
+
+          // Determine class name
+          let className = sheetName;
+          const classVal = block.classColIdx !== -1 && block.classColIdx < row.length && row[block.classColIdx] 
+            ? String(row[block.classColIdx]).trim() 
+            : '';
+          const roomVal = block.roomColIdx !== -1 && block.roomColIdx < row.length && row[block.roomColIdx] 
+            ? String(row[block.roomColIdx]).trim() 
+            : '';
+
+          if (classVal && roomVal) {
+            if (classVal.includes('/') || classVal.includes('ห้อง')) {
+              className = classVal;
+            } else {
+              let formattedClass = classVal;
+              if (!formattedClass.startsWith('ม.') && !formattedClass.startsWith('ป.') && 
+                  !formattedClass.startsWith('ม') && !formattedClass.startsWith('ป')) {
+                if (sheetName.startsWith('ม.') || sheetName.startsWith('ป.')) {
+                  formattedClass = sheetName.substring(0, 2) + classVal;
+                } else if (sheetName.startsWith('ม') || sheetName.startsWith('ป')) {
+                  formattedClass = sheetName.substring(0, 1) + '.' + classVal;
+                }
+              }
+              className = `${formattedClass}/${roomVal}`;
+            }
+          } else if (classVal) {
+            className = classVal;
+          }
+
+          // Determine status
+          let status = 'กำลังศึกษาอยู่';
+          if (block.statusColIdx !== -1 && block.statusColIdx < row.length && row[block.statusColIdx]) {
+            const statusVal = String(row[block.statusColIdx]).trim();
+            // Status should be a text status (not an ID or date)
+            if (statusVal && isNaN(Number(statusVal)) && statusVal.length < 20) {
+              status = statusVal;
+            }
+          }
+
+          // Copy photo logic (unchanged)
+          let photoLink = '';
+          if (fs.existsSync(EXCEL_PHOTOS_DIR)) {
+            const extensions = ['.jpg', '.jpeg', '.png'];
+            for (let ext of extensions) {
+              const localPhotoPath = path.join(EXCEL_PHOTOS_DIR, `${studentId}${ext}`);
+              if (fs.existsSync(localPhotoPath)) {
+                const serverPhotoName = `${studentId}${ext}`;
+                const serverPhotoPath = path.join(SERVER_PHOTOS_DIR, serverPhotoName);
+                try {
+                  fs.copyFileSync(localPhotoPath, serverPhotoPath);
+                  photoLink = `/uploads/photos/${serverPhotoName}`;
+                  console.log(`Copied photo for student ${studentId} from Excel photos folder.`);
+                } catch (copyErr) {
+                  console.error(`Error copying photo for student ${studentId}:`, copyErr);
+                }
+                break;
+              }
+            }
+          }
+
+          allStudents.push({
+            Student_ID: studentId,
+            FullName: fullName,
+            Class: className,
+            Email: `${studentId}@sjmr.ac.th`,
+            Status: status,
+            Photo: photoLink || ''
+          });
         });
       }
     });
