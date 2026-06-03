@@ -389,7 +389,15 @@ async function loadStudentAssignments() {
 function renderStudentAssignments() {
   studentAssignmentsGrid.innerHTML = '';
   
-  state.assignments.forEach(assign => {
+  const studentClass = state.studentData ? state.studentData.Class : '';
+  const filtered = state.assignments.filter(assign => {
+    return !assign.Class || 
+           assign.Class === 'all' || 
+           assign.Class === 'ทุกชั้นเรียน' || 
+           assign.Class.toLowerCase() === studentClass.toLowerCase();
+  });
+  
+  filtered.forEach(assign => {
     const submission = state.studentSubmissions.find(s => s.Assignment_ID === assign.Assignment_ID);
     
     let statusClass = 'status-pending';
@@ -423,10 +431,17 @@ function renderStudentAssignments() {
       year: '2-digit'
     });
 
+    const classBadgeHtml = assign.Class && assign.Class !== 'all' && assign.Class !== 'ทุกชั้นเรียน'
+      ? `<span class="badge" style="background: rgba(139,92,246,0.15); color: #c084fc; border: 1px solid rgba(139,92,246,0.3); font-size: 0.7rem; margin-top: 4px; display: inline-block;">เฉพาะห้อง: ${assign.Class}</span>`
+      : '';
+
     card.innerHTML = `
       <div class="card-top">
-        <span class="card-id">${assign.Assignment_ID}</span>
-        <h4 class="card-title">${assign.Assignment_Name}</h4>
+        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+          <span class="card-id">${assign.Assignment_ID}</span>
+          ${classBadgeHtml}
+        </div>
+        <h4 class="card-title" style="margin-top: 6px;">${assign.Assignment_Name}</h4>
       </div>
       <div class="card-bottom">
         <div class="card-meta">
@@ -895,6 +910,7 @@ async function loadTeacherDashboard() {
     populateDirectoryFilters(students);
     populateSubjectsDropdowns(subjects);
     populateReportsFilters();
+    populateAssignClassesDropdown();
     
     renderSubmissionsTable();
     renderStudentsDirectoryTable();
@@ -948,6 +964,21 @@ function populateSubjectsDropdowns(subjects) {
     });
     reportSub.value = currentVal || (reportSub.options[0] ? reportSub.options[0].value : 'all');
   }
+}
+
+// Populate classes option in new assignment creation form (NEW)
+function populateAssignClassesDropdown() {
+  const selectClass = document.getElementById('new-assign-class');
+  if (!selectClass) return;
+  
+  const classes = [...new Set(state.students.map(s => s.Class).filter(Boolean))].sort();
+  selectClass.innerHTML = '<option value="all">ทุกชั้นเรียน (All Classes)</option>';
+  classes.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c;
+    opt.textContent = `เฉพาะห้อง: ${c}`;
+    selectClass.appendChild(opt);
+  });
 }
 
 // Populate filters dropdowns
@@ -1402,6 +1433,7 @@ createAssignmentForm.addEventListener('submit', async (e) => {
   const id = document.getElementById('new-assign-id').value.trim();
   const name = document.getElementById('new-assign-name').value.trim();
   const subjectId = document.getElementById('new-assign-subject').value;
+  const assignClass = document.getElementById('new-assign-class').value;
   const due = document.getElementById('new-assign-due').value;
   const score = document.getElementById('new-assign-score').value;
 
@@ -1410,6 +1442,7 @@ createAssignmentForm.addEventListener('submit', async (e) => {
       Assignment_ID: id,
       Assignment_Name: name,
       Subject_ID: subjectId,
+      Class: assignClass,
       Due_Date: due,
       Max_Score: Number(score)
     });

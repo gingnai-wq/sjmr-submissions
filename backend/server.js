@@ -244,7 +244,7 @@ app.get('/api/assignments', (req, res) => {
 
 // 3. Create a new assignment (Teacher)
 app.post('/api/assignments', (req, res) => {
-  const { Assignment_ID, Assignment_Name, Due_Date, Max_Score, Subject_ID } = req.body;
+  const { Assignment_ID, Assignment_Name, Due_Date, Max_Score, Subject_ID, Class } = req.body;
 
   if (!Assignment_ID || !Assignment_Name || !Due_Date || !Max_Score) {
     return res.status(400).json({ success: false, message: 'กรุณากรอกข้อมูลให้ครบถ้วน' });
@@ -262,6 +262,7 @@ app.post('/api/assignments', (req, res) => {
     Subject_ID: Subject_ID || "S001",
     Due_Date,
     Max_Score: Number(Max_Score),
+    Class: Class || "ทุกชั้นเรียน",
     QR_Link: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${Assignment_ID}`
   });
 
