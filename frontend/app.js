@@ -237,6 +237,7 @@ function switchView(view) {
     btnStudentMode.classList.remove('active');
     teacherView.classList.add('active');
     studentView.classList.remove('active');
+    applyRolePrivileges(); // Run instantly to protect UI!
     loadTeacherDashboard();
   }
 }
@@ -809,6 +810,51 @@ function stopStudentScanner() {
 
 // ================= TEACHER WORKFLOW =================
 
+// Helper to determine if the logged-in teacher has access to a specific subject (NEW)
+function hasSubjectAccess(subjectId) {
+  if (!state.teacherData) return false;
+  if (state.teacherData.role === 'Admin') return true;
+  
+  const subj = state.subjects.find(s => s.Subject_ID === subjectId);
+  if (!subj) return false;
+  
+  if (subj.Teacher_Username === 'any' || 
+      subj.Subject_Name.includes('ชุมนุม') || 
+      subj.Subject_Name.includes('ลูกเสือ')) {
+    return true;
+  }
+  
+  return subj.Teacher_Username.toLowerCase() === state.teacherData.username.toLowerCase();
+}
+
+// Helper to apply UI visibility rules based on the user's role (NEW)
+function applyRolePrivileges() {
+  const tabTeachers = document.getElementById('tab-teachers');
+  const isAdmin = state.teacherData && state.teacherData.role === 'Admin';
+  
+  if (tabTeachers) {
+    if (isAdmin) {
+      tabTeachers.classList.remove('hidden');
+    } else {
+      tabTeachers.classList.add('hidden');
+      if (tabTeachers.classList.contains('active')) {
+        const tabSubmissions = document.getElementById('tab-submissions');
+        if (tabSubmissions) tabSubmissions.click();
+      }
+    }
+  }
+
+  // Hide local desktop excel sync and export cards for non-admins to prevent unauthorized modifications
+  const adminDbCard = document.getElementById('admin-db-card');
+  if (adminDbCard) {
+    if (isAdmin) {
+      adminDbCard.classList.remove('hidden');
+    } else {
+      adminDbCard.classList.add('hidden');
+    }
+  }
+}
+
 // Load Teacher Dashboard Data
 async function loadTeacherDashboard() {
   try {
@@ -824,14 +870,24 @@ async function loadTeacherDashboard() {
     state.subjects = subjects;
     state.attendance = attendance;
     
+    // Apply role-based visibility checks (NEW)
+    applyRolePrivileges();
+
+    // Filter assignments and submissions by subject access for statistics (NEW)
+    const permittedAssignments = assignments.filter(a => hasSubjectAccess(a.Subject_ID));
+    const permittedSubmissions = submissions.filter(sub => {
+      const a = assignments.find(assign => assign.Assignment_ID === sub.Assignment_ID);
+      return a && hasSubjectAccess(a.Subject_ID);
+    });
+    
     // Update stats
-    statTotalAssignments.textContent = `${assignments.length} งาน`;
-    statTotalSubmissions.textContent = `${submissions.length} รายการ`;
+    statTotalAssignments.textContent = `${permittedAssignments.length} งาน`;
+    statTotalSubmissions.textContent = `${permittedSubmissions.length} รายการ`;
     
     // Total students count from master list
     statTotalStudents.textContent = `${students.length} คน`;
     
-    const graded = submissions.filter(s => s.Status === 'Graded');
+    const graded = permittedSubmissions.filter(s => s.Status === 'Graded');
     statGradedSubmissions.textContent = `${graded.length} รายการ`;
     
     populateFilters(submissions, assignments);
@@ -850,13 +906,14 @@ async function loadTeacherDashboard() {
 
 // Populate subject select dropdowns (NEW)
 function populateSubjectsDropdowns(subjects) {
+  const permittedSubjects = subjects.filter(s => hasSubjectAccess(s.Subject_ID));
   const newAssignSub = document.getElementById('new-assign-subject');
   const scanSub = document.getElementById('scan-subject-select');
   const reportSub = document.getElementById('report-subject-select');
   
   if (newAssignSub) {
     newAssignSub.innerHTML = '';
-    subjects.forEach(s => {
+    permittedSubjects.forEach(s => {
       const opt = document.createElement('option');
       opt.value = s.Subject_ID;
       opt.textContent = `${s.Subject_ID} - ${s.Subject_Name}`;
@@ -866,7 +923,7 @@ function populateSubjectsDropdowns(subjects) {
   
   if (scanSub) {
     scanSub.innerHTML = '';
-    subjects.forEach(s => {
+    permittedSubjects.forEach(s => {
       const opt = document.createElement('option');
       opt.value = s.Subject_ID;
       opt.textContent = `${s.Subject_ID} - ${s.Subject_Name}`;
@@ -876,21 +933,33 @@ function populateSubjectsDropdowns(subjects) {
   
   if (reportSub) {
     const currentVal = reportSub.value;
-    reportSub.innerHTML = '<option value="all">ทุกรายวิชา</option>';
-    subjects.forEach(s => {
+    reportSub.innerHTML = '';
+    if (state.teacherData && state.teacherData.role === 'Admin') {
+      const optAll = document.createElement('option');
+      optAll.value = 'all';
+      optAll.textContent = 'ทุกรายวิชา';
+      reportSub.appendChild(optAll);
+    }
+    permittedSubjects.forEach(s => {
       const opt = document.createElement('option');
       opt.value = s.Subject_ID;
       opt.textContent = `${s.Subject_ID} - ${s.Subject_Name}`;
       reportSub.appendChild(opt);
     });
-    reportSub.value = currentVal || 'all';
+    reportSub.value = currentVal || (reportSub.options[0] ? reportSub.options[0].value : 'all');
   }
 }
 
 // Populate filters dropdowns
 function populateFilters(submissions, assignments) {
+  const permittedAssignments = assignments.filter(a => hasSubjectAccess(a.Subject_ID));
+  const permittedSubmissions = submissions.filter(sub => {
+    const a = assignments.find(assign => assign.Assignment_ID === sub.Assignment_ID);
+    return a && hasSubjectAccess(a.Subject_ID);
+  });
+
   const classes = new Set();
-  submissions.forEach(s => {
+  permittedSubmissions.forEach(s => {
     if (s.Class) classes.add(s.Class);
   });
   
@@ -906,7 +975,7 @@ function populateFilters(submissions, assignments) {
 
   const currentAssignVal = filterAssignment.value;
   filterAssignment.innerHTML = '<option value="">การบ้านทั้งหมด</option>';
-  assignments.forEach(a => {
+  permittedAssignments.forEach(a => {
     const opt = document.createElement('option');
     opt.value = a.Assignment_ID;
     opt.textContent = `${a.Assignment_ID} - ${a.Assignment_Name.split(' ')[0]}`;
@@ -917,10 +986,11 @@ function populateFilters(submissions, assignments) {
 
 // Populate Quick Scan Assignments selector
 function populateTeacherScannerAssignments(assignments) {
+  const permittedAssignments = assignments.filter(a => hasSubjectAccess(a.Subject_ID));
   const currentVal = scanAssignSelect.value;
   scanAssignSelect.innerHTML = '';
   
-  assignments.forEach(a => {
+  permittedAssignments.forEach(a => {
     const opt = document.createElement('option');
     opt.value = a.Assignment_ID;
     opt.textContent = `${a.Assignment_ID} - ${a.Assignment_Name.split(' ')[0]}`;
@@ -929,7 +999,7 @@ function populateTeacherScannerAssignments(assignments) {
   
   // Set default score when assignment is selected
   scanAssignSelect.addEventListener('change', () => {
-    const activeAssign = assignments.find(a => a.Assignment_ID === scanAssignSelect.value);
+    const activeAssign = permittedAssignments.find(a => a.Assignment_ID === scanAssignSelect.value);
     if (activeAssign) {
       scanScoreInput.value = activeAssign.Max_Score;
     }
@@ -937,9 +1007,9 @@ function populateTeacherScannerAssignments(assignments) {
 
   if (currentVal && Array.from(scanAssignSelect.options).some(o => o.value === currentVal)) {
     scanAssignSelect.value = currentVal;
-  } else if (assignments.length > 0) {
-    scanAssignSelect.value = assignments[0].Assignment_ID;
-    scanScoreInput.value = assignments[0].Max_Score;
+  } else if (permittedAssignments.length > 0) {
+    scanAssignSelect.value = permittedAssignments[0].Assignment_ID;
+    scanScoreInput.value = permittedAssignments[0].Max_Score;
   }
 }
 
@@ -957,6 +1027,12 @@ function renderSubmissionsTable() {
   const selectedAssign = filterAssignment.value;
 
   const filtered = state.submissions.filter(sub => {
+    // Enforce subject access controls (NEW)
+    const assign = state.assignments.find(a => a.Assignment_ID === sub.Assignment_ID);
+    if (!assign || !hasSubjectAccess(assign.Subject_ID)) {
+      return false;
+    }
+
     const matchQuery = !query || 
                        sub.FullName.toLowerCase().includes(query) || 
                        sub.Student_ID.toLowerCase().includes(query) ||
@@ -1360,7 +1436,14 @@ if (btnReloadLocalExcel) {
     btnReloadLocalExcel.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังซิงก์ข้อมูล...';
 
     try {
-      const res = await fetch('/api/import-excel', { method: 'POST' }).then(r => r.json());
+      const res = await fetch('/api/import-excel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          Requester_Username: state.teacherData ? state.teacherData.username : '',
+          Requester_Role: state.teacherData ? state.teacherData.role : ''
+        })
+      }).then(r => r.json());
       if (res.success) {
         showToast(res.message, 'success');
         await loadTeacherDashboard(); // Refresh data
@@ -1394,6 +1477,10 @@ excelFileInput.addEventListener('change', async (e) => {
 
   const formData = new FormData();
   formData.append('excel', file);
+  if (state.teacherData) {
+    formData.append('Requester_Username', state.teacherData.username);
+    formData.append('Requester_Role', state.teacherData.role);
+  }
 
   try {
     const res = await fetch('/api/import-excel-file', {
@@ -1436,6 +1523,10 @@ if (btnImportPhotosZip && photosZipInput) {
 
     const formData = new FormData();
     formData.append('zip', file);
+    if (state.teacherData) {
+      formData.append('Requester_Username', state.teacherData.username);
+      formData.append('Requester_Role', state.teacherData.role);
+    }
 
     try {
       const res = await fetch('/api/import-photos-zip', {
@@ -1501,7 +1592,12 @@ if (driveSyncForm) {
       const res = await fetch('/api/import-photos-drive', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ scriptUrl, folderId })
+        body: JSON.stringify({
+          scriptUrl,
+          folderId,
+          Requester_Username: state.teacherData ? state.teacherData.username : '',
+          Requester_Role: state.teacherData ? state.teacherData.role : ''
+        })
       }).then(r => r.json());
       
       if (res.success) {
@@ -1542,7 +1638,12 @@ if (btnExportDrive) {
       const res = await fetch('/api/export-drive', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ scriptUrl, folderId })
+        body: JSON.stringify({
+          scriptUrl,
+          folderId,
+          Requester_Username: state.teacherData ? state.teacherData.username : '',
+          Requester_Role: state.teacherData ? state.teacherData.role : ''
+        })
       }).then(r => r.json());
       
       if (res.success) {
@@ -1691,53 +1792,41 @@ function renderStudentsDirectoryTable() {
   const endIndex = startIndex + state.directoryLimit;
   const paginated = filtered.slice(startIndex, endIndex);
   
-  paginated.forEach(s => {
-    const avatarSrc = s.Photo ? s.Photo : `https://api.dicebear.com/7.x/adventurer/svg?seed=${s.Student_ID}`;
-    
-    // Attendance Today (NEW)
-    const today = new Date().toLocaleDateString('en-CA');
-    const todayAtt = state.attendance.find(a => a.Student_ID === String(s.Student_ID) && a.Date === today);
-    let attBadge = '<span class="status-badge pending" style="padding: 2px 6px; font-size: 0.65rem; display: inline-flex;"><i class="fa-solid fa-clock"></i> ยังไม่เช็คชื่อ</span>';
-    if (todayAtt) {
-      if (todayAtt.Status === 'Present') {
-        attBadge = '<span class="status-badge graded" style="padding: 2px 6px; font-size: 0.65rem; display: inline-flex;"><i class="fa-solid fa-circle-check"></i> มาเรียน</span>';
-      } else {
-        attBadge = '<span class="status-badge correction" style="padding: 2px 6px; font-size: 0.65rem; display: inline-flex;"><i class="fa-solid fa-circle-xmark"></i> ขาดเรียน</span>';
+    paginated.forEach(s => {
+      const avatarSrc = s.Photo ? s.Photo : `https://api.dicebear.com/7.x/adventurer/svg?seed=${s.Student_ID}`;
+      
+      // Attendance Today (NEW)
+      const today = new Date().toLocaleDateString('en-CA');
+      const todayAtt = state.attendance.find(a => a.Student_ID === String(s.Student_ID) && a.Date === today);
+      let attBadge = '<span class="status-badge pending" style="padding: 2px 6px; font-size: 0.65rem; display: inline-flex;"><i class="fa-solid fa-clock"></i> ยังไม่เช็คชื่อ</span>';
+      if (todayAtt) {
+        if (todayAtt.Status === 'Present') {
+          attBadge = '<span class="status-badge graded" style="padding: 2px 6px; font-size: 0.65rem; display: inline-flex;"><i class="fa-solid fa-circle-check"></i> มาเรียน</span>';
+        } else {
+          attBadge = '<span class="status-badge correction" style="padding: 2px 6px; font-size: 0.65rem; display: inline-flex;"><i class="fa-solid fa-circle-xmark"></i> ขาดเรียน</span>';
+        }
       }
-    }
-    
-    // Submissions Stats (NEW)
-    const studentSubs = state.submissions.filter(sub => sub.Student_ID === s.Student_ID);
-    const totalAssigns = state.assignments.length;
-    const submittedCount = studentSubs.filter(sub => sub.Status === 'Graded' || sub.Status === 'Submitted' || sub.Status === 'Resubmitted').length;
-    
-    let taskBadge = `<span class="status-badge pending" style="padding: 2px 6px; font-size: 0.65rem; display: inline-flex;"><i class="fa-solid fa-file-invoice"></i> ส่งงาน ${submittedCount}/${totalAssigns}</span>`;
-    if (totalAssigns > 0) {
-      if (submittedCount === totalAssigns) {
-        taskBadge = `<span class="status-badge graded" style="padding: 2px 6px; font-size: 0.65rem; display: inline-flex;"><i class="fa-solid fa-check-double"></i> ส่งครบ ${submittedCount}/${totalAssigns}</span>`;
-      } else if (submittedCount > 0) {
-        taskBadge = `<span class="status-badge submitted" style="padding: 2px 6px; font-size: 0.65rem; display: inline-flex;"><i class="fa-solid fa-file-arrow-up"></i> ส่งงาน ${submittedCount}/${totalAssigns}</span>`;
+      
+      // Submissions Stats (NEW)
+      const studentSubs = state.submissions.filter(sub => sub.Student_ID === s.Student_ID);
+      const totalAssigns = state.assignments.length;
+      const submittedCount = studentSubs.filter(sub => sub.Status === 'Graded' || sub.Status === 'Submitted' || sub.Status === 'Resubmitted').length;
+      
+      let taskBadge = `<span class="status-badge pending" style="padding: 2px 6px; font-size: 0.65rem; display: inline-flex;"><i class="fa-solid fa-file-invoice"></i> ส่งงาน ${submittedCount}/${totalAssigns}</span>`;
+      if (totalAssigns > 0) {
+        if (submittedCount === totalAssigns) {
+          taskBadge = `<span class="status-badge graded" style="padding: 2px 6px; font-size: 0.65rem; display: inline-flex;"><i class="fa-solid fa-check-double"></i> ส่งครบ ${submittedCount}/${totalAssigns}</span>`;
+        } else if (submittedCount > 0) {
+          taskBadge = `<span class="status-badge submitted" style="padding: 2px 6px; font-size: 0.65rem; display: inline-flex;"><i class="fa-solid fa-file-arrow-up"></i> ส่งงาน ${submittedCount}/${totalAssigns}</span>`;
+        } else {
+          taskBadge = `<span class="status-badge correction" style="padding: 2px 6px; font-size: 0.65rem; display: inline-flex;"><i class="fa-solid fa-triangle-exclamation"></i> ยังไม่ส่ง</span>`;
+        }
       } else {
-        taskBadge = `<span class="status-badge correction" style="padding: 2px 6px; font-size: 0.65rem; display: inline-flex;"><i class="fa-solid fa-triangle-exclamation"></i> ยังไม่ส่ง</span>`;
+        taskBadge = `<span class="status-badge pending" style="padding: 2px 6px; font-size: 0.65rem; display: inline-flex;">ไม่มีการบ้าน</span>`;
       }
-    } else {
-      taskBadge = `<span class="status-badge pending" style="padding: 2px 6px; font-size: 0.65rem; display: inline-flex;">ไม่มีการบ้าน</span>`;
-    }
 
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td><img src="${avatarSrc}" alt="Avatar" class="student-table-avatar" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; background: var(--bg-secondary); border: 1px solid var(--glass-border);"></td>
-      <td><strong>${s.Student_ID}</strong></td>
-      <td>${s.FullName}</td>
-      <td><span class="badge-class" style="font-size:0.75rem">${s.Class || '-'}</span></td>
-      <td>${s.Email || '-'}</td>
-      <td>
-        <div style="display: flex; flex-direction: column; gap: 4px; align-items: flex-start;">
-          ${attBadge}
-          ${taskBadge}
-        </div>
-      </td>
-      <td>
+      const isAdmin = state.teacherData && state.teacherData.role === 'Admin';
+      const editBtnHtml = isAdmin ? `
         <button class="btn btn-purple btn-edit-student-trigger" style="padding: 4px 10px; font-size: 0.8rem;"
                 data-id="${s.Student_ID}"
                 data-name="${s.FullName}"
@@ -1746,17 +1835,34 @@ function renderStudentsDirectoryTable() {
                 data-photo="${s.Photo || ''}">
           <i class="fa-solid fa-user-gear"></i> แก้ไข
         </button>
-        <button class="btn btn-green btn-print-student-trigger" style="padding: 4px 10px; font-size: 0.8rem; margin-left: 4px;"
-                data-id="${s.Student_ID}"
-                data-name="${s.FullName}"
-                data-class="${s.Class || ''}"
-                data-photo="${avatarSrc}">
-          <i class="fa-solid fa-print"></i> พิมพ์บัตร
-        </button>
-      </td>
-    `;
-    studentsDirTableBody.appendChild(row);
-  });
+      ` : '';
+
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td><img src="${avatarSrc}" alt="Avatar" class="student-table-avatar" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; background: var(--bg-secondary); border: 1px solid var(--glass-border);"></td>
+        <td><strong>${s.Student_ID}</strong></td>
+        <td>${s.FullName}</td>
+        <td><span class="badge-class" style="font-size:0.75rem">${s.Class || '-'}</span></td>
+        <td>${s.Email || '-'}</td>
+        <td>
+          <div style="display: flex; flex-direction: column; gap: 4px; align-items: flex-start;">
+            ${attBadge}
+            ${taskBadge}
+          </div>
+        </td>
+        <td>
+          ${editBtnHtml}
+          <button class="btn btn-green btn-print-student-trigger" style="padding: 4px 10px; font-size: 0.8rem; ${isAdmin ? 'margin-left: 4px;' : ''}"
+                  data-id="${s.Student_ID}"
+                  data-name="${s.FullName}"
+                  data-class="${s.Class || ''}"
+                  data-photo="${avatarSrc}">
+            <i class="fa-solid fa-print"></i> พิมพ์บัตร
+          </button>
+        </td>
+      `;
+      studentsDirTableBody.appendChild(row);
+    });
   
   // Update Pagination Controls
   document.getElementById('student-dir-page-info').textContent = `หน้า ${state.directoryPage} จาก ${totalPages}`;
@@ -1967,7 +2073,14 @@ if (addTeacherForm) {
       const res = await fetch('/api/teacher/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password, fullName, role })
+        body: JSON.stringify({
+          username,
+          password,
+          fullName,
+          role,
+          Requester_Username: state.teacherData ? state.teacherData.username : '',
+          Requester_Role: state.teacherData ? state.teacherData.role : ''
+        })
       }).then(r => r.json());
       
       if (res.success) {
@@ -1998,7 +2111,11 @@ document.getElementById('teachers-table-body').addEventListener('click', async (
         const res = await fetch('/api/teacher/delete', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username })
+          body: JSON.stringify({
+            username,
+            Requester_Username: state.teacherData ? state.teacherData.username : '',
+            Requester_Role: state.teacherData ? state.teacherData.role : ''
+          })
         }).then(r => r.json());
         
         if (res.success) {
@@ -2092,6 +2209,11 @@ document.getElementById('student-edit-form').addEventListener('submit', async (e
   btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังบันทึก...';
   
   try {
+    if (state.teacherData) {
+      formData.append('Requester_Username', state.teacherData.username);
+      formData.append('Requester_Role', state.teacherData.role);
+    }
+
     const res = await fetch('/api/student/update', {
       method: 'POST',
       body: formData
@@ -2117,23 +2239,6 @@ document.getElementById('student-edit-form').addEventListener('submit', async (e
 async function initApp() {
   checkQueryParams();
   
-  // Sync locally saved cloud configs to server on startup (Real-time sync handshake)
-  const scriptUrl = localStorage.getItem('drive_script_url');
-  const folderId = localStorage.getItem('drive_folder_id');
-  if (scriptUrl && folderId) {
-    try {
-      console.log('Sending handshake to load database from Google Drive...');
-      await fetch('/api/save-config', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ scriptUrl, folderId })
-      });
-      console.log('Google Drive database sync handshake completed successfully.');
-    } catch (err) {
-      console.error('Handshake config sync to cloud database failed:', err);
-    }
-  }
-  
   // Restore persistent login sessions (NEW)
   const authTeacher = localStorage.getItem('auth_teacher');
   const authStudentId = localStorage.getItem('auth_student_id');
@@ -2146,11 +2251,35 @@ async function initApp() {
       document.getElementById('btn-teacher-logout').classList.remove('hidden');
       
       switchView('teacher');
+      applyRolePrivileges(); // Apply instant shield on session restore
     } catch (e) {
       localStorage.removeItem('auth_teacher');
     }
   } else if (authStudentId) {
     loginStudent(authStudentId);
+  }
+
+  // Sync locally saved cloud configs to server on startup (Real-time sync handshake)
+  const scriptUrl = localStorage.getItem('drive_script_url');
+  const folderId = localStorage.getItem('drive_folder_id');
+  const isAdmin = state.teacherData && state.teacherData.role === 'Admin';
+  if (scriptUrl && folderId && isAdmin) {
+    try {
+      console.log('Sending handshake to load database from Google Drive...');
+      await fetch('/api/save-config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          scriptUrl,
+          folderId,
+          Requester_Username: state.teacherData.username,
+          Requester_Role: state.teacherData.role
+        })
+      });
+      console.log('Google Drive database sync handshake completed successfully.');
+    } catch (err) {
+      console.error('Handshake config sync to cloud database failed:', err);
+    }
   }
   
   // Theme Toggle Initializer
@@ -3006,7 +3135,13 @@ if (addSubjectForm) {
       const res = await fetch('/api/subjects', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ Subject_ID: id, Subject_Name: name, Teacher_Username: teacher })
+        body: JSON.stringify({
+          Subject_ID: id,
+          Subject_Name: name,
+          Teacher_Username: teacher,
+          Requester_Username: state.teacherData ? state.teacherData.username : '',
+          Requester_Role: state.teacherData ? state.teacherData.role : ''
+        })
       }).then(r => r.json());
       
       if (res.success) {
@@ -3038,7 +3173,11 @@ document.getElementById('panel-teachers-view').addEventListener('click', async (
         const res = await fetch('/api/subjects/delete', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ Subject_ID: subjectId })
+          body: JSON.stringify({
+            Subject_ID: subjectId,
+            Requester_Username: state.teacherData ? state.teacherData.username : '',
+            Requester_Role: state.teacherData ? state.teacherData.role : ''
+          })
         }).then(r => r.json());
         
         if (res.success) {

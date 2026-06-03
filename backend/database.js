@@ -483,7 +483,7 @@ module.exports = {
   // Teacher Account helpers
   getTeachers: () => teachers,
   findTeacher: (username, password) => {
-    return teachers.find(t => t.username.toLowerCase() === username.toLowerCase() && t.password === password);
+    return teachers.find(t => t.username.toLowerCase() === username.toLowerCase() && String(t.password) === String(password));
   },
   addTeacher: (teacherData) => {
     const exists = teachers.some(t => t.username.toLowerCase() === teacherData.username.toLowerCase());

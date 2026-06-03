@@ -191,6 +191,33 @@ async function initDb() {
 
 // ---------------- API ENDPOINTS ----------------
 
+// Middleware to verify if the requester has Admin privileges
+function verifyAdmin(req, res, next) {
+  const requesterUsername = req.body.Requester_Username || req.query.Requester_Username;
+  const requesterRole = req.body.Requester_Role || req.query.Requester_Role;
+
+  if (!requesterUsername || !requesterRole) {
+    // Clean up uploaded file if present
+    if (req.file && fs.existsSync(req.file.path)) {
+      try { fs.unlinkSync(req.file.path); } catch (err) {}
+    }
+    return res.status(403).json({ success: false, message: 'ปฏิเสธการเข้าถึง: ข้อมูลสิทธิ์ผู้ร้องขอไม่ครบถ้วน' });
+  }
+
+  const teachers = db.getTeachers();
+  const requester = teachers.find(t => t.username.toLowerCase() === requesterUsername.toLowerCase());
+
+  if (requester && requester.role === 'Admin' && requesterRole === 'Admin') {
+    next();
+  } else {
+    // Clean up uploaded file if present
+    if (req.file && fs.existsSync(req.file.path)) {
+      try { fs.unlinkSync(req.file.path); } catch (err) {}
+    }
+    return res.status(403).json({ success: false, message: 'ปฏิเสธการเข้าถึง: สิทธิ์นี้เฉพาะผู้ดูแลระบบสูงสุด (Admin) เท่านั้น' });
+  }
+}
+
 // 1. Verify Student ID
 app.get('/api/student/:id', (req, res) => {
   const studentId = req.params.id;
@@ -442,7 +469,7 @@ app.post('/api/quick-grade', (req, res) => {
 });
 
 // 10. Re-import / Reload student list from Excel
-app.post('/api/import-excel', (req, res) => {
+app.post('/api/import-excel', verifyAdmin, (req, res) => {
   try {
     const imported = excelHelper.importStudents();
     if (imported.length > 0) {
@@ -458,7 +485,7 @@ app.post('/api/import-excel', (req, res) => {
 });
 
 // 10.1. Upload and import student list from Excel file (Teacher/Web UI)
-app.post('/api/import-excel-file', upload.single('excel'), (req, res) => {
+app.post('/api/import-excel-file', upload.single('excel'), verifyAdmin, (req, res) => {
   const file = req.file;
   if (!file) {
     return res.status(400).json({ success: false, message: 'กรุณาอัปโหลดไฟล์ Excel (.xlsx)' });
@@ -487,7 +514,7 @@ app.post('/api/import-excel-file', upload.single('excel'), (req, res) => {
 });
 
 // 10.2. Upload and import student photos from a ZIP file (Teacher/Web UI)
-app.post('/api/import-photos-zip', upload.single('zip'), (req, res) => {
+app.post('/api/import-photos-zip', upload.single('zip'), verifyAdmin, (req, res) => {
   const file = req.file;
   if (!file) {
     return res.status(400).json({ success: false, message: 'กรุณาอัปโหลดไฟล์ ZIP (.zip)' });
@@ -603,7 +630,7 @@ function downloadFile(url, targetPath, callback) {
 }
 
 // 10.3. Download and import student photos from Google Drive via Google Apps Script (Teacher/Web UI)
-app.post('/api/import-photos-drive', (req, res) => {
+app.post('/api/import-photos-drive', verifyAdmin, (req, res) => {
   const { scriptUrl, folderId } = req.body;
   if (!scriptUrl || !folderId) {
     return res.status(400).json({ success: false, message: 'กรุณาระบุ URL ของ Google Apps Script และ Folder ID' });
@@ -682,7 +709,7 @@ function uploadFileToDrive(scriptUrl, folderId, filePath, callback) {
 }
 
 // 10.4. Export submissions report and upload it to Google Drive (Teacher/Web UI)
-app.post('/api/export-drive', (req, res) => {
+app.post('/api/export-drive', verifyAdmin, (req, res) => {
   const { scriptUrl, folderId } = req.body;
   if (!scriptUrl || !folderId) {
     return res.status(400).json({ success: false, message: 'กรุณาระบุ URL ของ Google Apps Script และ Folder ID' });
@@ -724,7 +751,7 @@ app.post('/api/export-drive', (req, res) => {
 });
 
 // 11. Update student details and photo (Teacher/Web UI) (NEW)
-app.post('/api/student/update', uploadPhoto.single('photo'), (req, res) => {
+app.post('/api/student/update', uploadPhoto.single('photo'), verifyAdmin, (req, res) => {
   const { Student_ID, FullName, Class, Email } = req.body;
   const file = req.file;
 
@@ -764,7 +791,7 @@ app.get('/api/students', (req, res) => {
 });
 
 // 13. Save Config Endpoint (NEW)
-app.post('/api/save-config', async (req, res) => {
+app.post('/api/save-config', verifyAdmin, async (req, res) => {
   const { scriptUrl, folderId } = req.body;
   if (!scriptUrl || !folderId) {
     return res.status(400).json({ success: false, message: 'กรุณาระบุ URL ของ Google Apps Script และ Folder ID' });
@@ -813,7 +840,7 @@ app.get('/api/teachers', (req, res) => {
   res.json(list);
 });
 
-app.post('/api/teacher/create', (req, res) => {
+app.post('/api/teacher/create', verifyAdmin, (req, res) => {
   const { username, password, fullName, role } = req.body;
   if (!username || !password || !fullName) {
     return res.status(400).json({ success: false, message: 'กรุณากรอกข้อมูลครูให้ครบถ้วน' });
@@ -831,7 +858,7 @@ app.post('/api/teacher/create', (req, res) => {
   }
 });
 
-app.post('/api/teacher/delete', (req, res) => {
+app.post('/api/teacher/delete', verifyAdmin, (req, res) => {
   const { username } = req.body;
   if (!username) {
     return res.status(400).json({ success: false, message: 'กรุณาระบุชื่อผู้ใช้งานที่ต้องการลบ' });
@@ -849,7 +876,7 @@ app.get('/api/subjects', (req, res) => {
   res.json(db.getSubjects());
 });
 
-app.post('/api/subjects', (req, res) => {
+app.post('/api/subjects', verifyAdmin, (req, res) => {
   const { Subject_ID, Subject_Name, Teacher_Username } = req.body;
   if (!Subject_ID || !Subject_Name || !Teacher_Username) {
     return res.status(400).json({ success: false, message: 'ข้อมูลไม่ครบถ้วน' });
@@ -866,7 +893,7 @@ app.post('/api/subjects', (req, res) => {
   }
 });
 
-app.post('/api/subjects/delete', (req, res) => {
+app.post('/api/subjects/delete', verifyAdmin, (req, res) => {
   const { Subject_ID } = req.body;
   if (!Subject_ID) {
     return res.status(400).json({ success: false, message: 'ไม่ระบุรหัสวิชา' });

@@ -185,7 +185,7 @@
               <div class="panel-tabs">
                 <button id="tab-submissions" class="tab-link active"><i class="fa-solid fa-clipboard-list"></i> รายการส่งงานของนักเรียน</button>
                 <button id="tab-students" class="tab-link"><i class="fa-solid fa-address-book"></i> ทะเบียนรายชื่อนักเรียนทั้งหมด</button>
-                <button id="tab-teachers" class="tab-link"><i class="fa-solid fa-user-tie"></i> จัดการบัญชีคุณครู</button>
+                <button id="tab-teachers" class="tab-link hidden"><i class="fa-solid fa-user-tie"></i> จัดการบัญชีคุณครู</button>
                 <button id="tab-reports" class="tab-link"><i class="fa-solid fa-chart-line"></i> สรุปรายงานและพิมพ์ A4</button>
               </div>
 
@@ -539,7 +539,7 @@
               </div>
 
               <!-- Data Management Card -->
-              <div class="glass-card admin-action-card">
+              <div class="glass-card admin-action-card hidden" id="admin-db-card">
                 <h3><i class="fa-solid fa-database text-blue"></i> จัดการฐานข้อมูลและซิงก์</h3>
                 <div class="db-actions-list">
                   <button id="btn-reload-local-excel" class="btn btn-purple btn-block btn-icon-left">
