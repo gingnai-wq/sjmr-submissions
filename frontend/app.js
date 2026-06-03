@@ -1105,6 +1105,67 @@ if (btnImportPhotosZip && photosZipInput) {
   });
 }
 
+// Database Actions (Google Drive Photos Sync)
+const btnSyncDrivePhotos = document.getElementById('btn-sync-drive-photos');
+const driveSyncModal = document.getElementById('drive-sync-modal');
+const driveSyncForm = document.getElementById('drive-sync-form');
+const btnCloseDriveModalBtn = document.querySelector('.btn-close-drive-modal-btn');
+
+if (btnSyncDrivePhotos && driveSyncModal) {
+  btnSyncDrivePhotos.addEventListener('click', () => {
+    const savedUrl = localStorage.getItem('drive_script_url') || '';
+    const savedFolderId = localStorage.getItem('drive_folder_id') || '';
+    document.getElementById('drive-script-url').value = savedUrl;
+    document.getElementById('drive-folder-id').value = savedFolderId;
+    openModal(driveSyncModal);
+  });
+}
+
+if (btnCloseDriveModalBtn && driveSyncModal) {
+  btnCloseDriveModalBtn.addEventListener('click', () => {
+    closeModal(driveSyncModal);
+  });
+}
+
+if (driveSyncForm) {
+  driveSyncForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const scriptUrl = document.getElementById('drive-script-url').value.trim();
+    const folderId = document.getElementById('drive-folder-id').value.trim();
+    
+    localStorage.setItem('drive_script_url', scriptUrl);
+    localStorage.setItem('drive_folder_id', folderId);
+    
+    const btnSubmit = document.getElementById('btn-submit-drive-sync');
+    const btnOriginalText = btnSubmit.innerHTML;
+    btnSubmit.disabled = true;
+    btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังซิงก์รูปถ่าย...';
+    
+    try {
+      const res = await fetch('/api/import-photos-drive', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ scriptUrl, folderId })
+      }).then(r => r.json());
+      
+      if (res.success) {
+        showToast(res.message, 'success');
+        closeModal(driveSyncModal);
+        await loadTeacherDashboard();
+      } else {
+        showToast(res.message, 'error');
+      }
+    } catch (err) {
+      console.error(err);
+      showToast('เกิดข้อผิดพลาดในการเชื่อมต่อเพื่อดาวน์โหลดรูปภาพ', 'error');
+    } finally {
+      btnSubmit.disabled = false;
+      btnSubmit.innerHTML = btnOriginalText;
+    }
+  });
+}
+
 // Database Actions (Export to Excel)
 btnExportExcel.addEventListener('click', async () => {
   const btnOriginalText = btnExportExcel.innerHTML;

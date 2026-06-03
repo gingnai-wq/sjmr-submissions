@@ -409,6 +409,133 @@ app.post('/api/import-photos-zip', upload.single('zip'), (req, res) => {
   }
 });
 
+// Helper to recursively fetch JSON, following HTTP/HTTPS redirects
+function downloadJson(url, callback) {
+  const lib = url.startsWith('https') ? require('https') : require('http');
+  lib.get(url, (res) => {
+    const isRedirect = [301, 302, 303, 307, 308].includes(res.statusCode);
+    if (isRedirect && res.headers.location) {
+      return downloadJson(res.headers.location, callback);
+    }
+    if (res.statusCode !== 200) {
+      return callback(new Error(`Failed to fetch JSON: status ${res.statusCode}`));
+    }
+    
+    let body = '';
+    res.on('data', chunk => body += chunk);
+    res.on('end', () => {
+      callback(null, body);
+    });
+  }).on('error', (err) => {
+    callback(err);
+  });
+}
+
+// Helper to recursively download a file, following redirects
+function downloadFile(url, targetPath, callback) {
+  const lib = url.startsWith('https') ? require('https') : require('http');
+  lib.get(url, (res) => {
+    const isRedirect = [301, 302, 303, 307, 308].includes(res.statusCode);
+    if (isRedirect && res.headers.location) {
+      return downloadFile(res.headers.location, targetPath, callback);
+    }
+    
+    if (res.statusCode !== 200) {
+      return callback(new Error(`Failed to download file: status ${res.statusCode}`));
+    }
+    
+    const fileStream = fs.createWriteStream(targetPath);
+    res.pipe(fileStream);
+    fileStream.on('finish', () => {
+      fileStream.close();
+      callback(null);
+    });
+  }).on('error', (err) => {
+    callback(err);
+  });
+}
+
+// 10.3. Download and import student photos from Google Drive via Google Apps Script (Teacher/Web UI)
+app.post('/api/import-photos-drive', (req, res) => {
+  const { scriptUrl, folderId } = req.body;
+  if (!scriptUrl || !folderId) {
+    return res.status(400).json({ success: false, message: 'กรุณาระบุ URL ของ Google Apps Script และ Folder ID' });
+  }
+
+  const url = `${scriptUrl}?folderId=${folderId}`;
+  
+  downloadJson(url, (err, body) => {
+    if (err) {
+      console.error('Error fetching file list from Google Apps Script:', err);
+      return res.status(500).json({ success: false, message: 'ไม่สามารถติดต่อ Google Apps Script ได้ กรุณาตรวจสอบ URL หรือการแชร์โฟลเดอร์' });
+    }
+    
+    try {
+      const parsed = JSON.parse(body);
+      if (!parsed.success) {
+        return res.status(400).json({ success: false, message: parsed.error || 'เกิดข้อผิดพลาดในการดึงข้อมูลจาก Google Drive' });
+      }
+      
+      const files = parsed.files || [];
+      const studentsList = db.getStudents();
+      const studentMap = {};
+      studentsList.forEach(s => {
+        studentMap[s.Student_ID] = s;
+      });
+
+      const matchCandidates = [];
+      files.forEach(file => {
+        const ext = path.extname(file.name).toLowerCase();
+        if (ext !== '.jpg' && ext !== '.jpeg' && ext !== '.png') return;
+        
+        const baseName = path.basename(file.name, ext).trim();
+        if (studentMap[baseName]) {
+          matchCandidates.push({
+            studentId: baseName,
+            ext: ext,
+            id: file.id
+          });
+        }
+      });
+
+      if (matchCandidates.length === 0) {
+        return res.status(400).json({ success: false, message: 'ไม่พบไฟล์รูปถ่ายที่ตั้งชื่อตามรหัสประจำตัวนักเรียนใน Google Drive Folder (ตัวอย่าง: 6032.jpg)' });
+      }
+
+      let downloaded = 0;
+      let successCount = 0;
+
+      function downloadNext() {
+        if (downloaded >= matchCandidates.length) {
+          db.setStudents(studentsList); // Save updated student list to database
+          return res.json({ success: true, message: `ซิงก์รูปถ่ายนักเรียนจาก Google Drive สำเร็จ ${successCount} รูป` });
+        }
+
+        const candidate = matchCandidates[downloaded];
+        const targetFileName = `${candidate.studentId}${candidate.ext}`;
+        const targetPath = path.join(SERVER_PHOTOS_DIR, targetFileName);
+        const downloadUrl = `https://docs.google.com/uc?export=download&id=${candidate.id}`;
+
+        downloadFile(downloadUrl, targetPath, (downloadErr) => {
+          if (!downloadErr) {
+            studentMap[candidate.studentId].Photo = `/uploads/photos/${targetFileName}`;
+            successCount++;
+          } else {
+            console.error(`Error downloading image for student ${candidate.studentId}:`, downloadErr);
+          }
+          downloaded++;
+          downloadNext();
+        });
+      }
+
+      downloadNext();
+    } catch (parseErr) {
+      console.error('Error parsing JSON from Apps Script:', parseErr, body);
+      res.status(500).json({ success: false, message: 'ข้อมูลที่ส่งกลับมาจาก Google Apps Script ไม่ถูกต้อง (ไม่ใช่ JSON รูปแบบที่กำหนด)' });
+    }
+  });
+});
+
 // 11. Update student details and photo (Teacher/Web UI) (NEW)
 app.post('/api/student/update', uploadPhoto.single('photo'), (req, res) => {
   const { Student_ID, FullName, Class, Email } = req.body;

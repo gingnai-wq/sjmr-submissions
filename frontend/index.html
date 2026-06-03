@@ -377,8 +377,8 @@
                     <i class="fa-solid fa-file-excel"></i> <span>ส่งออกรายงานลง Excel Desktop</span>
                   </button>
                   
-                  <button id="btn-sync-sheets" class="btn btn-blue btn-block btn-icon-left">
-                    <i class="fa-brands fa-google-drive"></i> <span>ซิงก์ Google Sheets API</span>
+                  <button id="btn-sync-drive-photos" class="btn btn-blue btn-block btn-icon-left">
+                    <i class="fa-brands fa-google-drive"></i> <span>ซิงก์รูปจาก Google Drive</span>
                   </button>
                 </div>
                 <div class="db-status-info">
@@ -586,6 +586,50 @@
             <button type="button" class="btn btn-secondary btn-close-grade-modal-btn">ยกเลิก</button>
             <button type="submit" class="btn btn-green">
               <i class="fa-solid fa-circle-check"></i> บันทึกผลการตรวจ
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Google Drive Sync Modal -->
+  <div id="drive-sync-modal" class="modal-overlay">
+    <div class="modal-container glass-card modal-medium animate-zoom-in">
+      <div class="modal-header">
+        <h2><i class="fa-brands fa-google-drive text-blue"></i> ซิงก์รูปนักเรียนจาก Google Drive</h2>
+        <button id="btn-close-drive-modal" class="btn-close-modal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="drive-sync-form">
+          <div class="input-group">
+            <label for="drive-script-url">Google Apps Script Web App URL</label>
+            <input type="url" id="drive-script-url" placeholder="https://script.google.com/macros/s/..." required autocomplete="off">
+          </div>
+          <div class="input-group">
+            <label for="drive-folder-id">Google Drive Folder ID (โฟลเดอร์หลักรูปภาพ)</label>
+            <input type="text" id="drive-folder-id" placeholder="ระบุ Folder ID ของ Google Drive..." required autocomplete="off">
+            <small class="hint-text">สามารถแยกรูปภาพเป็นโฟลเดอร์ย่อยรายห้องเรียนได้ ระบบจะเข้าไปสแกนหาจากทุกโฟลเดอร์ข้างในเอง</small>
+          </div>
+          
+          <!-- Instructions box -->
+          <div class="instructions-box" style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 15px; border: 1px solid var(--glass-border); line-height: 1.4;">
+            <h4 style="margin-top: 0; color: var(--text-primary); margin-bottom: 8px;"><i class="fa-solid fa-circle-info"></i> ขั้นตอนการตั้งค่า Google Apps Script (ทำครั้งเดียว):</h4>
+            <ol style="margin-bottom: 0; padding-left: 20px; color: var(--text-muted);">
+              <li>สร้างโฟลเดอร์รูปภาพบน Google Drive ตั้งชื่อไฟล์รูปภาพเป็นรหัสนักเรียน (เช่น <code>6032.jpg</code>)</li>
+              <li>แชร์โฟลเดอร์ให้เป็น <strong>"ทุกคนที่มีลิงก์สามารถดูได้" (Anyone with the link can view)</strong></li>
+              <li>เปิดเว็บ <a href="https://script.google.com" target="_blank" style="color: var(--text-primary); text-decoration: underline;">script.google.com</a> สร้างโปรเจกต์ใหม่</li>
+              <li>คัดลอกโค้ด Apps Script (ในไฟล์สรุป) ไปวาง แล้วกดบันทึก</li>
+              <li>กด <strong>"Deploy" (การทำให้ใช้งานได้)</strong> -> เลือก "New deployment" -> ชนิด "Web app"</li>
+              <li>ตั้งค่า: Execute as = <strong>"Me"</strong>, Who has access = <strong>"Anyone"</strong></li>
+              <li>กด Deploy แล้วคัดลอกลิงก์ Web App URL มาใส่ช่องด้านบน</li>
+            </ol>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary btn-close-drive-modal-btn">ยกเลิก</button>
+            <button type="submit" class="btn btn-blue" id="btn-submit-drive-sync">
+              <i class="fa-solid fa-rotate"></i> เริ่มซิงก์รูปถ่าย
             </button>
           </div>
         </form>
