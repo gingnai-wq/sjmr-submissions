@@ -284,6 +284,15 @@ document.getElementById('pwd-form').addEventListener('submit', async (e) => {
       document.querySelector('.mode-toggle-container').classList.add('hidden');
       document.getElementById('btn-teacher-logout').classList.remove('hidden');
       
+      // Update teacher profile badge (NEW)
+      const teacherProfileBadge = document.getElementById('teacher-profile-badge');
+      const teacherNameHeader = document.getElementById('teacher-name-display-header');
+      if (teacherProfileBadge && teacherNameHeader) {
+        const roleLabel = res.teacher.role === 'Admin' ? 'แอดมิน' : 'คุณครู';
+        teacherNameHeader.textContent = `${roleLabel}: ${res.teacher.fullName}`;
+        teacherProfileBadge.classList.remove('hidden');
+      }
+      
       logAgentEvent('teacher_login', 'Teacher', { username: res.teacher.username });
       switchView('teacher');
     } else {
@@ -852,6 +861,7 @@ function hasSubjectAccess(subjectId) {
 // Helper to apply UI visibility rules based on the user's role (NEW)
 function applyRolePrivileges() {
   const tabTeachers = document.getElementById('tab-teachers');
+  const tabSubjects = document.getElementById('tab-subjects');
   const isAdmin = state.teacherData && state.teacherData.role === 'Admin';
   
   if (tabTeachers) {
@@ -860,6 +870,18 @@ function applyRolePrivileges() {
     } else {
       tabTeachers.classList.add('hidden');
       if (tabTeachers.classList.contains('active')) {
+        const tabSubmissions = document.getElementById('tab-submissions');
+        if (tabSubmissions) tabSubmissions.click();
+      }
+    }
+  }
+
+  if (tabSubjects) {
+    if (isAdmin) {
+      tabSubjects.classList.remove('hidden');
+    } else {
+      tabSubjects.classList.add('hidden');
+      if (tabSubjects.classList.contains('active')) {
         const tabSubmissions = document.getElementById('tab-submissions');
         if (tabSubmissions) tabSubmissions.click();
       }
@@ -922,6 +944,13 @@ async function loadTeacherDashboard() {
     renderSubmissionsTable();
     renderStudentsDirectoryTable();
     loadAssignmentsTable();
+    
+    // Pre-populate admin tabs if admin, otherwise just populate subjects
+    if (state.teacherData && state.teacherData.role === 'Admin') {
+      loadTeachersTable();
+    } else {
+      loadSubjectsTable();
+    }
   } catch (err) {
     console.error(err);
     showToast('ไม่สามารถโหลดข้อมูลหลังบ้านได้', 'error');
@@ -1756,8 +1785,8 @@ if (btnSyncSheets) {
   });
 }
 
-// Tab Switching in Teacher Dashboard (Updated to support Accounts & Reports Tabs)
-const tabs = ['submissions', 'students', 'teachers', 'reports'];
+// Tab Switching in Teacher Dashboard (Updated to support Accounts, Subjects, Assignments & Reports Tabs)
+const tabs = ['submissions', 'students', 'assignments', 'subjects', 'teachers', 'reports'];
 tabs.forEach(t => {
   const tabEl = document.getElementById(`tab-${t}`);
   if (tabEl) {
@@ -1771,8 +1800,22 @@ tabs.forEach(t => {
       document.getElementById(`tab-${t}`).classList.add('active');
       document.getElementById(`panel-${t}-view`).classList.add('active');
       
+      // Control sidebar visibility based on active tab
+      const controlsGrid = document.querySelector('.teacher-controls-grid');
+      if (controlsGrid) {
+        if (['submissions', 'assignments'].includes(t)) {
+          controlsGrid.classList.remove('sidebar-hidden');
+        } else {
+          controlsGrid.classList.add('sidebar-hidden');
+        }
+      }
+      
       if (t === 'teachers') {
         loadTeachersTable();
+      } else if (t === 'subjects') {
+        loadSubjectsTable();
+      } else if (t === 'assignments') {
+        loadAssignmentsTable();
       } else if (t === 'reports') {
         populateReportsFilters();
       }
@@ -2224,6 +2267,13 @@ if (btnTeacherLogout) {
     state.teacherData = null;
     btnTeacherLogout.classList.add('hidden');
     document.querySelector('.mode-toggle-container').classList.remove('hidden');
+    
+    // Hide teacher profile badge (NEW)
+    const teacherProfileBadge = document.getElementById('teacher-profile-badge');
+    if (teacherProfileBadge) {
+      teacherProfileBadge.classList.add('hidden');
+    }
+    
     switchView('student');
     showToast('ออกจากระบบคุณครูเรียบร้อยแล้ว', 'success');
   });
@@ -2331,6 +2381,15 @@ async function initApp() {
       // Update UI for teacher logged in
       document.querySelector('.mode-toggle-container').classList.add('hidden');
       document.getElementById('btn-teacher-logout').classList.remove('hidden');
+      
+      // Update teacher profile badge (NEW)
+      const teacherProfileBadge = document.getElementById('teacher-profile-badge');
+      const teacherNameHeader = document.getElementById('teacher-name-display-header');
+      if (teacherProfileBadge && teacherNameHeader && state.teacherData) {
+        const roleLabel = state.teacherData.role === 'Admin' ? 'แอดมิน' : 'คุณครู';
+        teacherNameHeader.textContent = `${roleLabel}: ${state.teacherData.fullName}`;
+        teacherProfileBadge.classList.remove('hidden');
+      }
       
       switchView('teacher');
       applyRolePrivileges(); // Apply instant shield on session restore
@@ -3251,7 +3310,7 @@ if (addSubjectForm) {
   });
 }
 
-document.getElementById('panel-teachers-view').addEventListener('click', async (e) => {
+document.getElementById('panel-subjects-view').addEventListener('click', async (e) => {
   const delBtn = e.target.closest('.btn-delete-subject-trigger');
   if (delBtn) {
     const subjectId = delBtn.dataset.id;
@@ -3408,7 +3467,7 @@ if (assignmentEditForm) {
   };
 
   // Listen to Edit Button Clicks
-  document.getElementById('panel-teachers-view').addEventListener('click', (e) => {
+  document.getElementById('panel-assignments-view').addEventListener('click', (e) => {
     const editBtn = e.target.closest('.btn-edit-assign-trigger');
     if (editBtn) {
       populateEditSubjectDropdown();
@@ -3479,7 +3538,7 @@ if (assignmentEditForm) {
 }
 
 // Listen to Delete Button Clicks
-document.getElementById('panel-teachers-view').addEventListener('click', async (e) => {
+document.getElementById('panel-assignments-view').addEventListener('click', async (e) => {
   const delBtn = e.target.closest('.btn-delete-assign-trigger');
   if (delBtn) {
     const assignmentId = delBtn.dataset.id;

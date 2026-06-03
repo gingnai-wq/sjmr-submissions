@@ -689,6 +689,14 @@ input:focus, select:focus, textarea:focus {
   gap: 24px;
 }
 
+.teacher-controls-grid.sidebar-hidden {
+  grid-template-columns: 1fr !important;
+}
+
+.teacher-controls-grid.sidebar-hidden .teacher-sidebar-panel {
+  display: none !important;
+}
+
 .filter-actions {
   display: flex;
   gap: 12px;

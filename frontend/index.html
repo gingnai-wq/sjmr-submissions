@@ -15,7 +15,7 @@
   <!-- SheetJS for Export to Excel -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <!-- Vanilla CSS Link -->
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=1.0.3">
 </head>
 <body class="dark-theme">
   <!-- Canvas Background for dynamic mesh gradient -->
@@ -52,6 +52,11 @@
           <button id="btn-teacher-mode" class="toggle-btn">
             <i class="fa-solid fa-chalkboard-user"></i> คุณครู
           </button>
+        </div>
+
+        <!-- Logged in teacher badge (NEW) -->
+        <div id="teacher-profile-badge" class="teacher-profile-badge hidden" style="display: flex; align-items: center; gap: 8px; background: rgba(139, 92, 246, 0.15); border: 1px solid rgba(139, 92, 246, 0.3); padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; color: #c084fc; margin-right: 10px;">
+          <i class="fa-solid fa-circle-user"></i> <span id="teacher-name-display-header">กำลังโหลด...</span>
         </div>
 
         <!-- Logout button for teachers (NEW) -->
@@ -185,6 +190,8 @@
               <div class="panel-tabs">
                 <button id="tab-submissions" class="tab-link active"><i class="fa-solid fa-clipboard-list"></i> รายการส่งงานของนักเรียน</button>
                 <button id="tab-students" class="tab-link"><i class="fa-solid fa-address-book"></i> ทะเบียนรายชื่อนักเรียนทั้งหมด</button>
+                <button id="tab-assignments" class="tab-link"><i class="fa-solid fa-list-check"></i> จัดการภาระงาน/การบ้าน</button>
+                <button id="tab-subjects" class="tab-link hidden"><i class="fa-solid fa-book"></i> จัดการรายวิชาเรียน</button>
                 <button id="tab-teachers" class="tab-link hidden"><i class="fa-solid fa-user-tie"></i> จัดการบัญชีคุณครู</button>
                 <button id="tab-reports" class="tab-link"><i class="fa-solid fa-chart-line"></i> สรุปรายงานและพิมพ์ A4</button>
               </div>
@@ -324,8 +331,11 @@
                     </tbody>
                   </table>
                 </div>
+              </div>
 
-                <div class="panel-header" style="margin-top: 25px; display: flex; justify-content: space-between; align-items: center;">
+              <!-- View 3.1: Subject Management Table (NEW) -->
+              <div id="panel-subjects-view" class="tab-view">
+                <div class="panel-header" style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center;">
                   <h3><i class="fa-solid fa-book text-purple"></i> ทะเบียนรายวิชาเรียน (Subject Management)</h3>
                   <button id="btn-add-subject-trigger" class="btn btn-purple btn-icon-left" style="font-size: 0.85rem; padding: 6px 12px;">
                     <i class="fa-solid fa-folder-plus"></i> เพิ่มรายวิชาใหม่
@@ -349,8 +359,11 @@
                     </tbody>
                   </table>
                 </div>
- 
-                <div class="panel-header" style="margin-top: 25px; display: flex; justify-content: space-between; align-items: center;">
+              </div>
+
+              <!-- View 3.2: Assignment Management Table (NEW) -->
+              <div id="panel-assignments-view" class="tab-view">
+                <div class="panel-header" style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center;">
                   <h3><i class="fa-solid fa-list-check text-purple"></i> ทะเบียนภาระงาน (Assignment Management)</h3>
                 </div>
 
@@ -1025,6 +1038,6 @@
   <div id="toast-container" class="toast-container"></div>
 
   <!-- Main JavaScript File -->
-  <script src="app.js"></script>
+  <script src="app.js?v=1.0.3"></script>
 </body>
 </html>
