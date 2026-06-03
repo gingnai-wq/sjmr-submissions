@@ -4,6 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const db = require('./database');
 const excelHelper = require('./excelHelper');
+const AdmZip = require('adm-zip');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -336,6 +337,75 @@ app.post('/api/import-excel-file', upload.single('excel'), (req, res) => {
       fs.unlinkSync(file.path);
     }
     res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาดในการโหลดและวิเคราะห์ไฟล์ Excel' });
+  }
+});
+
+// 10.2. Upload and import student photos from a ZIP file (Teacher/Web UI)
+app.post('/api/import-photos-zip', upload.single('zip'), (req, res) => {
+  const file = req.file;
+  if (!file) {
+    return res.status(400).json({ success: false, message: 'กรุณาอัปโหลดไฟล์ ZIP (.zip)' });
+  }
+
+  try {
+    const zipPath = file.path;
+    const zip = new AdmZip(zipPath);
+    const zipEntries = zip.getEntries();
+    
+    let copyCount = 0;
+    const studentsList = db.getStudents();
+    
+    // Create a fast map of student IDs to find them quickly
+    const studentMap = {};
+    studentsList.forEach(s => {
+      studentMap[s.Student_ID] = s;
+    });
+
+    zipEntries.forEach(entry => {
+      if (entry.isDirectory) return;
+      
+      const fileName = path.basename(entry.entryName);
+      if (fileName.startsWith('._') || fileName.startsWith('~$')) return; // Ignore macOS metadata/temp files
+      
+      const ext = path.extname(fileName).toLowerCase();
+      if (ext !== '.jpg' && ext !== '.jpeg' && ext !== '.png') return;
+      
+      const baseName = path.basename(fileName, ext).trim();
+      
+      // If the baseName corresponds to a valid student ID
+      if (studentMap[baseName]) {
+        const targetFileName = `${baseName}${ext}`;
+        const targetPath = path.join(SERVER_PHOTOS_DIR, targetFileName);
+        
+        // Extract this specific file and write it to targetPath
+        const fileContent = entry.getData();
+        fs.writeFileSync(targetPath, fileContent);
+        
+        // Update student profile photo path
+        studentMap[baseName].Photo = `/uploads/photos/${targetFileName}`;
+        copyCount++;
+      }
+    });
+
+    if (copyCount > 0) {
+      db.setStudents(studentsList); // Save updated student list to database
+      // Delete temp uploaded zip file
+      if (fs.existsSync(zipPath)) {
+        fs.unlinkSync(zipPath);
+      }
+      res.json({ success: true, message: `นำเข้าและจับคู่รูปถ่ายนักเรียนสำเร็จ ${copyCount} รูป` });
+    } else {
+      if (fs.existsSync(zipPath)) {
+        fs.unlinkSync(zipPath);
+      }
+      res.status(400).json({ success: false, message: 'ไม่พบไฟล์รูปถ่ายที่ตั้งชื่อตามรหัสประจำตัวนักเรียนในไฟล์ ZIP (ตัวอย่างการตั้งชื่อไฟล์รูป: 6032.jpg)' });
+    }
+  } catch (err) {
+    console.error(err);
+    if (file && fs.existsSync(file.path)) {
+      fs.unlinkSync(file.path);
+    }
+    res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาดในการแตกไฟล์ ZIP และบันทึกรูปถ่าย' });
   }
 });
 

@@ -1062,6 +1062,49 @@ excelFileInput.addEventListener('change', async (e) => {
   }
 });
 
+// Database Actions (Import Photos from ZIP File)
+const btnImportPhotosZip = document.getElementById('btn-import-photos-zip');
+const photosZipInput = document.getElementById('photos-zip-input');
+
+if (btnImportPhotosZip && photosZipInput) {
+  btnImportPhotosZip.addEventListener('click', () => {
+    photosZipInput.click(); // Trigger file dialog
+  });
+
+  photosZipInput.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const btnOriginalText = btnImportPhotosZip.innerHTML;
+    btnImportPhotosZip.disabled = true;
+    btnImportPhotosZip.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังแตกไฟล์รูป...';
+
+    const formData = new FormData();
+    formData.append('zip', file);
+
+    try {
+      const res = await fetch('/api/import-photos-zip', {
+        method: 'POST',
+        body: formData
+      }).then(r => r.json());
+
+      if (res.success) {
+        showToast(res.message, 'success');
+        await loadTeacherDashboard();
+      } else {
+        showToast(res.message, 'error');
+      }
+    } catch (err) {
+      console.error(err);
+      showToast('เกิดข้อผิดพลาดในการอัปโหลดและนำเข้ารูปภาพนักเรียน', 'error');
+    } finally {
+      btnImportPhotosZip.disabled = false;
+      btnImportPhotosZip.innerHTML = btnOriginalText;
+      photosZipInput.value = ''; // Reset file input
+    }
+  });
+}
+
 // Database Actions (Export to Excel)
 btnExportExcel.addEventListener('click', async () => {
   const btnOriginalText = btnExportExcel.innerHTML;
