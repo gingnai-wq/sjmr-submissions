@@ -996,14 +996,30 @@ createAssignmentForm.addEventListener('submit', async (e) => {
   }
 });
 
-// Database Actions (Import from Excel) (NEW)
-btnImportExcel.addEventListener('click', async () => {
+// Database Actions (Import from Excel File)
+const excelFileInput = document.getElementById('excel-file-input');
+
+btnImportExcel.addEventListener('click', () => {
+  excelFileInput.click(); // Trigger file dialog
+});
+
+excelFileInput.addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
   const btnOriginalText = btnImportExcel.innerHTML;
   btnImportExcel.disabled = true;
-  btnImportExcel.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังนำเข้า...';
+  btnImportExcel.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังวิเคราะห์ไฟล์...';
+
+  const formData = new FormData();
+  formData.append('excel', file);
 
   try {
-    const res = await fetch('/api/import-excel', { method: 'POST' }).then(r => r.json());
+    const res = await fetch('/api/import-excel-file', {
+      method: 'POST',
+      body: formData
+    }).then(r => r.json());
+
     if (res.success) {
       showToast(res.message, 'success');
       await loadTeacherDashboard();
@@ -1012,10 +1028,11 @@ btnImportExcel.addEventListener('click', async () => {
     }
   } catch (err) {
     console.error(err);
-    showToast('เกิดข้อผิดพลาดในการโหลดไฟล์ Excel', 'error');
+    showToast('เกิดข้อผิดพลาดในการอัปโหลดและวิเคราะห์ไฟล์ Excel', 'error');
   } finally {
     btnImportExcel.disabled = false;
     btnImportExcel.innerHTML = btnOriginalText;
+    excelFileInput.value = ''; // Reset file input
   }
 });
 

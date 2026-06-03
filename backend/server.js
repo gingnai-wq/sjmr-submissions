@@ -310,6 +310,35 @@ app.post('/api/import-excel', (req, res) => {
   }
 });
 
+// 10.1. Upload and import student list from Excel file (Teacher/Web UI)
+app.post('/api/import-excel-file', upload.single('excel'), (req, res) => {
+  const file = req.file;
+  if (!file) {
+    return res.status(400).json({ success: false, message: 'กรุณาอัปโหลดไฟล์ Excel (.xlsx)' });
+  }
+
+  try {
+    const imported = excelHelper.importStudents(file.path);
+    // Delete the uploaded temp file after parsing
+    if (fs.existsSync(file.path)) {
+      fs.unlinkSync(file.path);
+    }
+
+    if (imported.length > 0) {
+      db.setStudents(imported);
+      res.json({ success: true, message: `นำเข้าข้อมูลนักเรียนสำเร็จ ${imported.length} คน จากไฟล์ Excel เรียบร้อย` });
+    } else {
+      res.status(400).json({ success: false, message: 'ไม่พบข้อมูลนักเรียนที่สามารถแยกวิเคราะห์ได้จากไฟล์ Excel นี้ กรุณาตรวจสอบหัวตารางคอลัมน์' });
+    }
+  } catch (err) {
+    console.error(err);
+    if (file && fs.existsSync(file.path)) {
+      fs.unlinkSync(file.path);
+    }
+    res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาดในการโหลดและวิเคราะห์ไฟล์ Excel' });
+  }
+});
+
 // 11. Update student details and photo (Teacher/Web UI) (NEW)
 app.post('/api/student/update', uploadPhoto.single('photo'), (req, res) => {
   const { Student_ID, FullName, Class, Email } = req.body;

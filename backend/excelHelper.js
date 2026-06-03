@@ -15,14 +15,14 @@ if (!fs.existsSync(SERVER_PHOTOS_DIR)) {
   fs.mkdirSync(SERVER_PHOTOS_DIR, { recursive: true });
 }
 
-function importStudents() {
-  if (!fs.existsSync(STUDENT_LIST_PATH)) {
-    console.warn(`Student list file not found at ${STUDENT_LIST_PATH}. Using empty/default students list.`);
+function importStudents(filePath = STUDENT_LIST_PATH) {
+  if (!fs.existsSync(filePath)) {
+    console.warn(`Student list file not found at ${filePath}. Using empty/default students list.`);
     return [];
   }
 
   try {
-    const wb = xlsx.readFile(STUDENT_LIST_PATH);
+    const wb = xlsx.readFile(filePath);
     const allStudents = [];
 
     wb.SheetNames.forEach(sheetName => {
