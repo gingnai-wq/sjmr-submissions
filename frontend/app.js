@@ -1228,26 +1228,28 @@ btnExportExcel.addEventListener('click', async () => {
 });
 
 // Database Actions (Sync with Google Sheets API)
-btnSyncSheets.addEventListener('click', async () => {
-  const btnOriginalText = btnSyncSheets.innerHTML;
-  btnSyncSheets.disabled = true;
-  btnSyncSheets.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังเชื่อมโยง...';
+if (btnSyncSheets) {
+  btnSyncSheets.addEventListener('click', async () => {
+    const btnOriginalText = btnSyncSheets.innerHTML;
+    btnSyncSheets.disabled = true;
+    btnSyncSheets.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังเชื่อมโยง...';
 
-  try {
-    const res = await API.syncSheets();
-    if (res.success) {
-      showToast('ซิงก์ประวัติการส่งงานกับ Google Sheets API เรียบร้อย!', 'success');
-    } else {
-      showToast(res.message, 'error');
+    try {
+      const res = await API.syncSheets();
+      if (res.success) {
+        showToast('ซิงก์ประวัติการส่งงานกับ Google Sheets API เรียบร้อย!', 'success');
+      } else {
+        showToast(res.message, 'error');
+      }
+    } catch (err) {
+      console.error(err);
+      showToast('เกิดข้อผิดพลาดในการเชื่อมต่อเครือข่าย', 'error');
+    } finally {
+      btnSyncSheets.disabled = false;
+      btnSyncSheets.innerHTML = btnOriginalText;
     }
-  } catch (err) {
-    console.error(err);
-    showToast('เกิดข้อผิดพลาดในการเชื่อมต่อเครือข่าย', 'error');
-  } finally {
-    btnSyncSheets.disabled = false;
-    btnSyncSheets.innerHTML = btnOriginalText;
-  }
-});
+  });
+}
 
 // Tab Switching in Teacher Dashboard
 document.getElementById('tab-submissions').addEventListener('click', (e) => {
