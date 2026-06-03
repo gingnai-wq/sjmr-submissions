@@ -1757,8 +1757,9 @@ async function loadTeachersTable() {
       `;
       teachersTableBody.appendChild(row);
     });
-    // Call loadSystemLogs()
+    // Call loadSystemLogs() and loadSubjectsTable()
     loadSystemLogs();
+    loadSubjectsTable();
   } catch (err) {
     console.error(err);
     teachersTableBody.innerHTML = '<tr><td colspan="4" class="text-center text-red">เกิดข้อผิดพลาดในการโหลดข้อมูล</td></tr>';
@@ -2564,4 +2565,141 @@ function generateClassReport(selectedClass, subjectId, period, resultsPanel, pri
     window.print();
   });
 }
+
+// ================= SUBJECT MANAGEMENT BINDINGS =================
+
+async function loadSubjectsTable() {
+  const subjectsTableBody = document.getElementById('subjects-table-body');
+  if (!subjectsTableBody) return;
+  subjectsTableBody.innerHTML = '<tr><td colspan="4" class="text-center"><i class="fa-solid fa-spinner fa-spin"></i> กำลังโหลดข้อมูล...</td></tr>';
+  
+  try {
+    const list = await fetch('/api/subjects').then(r => r.json());
+    const teachersList = await fetch('/api/teachers').then(r => r.json());
+    
+    subjectsTableBody.innerHTML = '';
+    
+    if (list.length === 0) {
+      subjectsTableBody.innerHTML = '<tr><td colspan="4" class="text-center">ไม่พบรายการวิชาเรียน</td></tr>';
+      return;
+    }
+    
+    list.forEach(s => {
+      let teacherName = 'ครูทุกคน (วิชากิจกรรม)';
+      if (s.Teacher_Username !== 'any') {
+        const t = teachersList.find(x => x.username.toLowerCase() === s.Teacher_Username.toLowerCase());
+        teacherName = t ? `${t.fullName} (${s.Teacher_Username})` : s.Teacher_Username;
+      }
+      
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td><strong>${s.Subject_ID}</strong></td>
+        <td>${s.Subject_Name}</td>
+        <td><span class="badge-class" style="background: rgba(139,92,246,0.15); color: #c084fc; border: 1px solid rgba(139,92,246,0.3); font-size: 0.75rem;">${teacherName}</span></td>
+        <td>
+          <button class="btn btn-red btn-delete-subject-trigger" data-id="${s.Subject_ID}" style="padding: 4px 10px; font-size: 0.8rem;">
+            <i class="fa-solid fa-trash-can"></i> ลบ
+          </button>
+        </td>
+      `;
+      subjectsTableBody.appendChild(row);
+    });
+  } catch (err) {
+    console.error(err);
+    subjectsTableBody.innerHTML = '<tr><td colspan="4" class="text-center text-red">เกิดข้อผิดพลาดในการโหลดวิชาเรียน</td></tr>';
+  }
+}
+
+const addSubjectModal = document.getElementById('add-subject-modal');
+const btnAddSubjectTrigger = document.getElementById('btn-add-subject-trigger');
+const addSubjectForm = document.getElementById('add-subject-form');
+
+if (btnAddSubjectTrigger && addSubjectModal) {
+  btnAddSubjectTrigger.addEventListener('click', async () => {
+    addSubjectForm.reset();
+    
+    const selectTeacher = document.getElementById('new-subject-teacher');
+    if (selectTeacher) {
+      selectTeacher.innerHTML = '<option value="any">ครูทุกคน (วิชากิจกรรม เช่น ลูกเสือ/ชุมนุม)</option>';
+      try {
+        const teachersList = await fetch('/api/teachers').then(r => r.json());
+        teachersList.forEach(t => {
+          const opt = document.createElement('option');
+          opt.value = t.username;
+          opt.textContent = `${t.fullName} (${t.username})`;
+          selectTeacher.appendChild(opt);
+        });
+      } catch (e) {
+        console.error('Failed to load teachers for subject assignment:', e);
+      }
+    }
+    
+    openModal(addSubjectModal);
+  });
+}
+
+if (addSubjectForm) {
+  addSubjectForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('new-subject-id').value.trim();
+    const name = document.getElementById('new-subject-name').value.trim();
+    const teacher = document.getElementById('new-subject-teacher').value;
+    
+    const btnSubmit = addSubjectForm.querySelector('button[type="submit"]');
+    const btnOriginalText = btnSubmit.innerHTML;
+    btnSubmit.disabled = true;
+    btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังบันทึก...';
+    
+    try {
+      const res = await fetch('/api/subjects', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ Subject_ID: id, Subject_Name: name, Teacher_Username: teacher })
+      }).then(r => r.json());
+      
+      if (res.success) {
+        showToast(res.message, 'success');
+        logAgentEvent('create_subject', 'Teacher', { subjectId: id, teacher });
+        closeModal(addSubjectModal);
+        
+        await loadTeacherDashboard(); 
+      } else {
+        showToast(res.message, 'error');
+      }
+    } catch (err) {
+      console.error(err);
+      showToast('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์', 'error');
+    } finally {
+      btnSubmit.disabled = false;
+      btnSubmit.innerHTML = btnOriginalText;
+    }
+  });
+}
+
+document.getElementById('panel-teachers-view').addEventListener('click', async (e) => {
+  const delBtn = e.target.closest('.btn-delete-subject-trigger');
+  if (delBtn) {
+    const subjectId = delBtn.dataset.id;
+    if (confirm(`คุณครูยืนยันว่าต้องการลบรายวิชา "${subjectId}" ใช่หรือไม่?`)) {
+      try {
+        const res = await fetch('/api/subjects/delete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ Subject_ID: subjectId })
+        }).then(r => r.json());
+        
+        if (res.success) {
+          showToast(res.message, 'success');
+          logAgentEvent('delete_subject', 'Teacher', { subjectId });
+          await loadTeacherDashboard(); 
+        } else {
+          showToast(res.message, 'error');
+        }
+      } catch (err) {
+        console.error(err);
+        showToast('เกิดข้อผิดพลาดในการลบรายวิชา', 'error');
+      }
+    }
+  }
+});
 
