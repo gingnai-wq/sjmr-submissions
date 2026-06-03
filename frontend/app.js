@@ -1166,6 +1166,45 @@ if (driveSyncForm) {
   });
 }
 
+// Database Actions (Export Report to Google Drive)
+const btnExportDrive = document.getElementById('btn-export-drive');
+if (btnExportDrive) {
+  btnExportDrive.addEventListener('click', async () => {
+    const scriptUrl = localStorage.getItem('drive_script_url');
+    const folderId = localStorage.getItem('drive_folder_id');
+    
+    if (!scriptUrl || !folderId) {
+      showToast('กรุณากดปุ่ม "ซิงก์รูปจาก Google Drive" เพื่อกรอกข้อมูลการตั้งค่าและบันทึก URL กับ Folder ID ก่อน', 'error');
+      if (btnSyncDrivePhotos) btnSyncDrivePhotos.click();
+      return;
+    }
+    
+    const btnOriginalText = btnExportDrive.innerHTML;
+    btnExportDrive.disabled = true;
+    btnExportDrive.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังส่งรายงานไป Drive...';
+    
+    try {
+      const res = await fetch('/api/export-drive', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ scriptUrl, folderId })
+      }).then(r => r.json());
+      
+      if (res.success) {
+        showToast(res.message, 'success');
+      } else {
+        showToast(res.message, 'error');
+      }
+    } catch (err) {
+      console.error(err);
+      showToast('เกิดข้อผิดพลาดในการส่งออกรายงานไปยัง Google Drive', 'error');
+    } finally {
+      btnExportDrive.disabled = false;
+      btnExportDrive.innerHTML = btnOriginalText;
+    }
+  });
+}
+
 // Database Actions (Export to Excel)
 btnExportExcel.addEventListener('click', async () => {
   const btnOriginalText = btnExportExcel.innerHTML;

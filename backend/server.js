@@ -5,6 +5,7 @@ const fs = require('fs');
 const db = require('./database');
 const excelHelper = require('./excelHelper');
 const AdmZip = require('adm-zip');
+const urlModule = require('url');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -532,6 +533,106 @@ app.post('/api/import-photos-drive', (req, res) => {
     } catch (parseErr) {
       console.error('Error parsing JSON from Apps Script:', parseErr, body);
       res.status(500).json({ success: false, message: 'ข้อมูลที่ส่งกลับมาจาก Google Apps Script ไม่ถูกต้อง (ไม่ใช่ JSON รูปแบบที่กำหนด)' });
+    }
+  });
+});
+
+// Helper to make a POST request and follow standard Google Apps Script redirects
+function postRequest(url, postData, callback) {
+  const parsedUrl = urlModule.parse(url);
+  const lib = url.startsWith('https') ? require('https') : require('http');
+  
+  const options = {
+    hostname: parsedUrl.hostname,
+    port: parsedUrl.port,
+    path: parsedUrl.path,
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Content-Length': Buffer.byteLength(postData)
+    }
+  };
+  
+  const req = lib.request(options, (res) => {
+    // If redirected, follow the redirect with GET to retrieve Apps Script's returned payload
+    const isRedirect = [301, 302, 303, 307, 308].includes(res.statusCode);
+    if (isRedirect && res.headers.location) {
+      return downloadJson(res.headers.location, callback);
+    }
+    
+    let body = '';
+    res.on('data', chunk => body += chunk);
+    res.on('end', () => {
+      callback(null, body);
+    });
+  });
+  
+  req.on('error', (err) => {
+    callback(err);
+  });
+  
+  req.write(postData);
+  req.end();
+}
+
+// Helper to upload a local file to Google Drive via Apps Script Web App
+function uploadFileToDrive(scriptUrl, folderId, filePath, callback) {
+  if (!fs.existsSync(filePath)) {
+    return callback(new Error('Local file not found.'));
+  }
+  
+  try {
+    const fileContent = fs.readFileSync(filePath);
+    const base64Content = fileContent.toString('base64');
+    const filename = path.basename(filePath);
+    
+    const postData = JSON.stringify({
+      folderId: folderId,
+      filename: filename,
+      content: base64Content
+    });
+    
+    postRequest(scriptUrl, postData, callback);
+  } catch (err) {
+    callback(err);
+  }
+}
+
+// 10.4. Export submissions report and upload it to Google Drive (Teacher/Web UI)
+app.post('/api/export-drive', (req, res) => {
+  const { scriptUrl, folderId } = req.body;
+  if (!scriptUrl || !folderId) {
+    return res.status(400).json({ success: false, message: 'กรุณาระบุ URL ของ Google Apps Script และ Folder ID' });
+  }
+
+  // 1. Export submissions to local Excel file first
+  const fileExported = excelHelper.exportSubmissions(
+    db.getSubmissions(),
+    db.getStudents(),
+    db.getAssignments()
+  );
+
+  if (!fileExported) {
+    return res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาดในการสร้างไฟล์ Excel ในเครื่อง' });
+  }
+
+  // 2. Upload the local Excel file to Google Drive via Apps Script
+  uploadFileToDrive(scriptUrl, folderId, fileExported, (err, responseBody) => {
+    if (err) {
+      console.error('Error uploading file to Drive:', err);
+      return res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาดในการส่งไฟล์ไปที่ Google Drive: ' + err.message });
+    }
+
+    try {
+      const parsed = JSON.parse(responseBody);
+      if (parsed.success) {
+        res.json({ success: true, message: `ส่งออกและอัปเดตไฟล์รายงานบน Google Drive สำเร็จ!` });
+      } else {
+        res.status(400).json({ success: false, message: parsed.error || 'Google Drive ปฏิเสธการอัปโหลดไฟล์' });
+      }
+    } catch (parseErr) {
+      console.error('Error parsing response from Apps Script:', parseErr, responseBody);
+      res.status(500).json({ success: false, message: 'ข้อมูลตอบรับจาก Google Apps Script ไม่ถูกต้อง' });
     }
   });
 });
