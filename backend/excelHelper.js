@@ -77,20 +77,17 @@ function importStudents(filePath = STUDENT_LIST_PATH) {
     const wb = xlsx.readFile(filePath);
     const allStudents = [];
 
-    // Filter sheets: Prefer sheets starting with ม. or ป.
-    let sheetsToParse = wb.SheetNames.filter(sheetName => {
-      const name = sheetName.trim();
-      return name.startsWith('ม.') || name.startsWith('ป.') || name.startsWith('ม') || name.startsWith('ป');
+    // Filter sheets: Parse all sheets except ignored metadata/report/utility sheets
+    const IGNORED_SHEETS = [
+      'assignment_list', 'submissions_master', 'sheetinfo', 'metadata', 'report', 'student_master',
+      'ภาพรวม', 'ข้อมูลของผู้เข้าร่วม', 'ข้อมูลเวลา', 'รายละเอียดแบบทดสอบ',
+      'ผลสัมฤทธิ์', 'สรุปเกรด', 'สถิติ', 'สรุป', 'ผลสอบ', 'คะแนน', 'ประถมศึกษา', 'ค่าห้อง', 'ค่าใช้จ่าย',
+      'จำนวนนักเรียน'
+    ];
+    const sheetsToParse = wb.SheetNames.filter(sheetName => {
+      const lowerName = sheetName.trim().toLowerCase();
+      return !IGNORED_SHEETS.some(ignored => lowerName.includes(ignored));
     });
-
-    if (sheetsToParse.length === 0) {
-      // Fallback: use all sheets except ignored metadata sheets
-      const IGNORED_SHEETS = ['assignment_list', 'submissions_master', 'sheetinfo', 'metadata', 'report', 'student_master'];
-      sheetsToParse = wb.SheetNames.filter(sheetName => {
-        const lowerName = sheetName.trim().toLowerCase();
-        return !IGNORED_SHEETS.some(ignored => lowerName.includes(ignored));
-      });
-    }
 
     sheetsToParse.forEach(sheetName => {
       const sheet = wb.Sheets[sheetName];
@@ -238,7 +235,11 @@ function importStudents(filePath = STUDENT_LIST_PATH) {
         blocks.forEach(block => {
           if (block.idColIdx >= row.length) return;
 
-          const studentId = String(row[block.idColIdx] || '').trim();
+          let studentId = String(row[block.idColIdx] || '').trim();
+          // Remove decimal .0 if it exists (e.g. "4983.0" -> "4983")
+          if (studentId.endsWith('.0')) {
+            studentId = studentId.substring(0, studentId.length - 2);
+          }
           if (!studentId || studentId.length < 3) {
             return;
           }
@@ -286,10 +287,11 @@ function importStudents(filePath = STUDENT_LIST_PATH) {
             } else {
               let formattedClass = classVal;
               if (!formattedClass.startsWith('ม.') && !formattedClass.startsWith('ป.') && 
-                  !formattedClass.startsWith('ม') && !formattedClass.startsWith('ป')) {
-                if (sheetName.startsWith('ม.') || sheetName.startsWith('ป.')) {
+                  !formattedClass.startsWith('ม') && !formattedClass.startsWith('ป') &&
+                  !formattedClass.startsWith('อ.') && !formattedClass.startsWith('อ')) {
+                if (sheetName.startsWith('ม.') || sheetName.startsWith('ป.') || sheetName.startsWith('อ.')) {
                   formattedClass = sheetName.substring(0, 2) + classVal;
-                } else if (sheetName.startsWith('ม') || sheetName.startsWith('ป')) {
+                } else if (sheetName.startsWith('ม') || sheetName.startsWith('ป') || sheetName.startsWith('อ')) {
                   formattedClass = sheetName.substring(0, 1) + '.' + classVal;
                 }
               }
@@ -297,6 +299,11 @@ function importStudents(filePath = STUDENT_LIST_PATH) {
             }
           } else if (classVal) {
             className = classVal;
+          }
+
+          // Remove decimal .0 if class ends with it
+          if (className.endsWith('.0')) {
+            className = className.substring(0, className.length - 2);
           }
 
           // Determine status
