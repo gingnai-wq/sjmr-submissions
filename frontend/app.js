@@ -542,7 +542,8 @@ function startStudentScanner() {
     {
       fps: 15,
       qrbox: (width, height) => {
-        return { width: Math.round(width * 0.75), height: Math.round(height * 0.45) };
+        const edge = Math.min(width, height) * 0.75;
+        return { width: Math.round(edge), height: Math.round(edge) };
       }
     },
     (decodedText) => {
@@ -904,7 +905,8 @@ function startTeacherScanner() {
     {
       fps: 15,
       qrbox: (width, height) => {
-        return { width: Math.round(width * 0.8), height: Math.round(height * 0.45) };
+        const edge = Math.min(width, height) * 0.75;
+        return { width: Math.round(edge), height: Math.round(edge) };
       }
     },
     (decodedText) => {
