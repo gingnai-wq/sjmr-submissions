@@ -1940,8 +1940,8 @@ document.getElementById('student-edit-form').addEventListener('submit', async (e
   }
 });
 
-// Initialize on window load (Includes automatic backend configuration sync handshake & persistence restore)
-window.addEventListener('load', () => {
+// Initialize immediately on script execution (Includes automatic backend configuration sync handshake & persistence restore)
+function initApp() {
   checkQueryParams();
   
   // Sync locally saved cloud configs to server on startup (Real-time sync handshake)
@@ -1979,7 +1979,10 @@ window.addEventListener('load', () => {
   if (savedTheme) {
     applyTheme(savedTheme);
   }
-});
+}
+
+// Run initialization immediately since script is at the bottom of the body
+initApp();
 
 // Theme Toggle Logic
 const btnThemeToggle = document.getElementById('btn-theme-toggle');
