@@ -36,12 +36,15 @@ function loadData() {
     }
   }
 
-  // Fallback to environment variables if config file has empty values (e.g. after cloud redeploy resets disk)
-  if (process.env.DRIVE_SCRIPT_URL && !config.scriptUrl) {
-    config.scriptUrl = process.env.DRIVE_SCRIPT_URL;
+  // Fallback to environment variables or user default credentials if config file has empty values (e.g. after cloud redeploy resets disk)
+  const DEFAULT_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxKI4nfHMXC72CvkJf0Svo9X_gGdmw3_wbakVo0939jeW3LRhK4Rov--WLNn8vE5o7k/exec';
+  const DEFAULT_FOLDER_ID = '1x90_05aAiqJeXL-5RCRsOxpvUcawZhag';
+
+  if (!config.scriptUrl) {
+    config.scriptUrl = process.env.DRIVE_SCRIPT_URL || DEFAULT_SCRIPT_URL;
   }
-  if (process.env.DRIVE_FOLDER_ID && !config.folderId) {
-    config.folderId = process.env.DRIVE_FOLDER_ID;
+  if (!config.folderId) {
+    config.folderId = process.env.DRIVE_FOLDER_ID || DEFAULT_FOLDER_ID;
   }
 
   // Load students
