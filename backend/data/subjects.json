@@ -1,0 +1,22 @@
+[
+  {
+    "Subject_ID": "S001",
+    "Subject_Name": "วิทยาการคำนวณ",
+    "Teacher_Username": "admin"
+  },
+  {
+    "Subject_ID": "S002",
+    "Subject_Name": "คณิตศาสตร์เบื้องต้น",
+    "Teacher_Username": "admin"
+  },
+  {
+    "Subject_ID": "S003",
+    "Subject_Name": "วิชาชุมนุม",
+    "Teacher_Username": "any"
+  },
+  {
+    "Subject_ID": "S004",
+    "Subject_Name": "กิจกรรมลูกเสือ",
+    "Teacher_Username": "any"
+  }
+]

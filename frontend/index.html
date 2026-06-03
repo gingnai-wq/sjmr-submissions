@@ -51,6 +51,11 @@
             <i class="fa-solid fa-chalkboard-user"></i> คุณครู
           </button>
         </div>
+
+        <!-- Logout button for teachers (NEW) -->
+        <button id="btn-teacher-logout" class="btn btn-red btn-icon-left hidden" style="padding: 6px 12px; font-size: 0.85rem; height: 36px; display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
+          <i class="fa-solid fa-right-from-bracket"></i> ออกจากระบบครู
+        </button>
       </div>
     </header>
 
@@ -179,6 +184,7 @@
                 <button id="tab-submissions" class="tab-link active"><i class="fa-solid fa-clipboard-list"></i> รายการส่งงานของนักเรียน</button>
                 <button id="tab-students" class="tab-link"><i class="fa-solid fa-address-book"></i> ทะเบียนรายชื่อนักเรียนทั้งหมด</button>
                 <button id="tab-teachers" class="tab-link"><i class="fa-solid fa-user-tie"></i> จัดการบัญชีคุณครู</button>
+                <button id="tab-reports" class="tab-link"><i class="fa-solid fa-chart-line"></i> สรุปรายงานและพิมพ์ A4</button>
               </div>
 
               <!-- View 1: Submissions Table -->
@@ -234,6 +240,13 @@
                     </div>
                     <select id="filter-dir-class">
                       <option value="">ชั้นเรียนทั้งหมด</option>
+                    </select>
+                    
+                    <select id="select-dir-limit" style="background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--glass-border); padding: 5px 10px; border-radius: 6px; font-size: 0.85rem; width: 110px;">
+                      <option value="10">แถว: 10 คน</option>
+                      <option value="20">แถว: 20 คน</option>
+                      <option value="50" selected>แถว: 50 คน</option>
+                      <option value="100">แถว: 100 คน</option>
                     </select>
                     
                     <!-- Print Selector & Controller (NEW) -->
@@ -309,21 +322,110 @@
                     </tbody>
                   </table>
                 </div>
+
+                <!-- Agent AI Activity Logs Terminal (NEW) -->
+                <div class="system-logs-panel" style="margin-top: 25px;">
+                  <h3><i class="fa-solid fa-terminal text-green"></i> ล็อกพฤติกรรมระบบ (Agent AI Activity Terminal)</h3>
+                  <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">ระบบ AI กำลังจัดเก็บพฤติกรรมการใช้งานเพื่อการวิเคราะห์และพัฒนาระบบ</p>
+                  <div id="ai-logs-terminal" style="background: rgba(0,0,0,0.65); font-family: monospace; font-size: 0.8rem; padding: 12px; border-radius: 8px; border: 1px solid var(--glass-border); max-height: 180px; overflow-y: auto; color: #a7f3d0; line-height: 1.5; text-align: left;">
+                    <div>[System Alert] Terminal initialized. Waiting for actions...</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- View 4: Reports Summary & Printing (NEW) -->
+              <div id="panel-reports-view" class="tab-view">
+                <div class="panel-header" style="margin-top: 15px; display: flex; flex-direction: column; gap: 12px; align-items: stretch;">
+                  <h3><i class="fa-solid fa-chart-line text-purple"></i> ระบบประเมินและสรุปรายงานผลการเข้าเรียน & การส่งงาน</h3>
+                  
+                  <div class="report-filters-bar" style="display: flex; gap: 10px; flex-wrap: wrap; background: rgba(255,255,255,0.02); padding: 12px; border-radius: 8px; border: 1px solid var(--glass-border);">
+                    
+                    <div class="filter-item" style="display: flex; flex-direction: column; gap: 4px;">
+                      <label style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold;">เลือกรายวิชา</label>
+                      <select id="report-subject-select" style="width: 160px; padding: 6px 10px; font-size: 0.85rem; background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--glass-border); border-radius: 6px;">
+                        <option value="all">ทุกรายวิชา</option>
+                      </select>
+                    </div>
+
+                    <div class="filter-item" style="display: flex; flex-direction: column; gap: 4px;">
+                      <label style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold;">ช่วงเวลาสรุปผล</label>
+                      <select id="report-period-select" style="width: 140px; padding: 6px 10px; font-size: 0.85rem; background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--glass-border); border-radius: 6px;">
+                        <option value="daily">รายวัน (วันนี้)</option>
+                        <option value="weekly">รายสัปดาห์</option>
+                        <option value="monthly">รายเดือน</option>
+                        <option value="semester">รายภาคเรียน</option>
+                        <option value="yearly">รายปีการศึกษา</option>
+                      </select>
+                    </div>
+
+                    <div class="filter-item" style="display: flex; flex-direction: column; gap: 4px;">
+                      <label style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold;">ประเภทรายงาน</label>
+                      <select id="report-type-select" style="width: 150px; padding: 6px 10px; font-size: 0.85rem; background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--glass-border); border-radius: 6px;">
+                        <option value="individual">รายงานรายบุคคล</option>
+                        <option value="class">ภาพรวมห้องเรียน</option>
+                      </select>
+                    </div>
+
+                    <!-- Class Filter -->
+                    <div class="filter-item" id="report-class-filter-group" style="display: flex; flex-direction: column; gap: 4px;">
+                      <label style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold;">ชั้นเรียน</label>
+                      <select id="report-class-select" style="width: 120px; padding: 6px 10px; font-size: 0.85rem; background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--glass-border); border-radius: 6px;">
+                        <!-- Options loaded dynamically -->
+                      </select>
+                    </div>
+
+                    <!-- Student Filter (Shown only for individual report) -->
+                    <div class="filter-item" id="report-student-filter-group" style="display: flex; flex-direction: column; gap: 4px;">
+                      <label style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold;">เลือกนักเรียน</label>
+                      <select id="report-student-select" style="width: 180px; padding: 6px 10px; font-size: 0.85rem; background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--glass-border); border-radius: 6px;">
+                        <!-- Options loaded dynamically -->
+                      </select>
+                    </div>
+
+                    <div class="filter-item" style="display: flex; align-items: flex-end;">
+                      <button id="btn-generate-report" class="btn btn-purple" style="padding: 6px 16px; font-size: 0.85rem; height: 35px;">
+                        <i class="fa-solid fa-arrows-rotate"></i> ดึงรายงาน
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Report Display Content -->
+                <div id="report-results-panel" style="margin-top: 15px; border-radius: 12px; border: 1px solid var(--glass-border); background: var(--glass-bg); padding: 24px; min-height: 250px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                  <i class="fa-solid fa-chart-bar" style="font-size: 3rem; color: var(--text-muted); opacity: 0.5; margin-bottom: 12px;"></i>
+                  <p style="color: var(--text-muted);">กรุณากดปุ่ม <strong>"ดึงรายงาน"</strong> เพื่อประมวลผลสรุปข้อมูล</p>
+                </div>
               </div>
 
             <!-- Right Panel: Admin Settings & Actions -->
             <div class="teacher-sidebar-panel">
               <!-- Quick Scan Grader Card -->
               <div class="glass-card admin-action-card">
-                <h3><i class="fa-solid fa-qrcode text-green"></i> ระบบสแกนตรวจงานด่วน</h3>
+                <h3><i class="fa-solid fa-qrcode text-green"></i> ระบบสแกนด่วน (สแกนตรวจงาน/เช็คชื่อ)</h3>
                 <div class="quick-scan-form">
                   <div class="input-group">
+                    <label for="scan-type-select"><strong>ประเภทการสแกน:</strong></label>
+                    <select id="scan-type-select" style="background: var(--bg-secondary); border: 1px solid var(--primary); border-radius: 6px; padding: 8px; width: 100%;">
+                      <option value="grade">1. ลงคะแนนการบ้าน</option>
+                      <option value="attendance">2. เช็คชื่อเข้าเรียนประจำวัน</option>
+                    </select>
+                  </div>
+                  
+                  <div class="input-group" id="scan-subject-group" style="display: none;">
+                    <label for="scan-subject-select">เช็คชื่อวิชาเรียน</label>
+                    <select id="scan-subject-select" style="background: var(--bg-secondary); border: 1px solid var(--glass-border); padding: 8px; border-radius: 6px; width: 100%;">
+                      <!-- Loaded dynamically -->
+                    </select>
+                  </div>
+
+                  <div class="input-group" id="scan-assign-group">
                     <label for="scan-assign-select">ตรวจการบ้านชิ้นไหน?</label>
-                    <select id="scan-assign-select">
+                    <select id="scan-assign-select" style="background: var(--bg-secondary); border: 1px solid var(--glass-border); padding: 8px; border-radius: 6px; width: 100%;">
                       <!-- Dynamic assignments options -->
                     </select>
                   </div>
-                  <div class="input-group">
+                  
+                  <div class="input-group" id="scan-score-group">
                     <label for="scan-score-input">คะแนนที่จะบันทึกเมื่อสแกนผ่าน</label>
                     <input type="number" id="scan-score-input" min="0" step="0.5" value="10" placeholder="10">
                   </div>
@@ -352,7 +454,7 @@
                   </div>
                   
                   <button id="btn-toggle-teacher-scanner" class="btn btn-green btn-block btn-icon-left">
-                    <i class="fa-solid fa-camera"></i> <span>เปิดกล้องสแกนตรวจงาน</span>
+                    <i class="fa-solid fa-camera"></i> <span>เปิดกล้องสแกนด่วน</span>
                   </button>
 
                   <!-- Scanner Simulator -->
@@ -364,7 +466,7 @@
                       <button type="button" class="btn btn-secondary btn-sim-scan" data-id="2500">สแกน นร.ใหม่</button>
                     </div>
                     <div class="input-with-action" style="margin-top: 10px;">
-                      <input type="text" id="sim-id-input" placeholder="พิมพ์รหัสเพื่อจำลองส่ง/ตรวจ..." autocomplete="off">
+                      <input type="text" id="sim-id-input" placeholder="พิมพ์รหัสเพื่อจำลองสแกน..." autocomplete="off">
                       <button type="button" id="btn-trigger-sim-scan" class="input-action-btn" title="จำลองสแกน">
                         <i class="fa-solid fa-barcode"></i>
                       </button>
@@ -393,6 +495,12 @@
                   <div class="input-group">
                     <label for="new-assign-name">ชื่อภาระงาน / หัวข้อ</label>
                     <input type="text" id="new-assign-name" placeholder="ระบุชื่อการบ้าน..." required autocomplete="off">
+                  </div>
+                  <div class="input-group">
+                    <label for="new-assign-subject">รายวิชา</label>
+                    <select id="new-assign-subject" required style="background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--glass-border); padding: 8px; border-radius: 6px; width: 100%;">
+                      <!-- Loaded dynamically -->
+                    </select>
                   </div>
                   <div class="form-row">
                     <div class="input-group">
@@ -739,6 +847,7 @@
 
   <!-- Invisible Print Cards Container (NEW) -->
   <div id="print-cards-area" class="print-only-container"></div>
+  <div id="print-report-area" class="print-only-container"></div>
 
   <!-- Notification Toast Container -->
   <div id="toast-container" class="toast-container"></div>

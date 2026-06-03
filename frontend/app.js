@@ -26,7 +26,20 @@ const API = {
   }).then(r => r.json()),
 
   exportExcel: () => fetch('/api/export', { method: 'POST' }).then(r => r.json()),
-  syncSheets: () => fetch('/api/sync-sheets', { method: 'POST' }).then(r => r.json())
+  syncSheets: () => fetch('/api/sync-sheets', { method: 'POST' }).then(r => r.json()),
+
+  getSubjects: () => fetch('/api/subjects').then(r => r.json()),
+  getAttendance: () => fetch('/api/attendance').then(r => r.json()),
+  scanAttendance: (data) => fetch('/api/attendance/scan', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  }).then(r => r.json()),
+  updateAttendance: (data) => fetch('/api/attendance/update', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  }).then(r => r.json())
 };
 
 // Global App State
@@ -38,6 +51,8 @@ let state = {
   assignments: [],
   submissions: [], // For teacher dashboard
   students: [], // For teacher directory
+  subjects: [], // For teacher subjects (NEW)
+  attendance: [], // For teacher attendance (NEW)
   directoryPage: 1, // Student directory pagination page
   directoryLimit: 50, // Student directory pagination limit
   selectedFile: null,
@@ -210,12 +225,14 @@ function switchView(view) {
 
   if (view === 'student') {
     state.currentView = 'student';
+    document.body.classList.remove('teacher-mode-active');
     btnStudentMode.classList.add('active');
     btnTeacherMode.classList.remove('active');
     studentView.classList.add('active');
     teacherView.classList.remove('active');
   } else if (view === 'teacher') {
     state.currentView = 'teacher';
+    document.body.classList.add('teacher-mode-active');
     btnTeacherMode.classList.add('active');
     btnStudentMode.classList.remove('active');
     teacherView.classList.add('active');
@@ -235,7 +252,7 @@ btnTeacherMode.addEventListener('click', () => {
   document.getElementById('pwd-input').focus();
 });
 
-// Teacher login validation (Updated to support multiple teacher accounts)
+// Teacher login validation (Updated to support multiple teacher accounts and session persistence)
 document.getElementById('pwd-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   const username = document.getElementById('pwd-username').value.trim();
@@ -257,6 +274,13 @@ document.getElementById('pwd-form').addEventListener('submit', async (e) => {
       closeModal(passwordModal);
       showToast(res.message, 'success');
       state.teacherData = res.teacher;
+      localStorage.setItem('auth_teacher', JSON.stringify(res.teacher)); // PERSIST SESSION
+      
+      // Update UI for teacher logged in
+      document.querySelector('.mode-toggle-container').classList.add('hidden');
+      document.getElementById('btn-teacher-logout').classList.remove('hidden');
+      
+      logAgentEvent('teacher_login', 'Teacher', { username: res.teacher.username });
       switchView('teacher');
     } else {
       showToast(res.message, 'error');
@@ -272,7 +296,7 @@ document.getElementById('pwd-form').addEventListener('submit', async (e) => {
 
 // ================= STUDENT WORKFLOW =================
 
-// Student ID login logic
+// Student ID login logic (Updated with Session storage and agent logs)
 async function loginStudent(studentId) {
   try {
     const res = await API.getStudentInfo(studentId);
@@ -280,6 +304,7 @@ async function loginStudent(studentId) {
       state.studentAuthenticated = true;
       state.studentData = res.student;
       state.studentSubmissions = res.submissions;
+      localStorage.setItem('auth_student_id', studentId); // PERSIST SESSION
       
       // Update displays
       const studentAvatarContainer = document.querySelector('.profile-avatar');
@@ -303,6 +328,7 @@ async function loginStudent(studentId) {
       // Fetch assignments and render
       await loadStudentAssignments();
       showToast(`ยินดีต้อนรับ ${res.student.FullName}`, 'success');
+      logAgentEvent('student_login', 'Student', { studentId: res.student.Student_ID });
 
       // Auto-trigger assignment modal if requested via URL params
       if (state.autoRouteAssignmentId) {
@@ -332,6 +358,8 @@ studentLoginForm.addEventListener('submit', (e) => {
 
 // Logout Student
 btnStudentLogout.addEventListener('click', () => {
+  logAgentEvent('student_logout', 'Student', { studentId: state.studentData ? state.studentData.Student_ID : '' });
+  localStorage.removeItem('auth_student_id'); // CLEAR PERSISTENCE
   state.studentAuthenticated = false;
   state.studentData = null;
   state.studentSubmissions = [];
@@ -615,10 +643,14 @@ async function loadTeacherDashboard() {
     const assignments = await API.getAssignments();
     const submissions = await API.getSubmissions();
     const students = await API.getStudentsList();
+    const subjects = await API.getSubjects();
+    const attendance = await API.getAttendance();
     
     state.assignments = assignments;
     state.submissions = submissions;
     state.students = students;
+    state.subjects = subjects;
+    state.attendance = attendance;
     
     // Update stats
     statTotalAssignments.textContent = `${assignments.length} งาน`;
@@ -633,12 +665,53 @@ async function loadTeacherDashboard() {
     populateFilters(submissions, assignments);
     populateTeacherScannerAssignments(assignments);
     populateDirectoryFilters(students);
+    populateSubjectsDropdowns(subjects);
+    populateReportsFilters();
     
     renderSubmissionsTable();
     renderStudentsDirectoryTable();
   } catch (err) {
     console.error(err);
     showToast('ไม่สามารถโหลดข้อมูลหลังบ้านได้', 'error');
+  }
+}
+
+// Populate subject select dropdowns (NEW)
+function populateSubjectsDropdowns(subjects) {
+  const newAssignSub = document.getElementById('new-assign-subject');
+  const scanSub = document.getElementById('scan-subject-select');
+  const reportSub = document.getElementById('report-subject-select');
+  
+  if (newAssignSub) {
+    newAssignSub.innerHTML = '';
+    subjects.forEach(s => {
+      const opt = document.createElement('option');
+      opt.value = s.Subject_ID;
+      opt.textContent = `${s.Subject_ID} - ${s.Subject_Name}`;
+      newAssignSub.appendChild(opt);
+    });
+  }
+  
+  if (scanSub) {
+    scanSub.innerHTML = '';
+    subjects.forEach(s => {
+      const opt = document.createElement('option');
+      opt.value = s.Subject_ID;
+      opt.textContent = `${s.Subject_ID} - ${s.Subject_Name}`;
+      scanSub.appendChild(opt);
+    });
+  }
+  
+  if (reportSub) {
+    const currentVal = reportSub.value;
+    reportSub.innerHTML = '<option value="all">ทุกรายวิชา</option>';
+    subjects.forEach(s => {
+      const opt = document.createElement('option');
+      opt.value = s.Subject_ID;
+      opt.textContent = `${s.Subject_ID} - ${s.Subject_Name}`;
+      reportSub.appendChild(opt);
+    });
+    reportSub.value = currentVal || 'all';
   }
 }
 
@@ -824,7 +897,9 @@ document.getElementById('grade-form').addEventListener('submit', async (e) => {
     const res = await API.gradeSubmission({
       Submission_ID: subId,
       Score: Number(score),
-      Status: status
+      Status: status,
+      Teacher_Username: state.teacherData ? state.teacherData.username : 'admin',
+      Teacher_Role: state.teacherData ? state.teacherData.role : 'Admin'
     });
 
     if (res.success) {
@@ -847,64 +922,140 @@ async function processQuickGradeScan(studentId) {
   if (scannerCooldown) return;
   scannerCooldown = true;
 
-  const activeAssignment = scanAssignSelect.value;
-  const activeScore = Number(scanScoreInput.value);
+  const scanType = document.getElementById('scan-type-select').value;
 
-  if (!activeAssignment) {
-    showToast("กรุณาเลือกการบ้านเพื่อลงคะแนน", "error");
-    scannerCooldown = false;
-    return;
-  }
+  if (scanType === 'grade') {
+    const activeAssignment = scanAssignSelect.value;
+    const activeScore = Number(scanScoreInput.value);
 
-  playBeep('success');
+    if (!activeAssignment) {
+      showToast("กรุณาเลือกการบ้านเพื่อลงคะแนน", "error");
+      scannerCooldown = false;
+      return;
+    }
 
-  try {
-    const res = await API.quickGrade({
-      Student_ID: studentId,
-      Assignment_ID: activeAssignment,
-      Score: activeScore
-    });
+    try {
+      const res = await API.quickGrade({
+        Student_ID: studentId,
+        Assignment_ID: activeAssignment,
+        Score: activeScore,
+        Teacher_Username: state.teacherData ? state.teacherData.username : 'admin',
+        Teacher_Role: state.teacherData ? state.teacherData.role : 'Admin'
+      });
 
-    if (res.success) {
-      const student = res.student;
-      
-      lastScannedText.textContent = `${student.FullName} (${studentId}) - บันทึก ${activeScore} คะแนน`;
-      lastScannedResult.classList.remove('hidden');
+      if (res.success) {
+        playBeep('success');
+        const student = res.student;
+        
+        lastScannedText.textContent = `${student.FullName} (${studentId}) - บันทึก ${activeScore} คะแนน`;
+        lastScannedResult.classList.remove('hidden');
 
-      // SHOW 5-SECOND HUD OVERLAY
-      hudStudentName.textContent = student.FullName;
-      hudStudentId.textContent = `รหัสประจำตัว: ${student.Student_ID}`;
-      hudStudentClass.textContent = `ชั้นเรียน: ${student.Class || 'ม.ทั่วไป'}`;
-      hudStudentScore.textContent = activeScore;
-      
-      // Display student photo (custom photo if exists, otherwise DiceBear)
-      hudStudentPhoto.src = student.Photo ? student.Photo : `https://api.dicebear.com/7.x/adventurer/svg?seed=${studentId}`;
-      
-      hudProgressBar.classList.remove('hud-countdown-active');
-      void hudProgressBar.offsetWidth;
-      
-      scanHudOverlay.classList.remove('hidden');
-      hudProgressBar.classList.add('hud-countdown-active');
-
-      if (hudTimeoutId) clearTimeout(hudTimeoutId);
-
-      hudTimeoutId = setTimeout(() => {
-        scanHudOverlay.classList.add('hidden');
+        // SHOW 5-SECOND HUD OVERLAY
+        hudStudentName.textContent = student.FullName;
+        hudStudentId.textContent = `รหัสประจำตัว: ${student.Student_ID}`;
+        hudStudentClass.textContent = `ชั้นเรียน: ${student.Class || 'ม.ทั่วไป'}`;
+        hudStudentScore.textContent = activeScore;
+        
+        // Show Score Badge
+        const scoreBadge = document.querySelector('.hud-score-badge');
+        if (scoreBadge) {
+          scoreBadge.innerHTML = `+ <span id="hud-student-score">${activeScore}</span> คะแนน`;
+          scoreBadge.style.background = 'rgba(16, 185, 129, 0.18)';
+          scoreBadge.style.color = '#34d399';
+        }
+        
+        hudStudentPhoto.src = student.Photo ? student.Photo : `https://api.dicebear.com/7.x/adventurer/svg?seed=${studentId}`;
+        
         hudProgressBar.classList.remove('hud-countdown-active');
-        scannerCooldown = false;
-      }, 5000);
+        void hudProgressBar.offsetWidth;
+        
+        scanHudOverlay.classList.remove('hidden');
+        hudProgressBar.classList.add('hud-countdown-active');
 
-      await loadTeacherDashboard();
-    } else {
+        if (hudTimeoutId) clearTimeout(hudTimeoutId);
+
+        hudTimeoutId = setTimeout(() => {
+          scanHudOverlay.classList.add('hidden');
+          hudProgressBar.classList.remove('hud-countdown-active');
+          scannerCooldown = false;
+        }, 5000);
+
+        await loadTeacherDashboard();
+      } else {
+        playBeep('error');
+        showToast(res.message, 'error');
+        scannerCooldown = false;
+      }
+    } catch (err) {
+      console.error(err);
       playBeep('error');
-      showToast(res.message, 'error');
+      showToast(`เกิดข้อผิดพลาดในการลงคะแนนให้รหัส ${studentId}`, 'error');
       scannerCooldown = false;
     }
-  } catch (err) {
-    console.error(err);
-    playBeep('error');
-    showToast(`เกิดข้อผิดพลาดในการลงคะแนนให้รหัส ${studentId}`, 'error');
-    scannerCooldown = false;
+  } else {
+    // Attendance Check-in Scan
+    const activeSubject = document.getElementById('scan-subject-select').value;
+    if (!activeSubject) {
+      showToast("กรุณาเลือกวิชาที่จะเช็คชื่อเข้าเรียน", "error");
+      scannerCooldown = false;
+      return;
+    }
+
+    try {
+      const res = await API.scanAttendance({
+        Student_ID: studentId,
+        Subject_ID: activeSubject,
+        Recorded_By: state.teacherData ? state.teacherData.username : 'admin'
+      });
+
+      if (res.success) {
+        playBeep('success');
+        const student = res.student;
+        
+        lastScannedText.textContent = `${student.FullName} (${studentId}) - เช็คชื่อเข้าเรียนสำเร็จ`;
+        lastScannedResult.classList.remove('hidden');
+
+        // SHOW 5-SECOND HUD OVERLAY
+        hudStudentName.textContent = student.FullName;
+        hudStudentId.textContent = `รหัสประจำตัว: ${student.Student_ID}`;
+        hudStudentClass.textContent = `ชั้นเรียน: ${student.Class || 'ม.ทั่วไป'}`;
+        
+        // Show Check-in status instead of score
+        const scoreBadge = document.querySelector('.hud-score-badge');
+        if (scoreBadge) {
+          scoreBadge.innerHTML = `<i class="fa-solid fa-circle-check"></i> เช็คชื่อมาเรียนแล้ว`;
+          scoreBadge.style.background = 'rgba(59, 130, 246, 0.18)';
+          scoreBadge.style.color = '#60a5fa';
+        }
+        
+        hudStudentPhoto.src = student.Photo ? student.Photo : `https://api.dicebear.com/7.x/adventurer/svg?seed=${studentId}`;
+        
+        hudProgressBar.classList.remove('hud-countdown-active');
+        void hudProgressBar.offsetWidth;
+        
+        scanHudOverlay.classList.remove('hidden');
+        hudProgressBar.classList.add('hud-countdown-active');
+
+        if (hudTimeoutId) clearTimeout(hudTimeoutId);
+
+        hudTimeoutId = setTimeout(() => {
+          scanHudOverlay.classList.add('hidden');
+          hudProgressBar.classList.remove('hud-countdown-active');
+          scannerCooldown = false;
+        }, 5000);
+
+        await loadTeacherDashboard();
+      } else {
+        playBeep('error');
+        showToast(res.message, 'error');
+        scannerCooldown = false;
+      }
+    } catch (err) {
+      console.error(err);
+      playBeep('error');
+      showToast(`เกิดข้อผิดพลาดในการเช็คชื่อรหัส ${studentId}`, 'error');
+      scannerCooldown = false;
+    }
   }
 }
 
@@ -1002,6 +1153,7 @@ createAssignmentForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const id = document.getElementById('new-assign-id').value.trim();
   const name = document.getElementById('new-assign-name').value.trim();
+  const subjectId = document.getElementById('new-assign-subject').value;
   const due = document.getElementById('new-assign-due').value;
   const score = document.getElementById('new-assign-score').value;
 
@@ -1009,6 +1161,7 @@ createAssignmentForm.addEventListener('submit', async (e) => {
     const res = await API.createAssignment({
       Assignment_ID: id,
       Assignment_Name: name,
+      Subject_ID: subjectId,
       Due_Date: due,
       Max_Score: Number(score)
     });
@@ -1281,8 +1434,8 @@ if (btnSyncSheets) {
   });
 }
 
-// Tab Switching in Teacher Dashboard (Updated to support Accounts Tab)
-const tabs = ['submissions', 'students', 'teachers'];
+// Tab Switching in Teacher Dashboard (Updated to support Accounts & Reports Tabs)
+const tabs = ['submissions', 'students', 'teachers', 'reports'];
 tabs.forEach(t => {
   const tabEl = document.getElementById(`tab-${t}`);
   if (tabEl) {
@@ -1298,6 +1451,8 @@ tabs.forEach(t => {
       
       if (t === 'teachers') {
         loadTeachersTable();
+      } else if (t === 'reports') {
+        populateReportsFilters();
       }
     });
   }
@@ -1367,6 +1522,36 @@ function renderStudentsDirectoryTable() {
   paginated.forEach(s => {
     const avatarSrc = s.Photo ? s.Photo : `https://api.dicebear.com/7.x/adventurer/svg?seed=${s.Student_ID}`;
     
+    // Attendance Today (NEW)
+    const today = new Date().toLocaleDateString('en-CA');
+    const todayAtt = state.attendance.find(a => a.Student_ID === String(s.Student_ID) && a.Date === today);
+    let attBadge = '<span class="status-badge pending" style="padding: 2px 6px; font-size: 0.65rem; display: inline-flex;"><i class="fa-solid fa-clock"></i> ยังไม่เช็คชื่อ</span>';
+    if (todayAtt) {
+      if (todayAtt.Status === 'Present') {
+        attBadge = '<span class="status-badge graded" style="padding: 2px 6px; font-size: 0.65rem; display: inline-flex;"><i class="fa-solid fa-circle-check"></i> มาเรียน</span>';
+      } else {
+        attBadge = '<span class="status-badge correction" style="padding: 2px 6px; font-size: 0.65rem; display: inline-flex;"><i class="fa-solid fa-circle-xmark"></i> ขาดเรียน</span>';
+      }
+    }
+    
+    // Submissions Stats (NEW)
+    const studentSubs = state.submissions.filter(sub => sub.Student_ID === s.Student_ID);
+    const totalAssigns = state.assignments.length;
+    const submittedCount = studentSubs.filter(sub => sub.Status === 'Graded' || sub.Status === 'Submitted' || sub.Status === 'Resubmitted').length;
+    
+    let taskBadge = `<span class="status-badge pending" style="padding: 2px 6px; font-size: 0.65rem; display: inline-flex;"><i class="fa-solid fa-file-invoice"></i> ส่งงาน ${submittedCount}/${totalAssigns}</span>`;
+    if (totalAssigns > 0) {
+      if (submittedCount === totalAssigns) {
+        taskBadge = `<span class="status-badge graded" style="padding: 2px 6px; font-size: 0.65rem; display: inline-flex;"><i class="fa-solid fa-check-double"></i> ส่งครบ ${submittedCount}/${totalAssigns}</span>`;
+      } else if (submittedCount > 0) {
+        taskBadge = `<span class="status-badge submitted" style="padding: 2px 6px; font-size: 0.65rem; display: inline-flex;"><i class="fa-solid fa-file-arrow-up"></i> ส่งงาน ${submittedCount}/${totalAssigns}</span>`;
+      } else {
+        taskBadge = `<span class="status-badge correction" style="padding: 2px 6px; font-size: 0.65rem; display: inline-flex;"><i class="fa-solid fa-triangle-exclamation"></i> ยังไม่ส่ง</span>`;
+      }
+    } else {
+      taskBadge = `<span class="status-badge pending" style="padding: 2px 6px; font-size: 0.65rem; display: inline-flex;">ไม่มีการบ้าน</span>`;
+    }
+
     const row = document.createElement('tr');
     row.innerHTML = `
       <td><img src="${avatarSrc}" alt="Avatar" class="student-table-avatar" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; background: var(--bg-secondary); border: 1px solid var(--glass-border);"></td>
@@ -1374,7 +1559,12 @@ function renderStudentsDirectoryTable() {
       <td>${s.FullName}</td>
       <td><span class="badge-class" style="font-size:0.75rem">${s.Class || '-'}</span></td>
       <td>${s.Email || '-'}</td>
-      <td><span class="status-badge graded" style="padding: 2px 8px; font-size: 0.7rem;">${s.Status || 'กำลังศึกษาอยู่'}</span></td>
+      <td>
+        <div style="display: flex; flex-direction: column; gap: 4px; align-items: flex-start;">
+          ${attBadge}
+          ${taskBadge}
+        </div>
+      </td>
       <td>
         <button class="btn btn-purple btn-edit-student-trigger" style="padding: 4px 10px; font-size: 0.8rem;"
                 data-id="${s.Student_ID}"
@@ -1567,6 +1757,8 @@ async function loadTeachersTable() {
       `;
       teachersTableBody.appendChild(row);
     });
+    // Call loadSystemLogs()
+    loadSystemLogs();
   } catch (err) {
     console.error(err);
     teachersTableBody.innerHTML = '<tr><td colspan="4" class="text-center text-red">เกิดข้อผิดพลาดในการโหลดข้อมูล</td></tr>';
@@ -1607,6 +1799,7 @@ if (addTeacherForm) {
       
       if (res.success) {
         showToast(res.message, 'success');
+        logAgentEvent('create_teacher', 'Teacher', { target: username });
         closeModal(addTeacherModal);
         loadTeachersTable();
       } else {
@@ -1637,6 +1830,7 @@ document.getElementById('teachers-table-body').addEventListener('click', async (
         
         if (res.success) {
           showToast(res.message, 'success');
+          logAgentEvent('delete_teacher', 'Teacher', { target: username });
           loadTeachersTable();
         } else {
           showToast(res.message, 'error');
@@ -1648,6 +1842,57 @@ document.getElementById('teachers-table-body').addEventListener('click', async (
     }
   }
 });
+
+// Teacher Logout Button Handler (NEW)
+const btnTeacherLogout = document.getElementById('btn-teacher-logout');
+if (btnTeacherLogout) {
+  btnTeacherLogout.addEventListener('click', () => {
+    logAgentEvent('teacher_logout', 'Teacher', { username: state.teacherData ? state.teacherData.username : '' });
+    localStorage.removeItem('auth_teacher'); // CLEAR PERSISTENCE
+    state.teacherData = null;
+    btnTeacherLogout.classList.add('hidden');
+    document.querySelector('.mode-toggle-container').classList.remove('hidden');
+    switchView('student');
+    showToast('ออกจากระบบคุณครูเรียบร้อยแล้ว', 'success');
+  });
+}
+
+// Log agent events to backend database (NEW)
+async function logAgentEvent(action, role, details = {}) {
+  try {
+    await fetch('/api/log', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action, role, details })
+    });
+  } catch (err) {
+    console.warn('Agent AI Logger failed:', err);
+  }
+}
+
+// Agent AI Activity Logs Terminal Loader (NEW)
+async function loadSystemLogs() {
+  const logsTerminal = document.getElementById('ai-logs-terminal');
+  if (!logsTerminal) return;
+  try {
+    const logs = await fetch('/api/logs').then(r => r.json());
+    logsTerminal.innerHTML = '';
+    if (logs.length === 0) {
+      logsTerminal.innerHTML = '<div>[System Alert] No activity logs recorded yet.</div>';
+      return;
+    }
+    logs.forEach(log => {
+      const timeStr = new Date(log.timestamp).toLocaleTimeString();
+      const detailsStr = JSON.stringify(log.details);
+      const div = document.createElement('div');
+      div.style.marginBottom = '4px';
+      div.innerHTML = `<span style="color: #6ee7b7;">[${timeStr}]</span> <span style="color: #60a5fa;">[${log.role}]</span> <span style="color: #f472b6;">${log.action}</span> - ${detailsStr}`;
+      logsTerminal.appendChild(div);
+    });
+  } catch (err) {
+    logsTerminal.innerHTML = '<div>[System Error] Failed to load activity logs from server.</div>';
+  }
+}
 
 // Student photo edit preview
 document.getElementById('edit-photo-input').addEventListener('change', (e) => {
@@ -1695,7 +1940,7 @@ document.getElementById('student-edit-form').addEventListener('submit', async (e
   }
 });
 
-// Initialize on window load (Includes automatic backend configuration sync handshake)
+// Initialize on window load (Includes automatic backend configuration sync handshake & persistence restore)
 window.addEventListener('load', () => {
   checkQueryParams();
   
@@ -1708,6 +1953,25 @@ window.addEventListener('load', () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ scriptUrl, folderId })
     }).catch(err => console.error('Handshake config sync to cloud database failed:', err));
+  }
+  
+  // Restore persistent login sessions (NEW)
+  const authTeacher = localStorage.getItem('auth_teacher');
+  const authStudentId = localStorage.getItem('auth_student_id');
+  if (authTeacher) {
+    try {
+      state.teacherData = JSON.parse(authTeacher);
+      
+      // Update UI for teacher logged in
+      document.querySelector('.mode-toggle-container').classList.add('hidden');
+      document.getElementById('btn-teacher-logout').classList.remove('hidden');
+      
+      switchView('teacher');
+    } catch (e) {
+      localStorage.removeItem('auth_teacher');
+    }
+  } else if (authStudentId) {
+    loginStudent(authStudentId);
   }
   
   // Theme Toggle Initializer
@@ -1742,4 +2006,559 @@ btnThemeToggle.addEventListener('click', () => {
     applyTheme('pastel');
   }
 });
+
+// ================= SCAN LIMIT & SCAN TYPE BINDINGS =================
+
+const selectDirLimit = document.getElementById('select-dir-limit');
+if (selectDirLimit) {
+  selectDirLimit.addEventListener('change', () => {
+    state.directoryLimit = parseInt(selectDirLimit.value) || 50;
+    state.directoryPage = 1;
+    renderStudentsDirectoryTable();
+  });
+}
+
+const scanTypeSelect = document.getElementById('scan-type-select');
+if (scanTypeSelect) {
+  scanTypeSelect.addEventListener('change', () => {
+    const val = scanTypeSelect.value;
+    const subjectGroup = document.getElementById('scan-subject-group');
+    const assignGroup = document.getElementById('scan-assign-group');
+    const scoreGroup = document.getElementById('scan-score-group');
+    
+    if (val === 'grade') {
+      if (subjectGroup) subjectGroup.style.display = 'none';
+      if (assignGroup) assignGroup.style.display = 'block';
+      if (scoreGroup) scoreGroup.style.display = 'block';
+    } else {
+      if (subjectGroup) subjectGroup.style.display = 'block';
+      if (assignGroup) assignGroup.style.display = 'none';
+      if (scoreGroup) scoreGroup.style.display = 'none';
+    }
+  });
+}
+
+// ================= REPORTS TAB LOGIC =================
+
+function populateReportsFilters() {
+  const classSelect = document.getElementById('report-class-select');
+  const studentSelect = document.getElementById('report-student-select');
+  
+  if (!classSelect || !studentSelect) return;
+  
+  // Populate Class dropdown
+  const classes = [...new Set(state.students.map(s => s.Class).filter(Boolean))].sort();
+  classSelect.innerHTML = classes.map(c => `<option value="${c}">${c}</option>`).join('');
+  
+  // Add change listener to Class Select to update Student List
+  classSelect.removeEventListener('change', updateStudentReportDropdown);
+  classSelect.addEventListener('change', updateStudentReportDropdown);
+  
+  updateStudentReportDropdown();
+}
+
+function updateStudentReportDropdown() {
+  const classSelect = document.getElementById('report-class-select');
+  const studentSelect = document.getElementById('report-student-select');
+  if (!classSelect || !studentSelect) return;
+  
+  const selectedClass = classSelect.value;
+  const classStudents = state.students.filter(s => s.Class === selectedClass).sort((a, b) => a.Student_ID.localeCompare(b.Student_ID));
+  
+  studentSelect.innerHTML = classStudents.map(s => `<option value="${s.Student_ID}">${s.Student_ID} - ${s.FullName}</option>`).join('');
+}
+
+const reportTypeSelect = document.getElementById('report-type-select');
+if (reportTypeSelect) {
+  reportTypeSelect.addEventListener('change', () => {
+    const studentFilterGroup = document.getElementById('report-student-filter-group');
+    if (studentFilterGroup) {
+      if (reportTypeSelect.value === 'individual') {
+        studentFilterGroup.style.display = 'flex';
+      } else {
+        studentFilterGroup.style.display = 'none';
+      }
+    }
+  });
+}
+
+function isWithinPeriod(dateStr, period) {
+  if (!dateStr) return false;
+  const dateOnlyStr = dateStr.includes('T') ? dateStr.split('T')[0] : dateStr;
+  const now = new Date();
+  const todayStr = now.toLocaleDateString('en-CA');
+  
+  if (period === 'daily') {
+    return dateOnlyStr === todayStr;
+  }
+  
+  const recordDate = new Date(dateOnlyStr);
+  const today = new Date(todayStr);
+  
+  let daysDiff = 0;
+  if (period === 'weekly') daysDiff = 7;
+  else if (period === 'monthly') daysDiff = 30;
+  else if (period === 'semester') daysDiff = 120;
+  else if (period === 'yearly') daysDiff = 365;
+  
+  const diffTime = today - recordDate;
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  return diffDays >= 0 && diffDays <= daysDiff;
+}
+
+const btnGenerateReport = document.getElementById('btn-generate-report');
+if (btnGenerateReport) {
+  btnGenerateReport.addEventListener('click', () => {
+    const subjectId = document.getElementById('report-subject-select').value;
+    const period = document.getElementById('report-period-select').value;
+    const type = document.getElementById('report-type-select').value;
+    const selectedClass = document.getElementById('report-class-select').value;
+    const studentId = document.getElementById('report-student-select').value;
+    
+    const resultsPanel = document.getElementById('report-results-panel');
+    const printArea = document.getElementById('print-report-area');
+    
+    if (type === 'individual') {
+      if (!studentId) {
+        showToast('กรุณาเลือกนักเรียนเพื่อดึงรายงาน', 'error');
+        return;
+      }
+      generateIndividualReport(studentId, subjectId, period, resultsPanel, printArea);
+    } else {
+      if (!selectedClass) {
+        showToast('กรุณาเลือกชั้นเรียนเพื่อดึงรายงาน', 'error');
+        return;
+      }
+      generateClassReport(selectedClass, subjectId, period, resultsPanel, printArea);
+    }
+  });
+}
+
+function generateIndividualReport(studentId, subjectId, period, resultsPanel, printArea) {
+  const student = state.students.find(s => s.Student_ID === studentId);
+  if (!student) return;
+  
+  const filteredAssignments = state.assignments.filter(a => {
+    const matchSubject = subjectId === 'all' || a.Subject_ID === subjectId;
+    const matchPeriod = isWithinPeriod(a.Due_Date, period);
+    return matchSubject && matchPeriod;
+  });
+  
+  const studentSubmissions = state.submissions.filter(sub => {
+    if (sub.Student_ID !== studentId) return false;
+    const assign = state.assignments.find(a => a.Assignment_ID === sub.Assignment_ID);
+    if (!assign) return false;
+    const matchSubject = subjectId === 'all' || assign.Subject_ID === subjectId;
+    const matchPeriod = isWithinPeriod(sub.Timestamp, period);
+    return matchSubject && matchPeriod;
+  });
+  
+  const studentAttendance = state.attendance.filter(att => {
+    if (att.Student_ID !== String(studentId)) return false;
+    const matchSubject = subjectId === 'all' || att.Subject_ID === subjectId;
+    const matchPeriod = isWithinPeriod(att.Date, period);
+    return matchSubject && matchPeriod;
+  });
+  
+  const totalTasks = filteredAssignments.length;
+  let submittedTasks = 0;
+  let pendingTasks = 0;
+  let scoreSum = 0;
+  let scoreMax = 0;
+  let gradedCount = 0;
+  
+  filteredAssignments.forEach(assign => {
+    const sub = studentSubmissions.find(s => s.Assignment_ID === assign.Assignment_ID);
+    if (sub) {
+      if (sub.Status === 'Graded' || sub.Status === 'Submitted' || sub.Status === 'Resubmitted') {
+        submittedTasks++;
+      } else {
+        pendingTasks++;
+      }
+      if (sub.Score !== null) {
+        scoreSum += sub.Score;
+        scoreMax += assign.Max_Score;
+        gradedCount++;
+      }
+    } else {
+      pendingTasks++;
+    }
+  });
+  
+  const scoreAvg = gradedCount > 0 ? (scoreSum / gradedCount).toFixed(1) : '0.0';
+  
+  const totalAtt = studentAttendance.length;
+  const presentAtt = studentAttendance.filter(a => a.Status === 'Present').length;
+  const absentAtt = totalAtt - presentAtt;
+  const attPercent = totalAtt > 0 ? Math.round((presentAtt / totalAtt) * 100) : 0;
+  
+  const avatarSrc = student.Photo ? student.Photo : `https://api.dicebear.com/7.x/adventurer/svg?seed=${student.Student_ID}`;
+  
+  let tasksTableRows = '';
+  if (filteredAssignments.length === 0) {
+    tasksTableRows = '<tr><td colspan="5" class="text-center">ไม่มีข้อมูลภาระงานในช่วงเวลานี้</td></tr>';
+  } else {
+    filteredAssignments.forEach(assign => {
+      const sub = studentSubmissions.find(s => s.Assignment_ID === assign.Assignment_ID);
+      const formattedDate = new Date(assign.Due_Date).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: '2-digit' });
+      let scoreDisp = '-';
+      let statusDisp = 'ยังไม่ส่ง';
+      
+      if (sub) {
+        scoreDisp = sub.Score !== null ? `${sub.Score} / ${assign.Max_Score}` : `รอตรวจ / ${assign.Max_Score}`;
+        if (sub.Status === 'Graded') statusDisp = 'ตรวจแล้ว';
+        else if (sub.Status === 'Need_Correction') statusDisp = 'แก้ไขใหม่';
+        else statusDisp = 'ส่งแล้ว';
+      }
+      
+      const subj = state.subjects.find(s => s.Subject_ID === assign.Subject_ID);
+      const subjName = subj ? subj.Subject_Name : 'วิชาทั่วไป';
+      
+      tasksTableRows += `
+        <tr>
+          <td><strong>${assign.Assignment_ID}</strong></td>
+          <td>${assign.Assignment_Name} <br><small style="color: var(--text-muted); font-size: 0.7rem;">วิชา: ${subjName}</small></td>
+          <td>${formattedDate}</td>
+          <td>${scoreDisp}</td>
+          <td>${statusDisp}</td>
+        </tr>
+      `;
+    });
+  }
+  
+  let attendanceTableRows = '';
+  if (studentAttendance.length === 0) {
+    attendanceTableRows = '<tr><td colspan="4" class="text-center">ไม่มีบันทึกประวัติการเข้าเรียนในช่วงเวลานี้</td></tr>';
+  } else {
+    const sortedAtt = [...studentAttendance].sort((a, b) => new Date(b.Date) - new Date(a.Date)).slice(0, 10);
+    sortedAtt.forEach(att => {
+      const formattedDate = new Date(att.Date).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' });
+      const subj = state.subjects.find(s => s.Subject_ID === att.Subject_ID);
+      const subjName = subj ? `${att.Subject_ID} - ${subj.Subject_Name}` : att.Subject_ID;
+      const statusDisp = att.Status === 'Present' ? 'มาเรียน' : 'ขาดเรียน';
+      
+      attendanceTableRows += `
+        <tr>
+          <td>${formattedDate}</td>
+          <td>${subjName}</td>
+          <td>${statusDisp}</td>
+          <td>${att.Recorded_By || 'system'}</td>
+        </tr>
+      `;
+    });
+  }
+  
+  const reportHtml = `
+    <div style="display: flex; gap: 10px; margin-bottom: 20px; align-self: flex-start;">
+      <button id="btn-print-active-report" class="btn btn-purple"><i class="fa-solid fa-print"></i> พิมพ์รายงานสรุป A4</button>
+    </div>
+    <div class="report-paper-preview">
+      <div class="report-header">
+        <div class="report-header-left">
+          <div class="logo"><i class="fa-solid fa-graduation-cap"></i></div>
+          <div class="report-title">
+            <h2>โรงเรียนเซนต์โยเซฟแม่ระมาด</h2>
+            <p>SJMR Student Submission & Attendance Report</p>
+          </div>
+        </div>
+        <div class="report-metadata">
+          <div><strong>ประเภทรายงาน:</strong> รายงานสรุปผลรายบุคคล</div>
+          <div><strong>วันที่ออกรายงาน:</strong> ${new Date().toLocaleDateString('th-TH')}</div>
+        </div>
+      </div>
+
+      <div class="report-profile-section">
+        <img src="${avatarSrc}" alt="Student Avatar" class="report-avatar">
+        <div class="report-profile-details">
+          <div class="item"><strong>ชื่อ-นามสกุล:</strong> ${student.FullName}</div>
+          <div class="item"><strong>รหัสประจำตัว:</strong> ${student.Student_ID}</div>
+          <div class="item"><strong>ชั้นเรียน:</strong> ${student.Class || '-'}</div>
+          <div class="item"><strong>อีเมล:</strong> ${student.Email || '-'}</div>
+        </div>
+      </div>
+
+      <div class="report-stats-grid">
+        <div class="report-stat-box">
+          <h4><i class="fa-solid fa-calendar-check" style="color: #3b82f6;"></i> สรุปการเข้าเรียน</h4>
+          <div class="report-stat-num-row">
+            <div class="report-stat-num">
+              <span class="num">${totalAtt}</span>
+              <span class="label">คาบเรียนทั้งหมด</span>
+            </div>
+            <div class="report-stat-num">
+              <span class="num success">${presentAtt}</span>
+              <span class="label">มาเรียน</span>
+            </div>
+            <div class="report-stat-num">
+              <span class="num error">${absentAtt}</span>
+              <span class="label">ขาดเรียน</span>
+            </div>
+          </div>
+          <div style="margin-top: 15px; text-align: center; font-size: 0.85rem; font-weight: bold; color: #1e3a8a;">
+            อัตราการเข้าเรียน: ${attPercent}%
+          </div>
+        </div>
+
+        <div class="report-stat-box">
+          <h4><i class="fa-solid fa-book" style="color: #8b5cf6;"></i> สรุปการส่งงาน</h4>
+          <div class="report-stat-num-row">
+            <div class="report-stat-num">
+              <span class="num">${totalTasks}</span>
+              <span class="label">ภาระงานทั้งหมด</span>
+            </div>
+            <div class="report-stat-num">
+              <span class="num success">${submittedTasks}</span>
+              <span class="label">ส่งแล้ว</span>
+            </div>
+            <div class="report-stat-num">
+              <span class="num error">${pendingTasks}</span>
+              <span class="label">งานค้างส่ง</span>
+            </div>
+          </div>
+          <div style="margin-top: 15px; text-align: center; font-size: 0.85rem; font-weight: bold; color: #1e3a8a;">
+            คะแนนรวม: ${scoreSum}/${scoreMax} | เฉลี่ย: ${scoreAvg} คะแนน
+          </div>
+        </div>
+      </div>
+
+      <div class="report-table-section">
+        <h4><i class="fa-solid fa-list-check"></i> รายการผลการส่งงานและการบ้าน</h4>
+        <table class="report-table">
+          <thead>
+            <tr>
+              <th style="width: 15%">รหัสการบ้าน</th>
+              <th style="width: 45%">ชื่อภาระงาน / วิชา</th>
+              <th style="width: 15%">กำหนดส่ง</th>
+              <th style="width: 10%">คะแนน</th>
+              <th style="width: 15%">สถานะ</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${tasksTableRows}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="report-table-section" style="margin-top: 15px;">
+        <h4><i class="fa-solid fa-clipboard-user"></i> ประวัติการเข้าเรียน (ล่าสุด 10 คาบ)</h4>
+        <table class="report-table">
+          <thead>
+            <tr>
+              <th style="width: 25%">วันที่</th>
+              <th style="width: 35%">รหัสวิชา - รายวิชา</th>
+              <th style="width: 20%">สถานะ</th>
+              <th style="width: 20%">บันทึกโดย</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${attendanceTableRows}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="report-footer">
+        <div>* รายงานฉบับนี้ประมวลผลโดยระบบอัตโนมัติ SJMR Portal</div>
+        <div class="report-signature">
+          <div class="line"></div>
+          <div>(ลงชื่อ) คุณครูประจำชั้น / ผู้ประเมิน</div>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  resultsPanel.innerHTML = reportHtml;
+  resultsPanel.style.background = 'transparent';
+  resultsPanel.style.border = 'none';
+  
+  printArea.innerHTML = resultsPanel.querySelector('.report-paper-preview').outerHTML;
+  
+  document.getElementById('btn-print-active-report').addEventListener('click', () => {
+    window.print();
+  });
+}
+
+function generateClassReport(selectedClass, subjectId, period, resultsPanel, printArea) {
+  const classStudents = state.students.filter(s => s.Class === selectedClass);
+  if (classStudents.length === 0) {
+    resultsPanel.innerHTML = '<p class="text-center text-muted">ไม่พบข้อมูลนักเรียนในชั้นเรียนนี้</p>';
+    return;
+  }
+  
+  const classAssignments = state.assignments.filter(a => {
+    const matchSubject = subjectId === 'all' || a.Subject_ID === subjectId;
+    const matchPeriod = isWithinPeriod(a.Due_Date, period);
+    return matchSubject && matchPeriod;
+  });
+  
+  const classTotalTasks = classAssignments.length;
+  let totalClassAttendanceRecords = 0;
+  let presentClassAttendanceRecords = 0;
+  let totalSubmissionsCount = 0;
+  let totalPossibleSubmissions = classStudents.length * classTotalTasks;
+  let gradedScoresSum = 0;
+  let gradedScoresCount = 0;
+  
+  let classStudentsRows = '';
+  
+  classStudents.forEach(student => {
+    const studentId = student.Student_ID;
+    
+    const studentAttendance = state.attendance.filter(att => {
+      if (att.Student_ID !== String(studentId)) return false;
+      const matchSubject = subjectId === 'all' || att.Subject_ID === subjectId;
+      const matchPeriod = isWithinPeriod(att.Date, period);
+      return matchSubject && matchPeriod;
+    });
+    
+    const attCount = studentAttendance.length;
+    const presentCount = studentAttendance.filter(a => a.Status === 'Present').length;
+    
+    totalClassAttendanceRecords += attCount;
+    presentClassAttendanceRecords += presentCount;
+    
+    const attPercent = attCount > 0 ? Math.round((presentCount / attCount) * 100) : 100;
+    
+    const studentSubmissions = state.submissions.filter(sub => {
+      if (sub.Student_ID !== studentId) return false;
+      const assign = state.assignments.find(a => a.Assignment_ID === sub.Assignment_ID);
+      if (!assign) return false;
+      const matchSubject = subjectId === 'all' || assign.Subject_ID === subjectId;
+      const matchPeriod = isWithinPeriod(sub.Timestamp, period);
+      return matchSubject && matchPeriod;
+    });
+    
+    let submittedCount = 0;
+    let studentScoreSum = 0;
+    let studentGradedCount = 0;
+    
+    classAssignments.forEach(assign => {
+      const sub = studentSubmissions.find(s => s.Assignment_ID === assign.Assignment_ID);
+      if (sub) {
+        if (sub.Status === 'Graded' || sub.Status === 'Submitted' || sub.Status === 'Resubmitted') {
+          submittedCount++;
+          totalSubmissionsCount++;
+        }
+        if (sub.Score !== null) {
+          studentScoreSum += sub.Score;
+          studentGradedCount++;
+          gradedScoresSum += sub.Score;
+          gradedScoresCount++;
+        }
+      }
+    });
+    
+    const avgScore = studentGradedCount > 0 ? (studentScoreSum / studentGradedCount).toFixed(1) : '0.0';
+    
+    classStudentsRows += `
+      <tr>
+        <td><strong>${student.Student_ID}</strong></td>
+        <td>${student.FullName}</td>
+        <td>${presentCount} / ${attCount} (${attPercent}%)</td>
+        <td>${submittedCount} / ${classTotalTasks}</td>
+        <td>${avgScore}</td>
+      </tr>
+    `;
+  });
+  
+  const avgAttendance = totalClassAttendanceRecords > 0 ? Math.round((presentClassAttendanceRecords / totalClassAttendanceRecords) * 100) : 100;
+  const avgScore = gradedScoresCount > 0 ? (gradedScoresSum / gradedScoresCount).toFixed(1) : '0.0';
+  const classSubmittedPercent = totalPossibleSubmissions > 0 ? Math.round((totalSubmissionsCount / totalPossibleSubmissions) * 100) : 100;
+  const classPendingCount = totalPossibleSubmissions - totalSubmissionsCount;
+  
+  const reportHtml = `
+    <div style="display: flex; gap: 10px; margin-bottom: 20px; align-self: flex-start;">
+      <button id="btn-print-active-report" class="btn btn-purple"><i class="fa-solid fa-print"></i> พิมพ์รายงานสรุป A4</button>
+    </div>
+    <div class="report-paper-preview">
+      <div class="report-header">
+        <div class="report-header-left">
+          <div class="logo"><i class="fa-solid fa-graduation-cap"></i></div>
+          <div class="report-title">
+            <h2>โรงเรียนเซนต์โยเซฟแม่ระมาด</h2>
+            <p>SJMR Student Submission & Attendance Report</p>
+          </div>
+        </div>
+        <div class="report-metadata">
+          <div><strong>ประเภทรายงาน:</strong> รายงานสรุปผลภาพรวมห้องเรียน</div>
+          <div><strong>ชั้นเรียน:</strong> ${selectedClass}</div>
+          <div><strong>วันที่ออกรายงาน:</strong> ${new Date().toLocaleDateString('th-TH')}</div>
+        </div>
+      </div>
+
+      <div class="report-stats-grid">
+        <div class="report-stat-box">
+          <h4><i class="fa-solid fa-users" style="color: #3b82f6;"></i> ข้อมูลภาพรวมห้องเรียน</h4>
+          <div class="report-stat-num-row">
+            <div class="report-stat-num">
+              <span class="num">${classStudents.length}</span>
+              <span class="label">นักเรียนทั้งหมด</span>
+            </div>
+            <div class="report-stat-num">
+              <span class="num success">${avgAttendance}%</span>
+              <span class="label">อัตราเข้าเรียนเฉลี่ย</span>
+            </div>
+            <div class="report-stat-num">
+              <span class="num warning">${avgScore}</span>
+              <span class="label">คะแนนเฉลี่ยห้อง</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="report-stat-box">
+          <h4><i class="fa-solid fa-file-invoice" style="color: #8b5cf6;"></i> การส่งการบ้านภาพรวม</h4>
+          <div class="report-stat-num-row">
+            <div class="report-stat-num">
+              <span class="num">${classTotalTasks}</span>
+              <span class="label">การบ้านทั้งหมด</span>
+            </div>
+            <div class="report-stat-num">
+              <span class="num success">${classSubmittedPercent}%</span>
+              <span class="label">อัตราการส่งงาน</span>
+            </div>
+            <div class="report-stat-num">
+              <span class="num error">${classPendingCount}</span>
+              <span class="label">งานค้างส่งรวม</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="report-table-section">
+        <h4><i class="fa-solid fa-table"></i> ตารางวิเคราะห์ข้อมูลนักเรียนรายบุคคลในห้องเรียน</h4>
+        <table class="report-table">
+          <thead>
+            <tr>
+              <th style="width: 15%">รหัสนักเรียน</th>
+              <th style="width: 35%">ชื่อ-นามสกุล</th>
+              <th style="width: 15%">เข้าเรียน (ครั้ง)</th>
+              <th style="width: 15%">ส่งงาน / ทั้งหมด</th>
+              <th style="width: 20%">คะแนนเฉลี่ย</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${classStudentsRows}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="report-footer">
+        <div>* รายงานฉบับนี้ประมวลผลโดยระบบอัตโนมัติ SJMR Portal</div>
+        <div class="report-signature">
+          <div class="line"></div>
+          <div>(ลงชื่อ) คุณครูประจำชั้น / ผู้ประเมิน</div>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  resultsPanel.innerHTML = reportHtml;
+  resultsPanel.style.background = 'transparent';
+  resultsPanel.style.border = 'none';
+  
+  printArea.innerHTML = resultsPanel.querySelector('.report-paper-preview').outerHTML;
+  
+  document.getElementById('btn-print-active-report').addEventListener('click', () => {
+    window.print();
+  });
+}
 

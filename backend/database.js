@@ -7,6 +7,9 @@ const ASSIGNMENTS_FILE = path.join(DATA_DIR, 'assignments.json');
 const SUBMISSIONS_FILE = path.join(DATA_DIR, 'submissions.json');
 const TEACHERS_FILE = path.join(DATA_DIR, 'teachers.json');
 const CONFIG_FILE = path.join(DATA_DIR, 'config.json');
+const LOGS_FILE = path.join(DATA_DIR, 'usage_logs.json');
+const SUBJECTS_FILE = path.join(DATA_DIR, 'subjects.json');
+const ATTENDANCE_FILE = path.join(DATA_DIR, 'attendance.json');
 
 if (!fs.existsSync(DATA_DIR)) {
   fs.mkdirSync(DATA_DIR, { recursive: true });
@@ -16,6 +19,9 @@ let students = [];
 let assignments = [];
 let submissions = [];
 let teachers = [];
+let usageLogs = [];
+let subjects = [];
+let attendance = [];
 let config = { scriptUrl: '', folderId: '' };
 let isSyncing = false;
 
@@ -55,6 +61,7 @@ function loadData() {
       {
         Assignment_ID: "A001",
         Assignment_Name: "Coding Project 1 (การเขียนโค้ดเบื้องต้น)",
+        Subject_ID: "S001",
         Due_Date: "2026-06-15",
         Max_Score: 10,
         QR_Link: "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=A001"
@@ -62,6 +69,7 @@ function loadData() {
       {
         Assignment_ID: "A002",
         Assignment_Name: "Scratch Game Creation (สร้างเกมสร้างสรรค์ด้วย Scratch)",
+        Subject_ID: "S001",
         Due_Date: "2026-06-22",
         Max_Score: 20,
         QR_Link: "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=A002"
@@ -69,12 +77,37 @@ function loadData() {
       {
         Assignment_ID: "A003",
         Assignment_Name: "HTML Personal Website (สร้างเว็บไซต์แนะนำตัว)",
+        Subject_ID: "S001",
         Due_Date: "2026-06-30",
         Max_Score: 15,
         QR_Link: "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=A003"
       }
     ];
     saveAssignments();
+  }
+
+  // Load subjects
+  if (fs.existsSync(SUBJECTS_FILE)) {
+    try {
+      subjects = JSON.parse(fs.readFileSync(SUBJECTS_FILE, 'utf8'));
+    } catch (e) {
+      console.error('Error reading subjects file, resetting:', e);
+      loadDefaultSubjects();
+    }
+  } else {
+    loadDefaultSubjects();
+  }
+
+  // Load attendance
+  if (fs.existsSync(ATTENDANCE_FILE)) {
+    try {
+      attendance = JSON.parse(fs.readFileSync(ATTENDANCE_FILE, 'utf8'));
+    } catch (e) {
+      console.error('Error reading attendance file, resetting:', e);
+      attendance = [];
+    }
+  } else {
+    attendance = [];
   }
 
   // Load submissions
@@ -100,6 +133,18 @@ function loadData() {
   } else {
     loadDefaultTeachers();
   }
+
+  // Load usage logs
+  if (fs.existsSync(LOGS_FILE)) {
+    try {
+      usageLogs = JSON.parse(fs.readFileSync(LOGS_FILE, 'utf8'));
+    } catch (e) {
+      console.error('Error reading usage logs file, resetting:', e);
+      usageLogs = [];
+    }
+  } else {
+    usageLogs = [];
+  }
 }
 
 function loadDefaultTeachers() {
@@ -112,6 +157,40 @@ function loadDefaultTeachers() {
     }
   ];
   saveTeachers();
+}
+
+function loadDefaultSubjects() {
+  subjects = [
+    {
+      Subject_ID: "S001",
+      Subject_Name: "วิทยาการคำนวณ",
+      Teacher_Username: "admin"
+    },
+    {
+      Subject_ID: "S002",
+      Subject_Name: "คณิตศาสตร์เบื้องต้น",
+      Teacher_Username: "admin"
+    },
+    {
+      Subject_ID: "S003",
+      Subject_Name: "วิชาชุมนุม",
+      Teacher_Username: "any"
+    },
+    {
+      Subject_ID: "S004",
+      Subject_Name: "กิจกรรมลูกเสือ",
+      Teacher_Username: "any"
+    }
+  ];
+  saveSubjects();
+}
+
+function saveSubjects() {
+  fs.writeFileSync(SUBJECTS_FILE, JSON.stringify(subjects, null, 2), 'utf8');
+}
+
+function saveAttendance() {
+  fs.writeFileSync(ATTENDANCE_FILE, JSON.stringify(attendance, null, 2), 'utf8');
 }
 
 function saveStudents() {
@@ -134,6 +213,10 @@ function saveConfig() {
   fs.writeFileSync(CONFIG_FILE, JSON.stringify(config, null, 2), 'utf8');
 }
 
+function saveUsageLogs() {
+  fs.writeFileSync(LOGS_FILE, JSON.stringify(usageLogs, null, 2), 'utf8');
+}
+
 // 2. Merge Logic for Two-Way Cloud Sync
 function mergeStudents(localList, driveList) {
   const map = {};
@@ -146,7 +229,6 @@ function mergeStudents(localList, driveList) {
       map[s.Student_ID] = s;
     } else {
       const merged = { ...existing, ...s };
-      // Keep photo path if either has it
       if (s.Photo && !existing.Photo) merged.Photo = s.Photo;
       if (!s.Photo && existing.Photo) merged.Photo = existing.Photo;
       map[s.Student_ID] = merged;
@@ -178,7 +260,6 @@ function mergeSubmissions(localList, driveList) {
     } else {
       const localTime = new Date(s.Timestamp || 0).getTime();
       const driveTime = new Date(existing.Timestamp || 0).getTime();
-      // Keep graded status, higher score, or newer timestamp
       if ((s.Status === 'Graded' && existing.Status !== 'Graded') || (localTime > driveTime)) {
         map[s.Submission_ID] = s;
       }
@@ -194,6 +275,41 @@ function mergeTeachers(localList, driveList) {
   });
   localList.forEach(t => {
     map[t.username] = { ...map[t.username], ...t };
+  });
+  return Object.values(map);
+}
+
+function mergeLogs(localList, driveList) {
+  const map = {};
+  driveList.forEach(l => {
+    map[l.id] = l;
+  });
+  localList.forEach(l => {
+    map[l.id] = l;
+  });
+  const merged = Object.values(map);
+  merged.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)); // Newest first
+  return merged.slice(0, 500); // Limit total size
+}
+
+function mergeSubjects(localList, driveList) {
+  const map = {};
+  driveList.forEach(s => {
+    map[s.Subject_ID] = s;
+  });
+  localList.forEach(s => {
+    map[s.Subject_ID] = { ...map[s.Subject_ID], ...s };
+  });
+  return Object.values(map);
+}
+
+function mergeAttendance(localList, driveList) {
+  const map = {};
+  driveList.forEach(a => {
+    map[a.Attendance_ID] = a;
+  });
+  localList.forEach(a => {
+    map[a.Attendance_ID] = a;
   });
   return Object.values(map);
 }
@@ -217,22 +333,25 @@ async function syncDrive() {
     }
 
     if (result.exists && result.data) {
-      // Merge drive data into local database
       const driveDb = result.data;
       students = mergeStudents(students, driveDb.students || []);
       assignments = mergeAssignments(assignments, driveDb.assignments || []);
       submissions = mergeSubmissions(submissions, driveDb.submissions || []);
       teachers = mergeTeachers(teachers, driveDb.teachers || []);
+      usageLogs = mergeLogs(usageLogs, driveDb.usageLogs || []);
+      subjects = mergeSubjects(subjects, driveDb.subjects || []);
+      attendance = mergeAttendance(attendance, driveDb.attendance || []);
       
       saveStudents();
       saveAssignments();
       saveSubmissions();
       saveTeachers();
+      saveUsageLogs();
+      saveSubjects();
+      saveAttendance();
       
-      // Push the merged database back to cloud
       await pushToDrive();
     } else {
-      // First time initialization: push local database to cloud
       await pushToDrive();
     }
   } catch (err) {
@@ -250,7 +369,7 @@ async function pushToDrive() {
     const bodyData = {
       action: "saveDb",
       folderId: config.folderId,
-      dbData: { students, assignments, submissions, teachers }
+      dbData: { students, assignments, submissions, teachers, usageLogs, subjects, attendance }
     };
     
     const res = await fetch(url, {
@@ -282,7 +401,6 @@ module.exports = {
     config.scriptUrl = scriptUrl;
     config.folderId = folderId;
     saveConfig();
-    // Trigger instant background sync
     syncDrive();
     return config;
   },
@@ -292,7 +410,7 @@ module.exports = {
   setStudents: (newStudents) => {
     students = newStudents;
     saveStudents();
-    pushToDrive(); // Push update immediately
+    pushToDrive();
   },
   findStudentById: (id) => students.find(s => s.Student_ID === id || s.Student_ID === String(id)),
   updateStudent: (studentId, updatedData) => {
@@ -303,7 +421,7 @@ module.exports = {
         ...updatedData
       };
       saveStudents();
-      pushToDrive(); // Push update immediately
+      pushToDrive();
       return students[idx];
     }
     return null;
@@ -314,7 +432,7 @@ module.exports = {
   addAssignment: (assignment) => {
     assignments.push(assignment);
     saveAssignments();
-    pushToDrive(); // Push update immediately
+    pushToDrive();
     return assignment;
   },
   
@@ -325,7 +443,7 @@ module.exports = {
     submission.Timestamp = new Date().toISOString();
     submissions.push(submission);
     saveSubmissions();
-    pushToDrive(); // Push update immediately
+    pushToDrive();
     return submission;
   },
   updateSubmissionScore: (submissionId, score, status) => {
@@ -333,9 +451,9 @@ module.exports = {
     if (sub) {
       sub.Score = Number(score);
       sub.Status = status || 'Graded';
-      sub.Timestamp = new Date().toISOString(); // Update timestamp on grading
+      sub.Timestamp = new Date().toISOString();
       saveSubmissions();
-      pushToDrive(); // Push update immediately
+      pushToDrive();
       return sub;
     }
     return null;
@@ -345,7 +463,7 @@ module.exports = {
     if (idx !== -1) {
       const removed = submissions.splice(idx, 1);
       saveSubmissions();
-      pushToDrive(); // Push update immediately
+      pushToDrive();
       return removed[0];
     }
     return null;
@@ -361,16 +479,85 @@ module.exports = {
     if (exists) return null;
     teachers.push(teacherData);
     saveTeachers();
-    pushToDrive(); // Push update immediately
+    pushToDrive();
     return teacherData;
   },
   deleteTeacher: (username) => {
-    if (username.toLowerCase() === 'admin') return null; // Protect main admin
+    if (username.toLowerCase() === 'admin') return null;
     const idx = teachers.findIndex(t => t.username.toLowerCase() === username.toLowerCase());
     if (idx !== -1) {
       const removed = teachers.splice(idx, 1);
       saveTeachers();
-      pushToDrive(); // Push update immediately
+      pushToDrive();
+      return removed[0];
+    }
+    return null;
+  },
+
+  // Usage Logging helpers
+  getUsageLogs: () => usageLogs,
+  addUsageLog: (logData) => {
+    const entry = {
+      id: 'LOG' + Date.now() + Math.random().toString(36).substr(2, 5),
+      timestamp: new Date().toISOString(),
+      ...logData
+    };
+    usageLogs.unshift(entry);
+    if (usageLogs.length > 500) usageLogs.pop();
+    saveUsageLogs();
+    pushToDrive(); // Push to drive immediately
+    return entry;
+  },
+
+  // Subject helpers
+  getSubjects: () => subjects,
+  addSubject: (subjectData) => {
+    const exists = subjects.some(s => s.Subject_ID.toLowerCase() === subjectData.Subject_ID.toLowerCase());
+    if (exists) return null;
+    subjects.push(subjectData);
+    saveSubjects();
+    pushToDrive();
+    return subjectData;
+  },
+  deleteSubject: (subjectId) => {
+    const idx = subjects.findIndex(s => s.Subject_ID.toLowerCase() === subjectId.toLowerCase());
+    if (idx !== -1) {
+      const removed = subjects.splice(idx, 1);
+      saveSubjects();
+      pushToDrive();
+      return removed[0];
+    }
+    return null;
+  },
+
+  // Attendance helpers
+  getAttendance: () => attendance,
+  addAttendance: (attData) => {
+    // Generate a unique ID
+    attData.Attendance_ID = 'ATT' + Date.now() + Math.random().toString(36).substr(2, 5);
+    attData.Timestamp = new Date().toISOString();
+    attendance.push(attData);
+    saveAttendance();
+    pushToDrive();
+    return attData;
+  },
+  updateAttendance: (attendanceId, status) => {
+    const att = attendance.find(a => a.Attendance_ID === attendanceId);
+    if (att) {
+      att.Status = status;
+      att.Timestamp = new Date().toISOString();
+      saveAttendance();
+      pushToDrive();
+      return att;
+    }
+    return null;
+  },
+  deleteAttendance: (attendanceId) => {
+    const idx = attendance.findIndex(a => a.Attendance_ID === attendanceId);
+    if (idx !== -1) {
+      const removed = attendance.splice(idx, 1);
+      saveAttendance();
+      pushToDrive();
       return removed[0];
     }
     return null;

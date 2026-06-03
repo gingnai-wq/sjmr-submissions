@@ -106,7 +106,7 @@ app.get('/api/assignments', (req, res) => {
 
 // 3. Create a new assignment (Teacher)
 app.post('/api/assignments', (req, res) => {
-  const { Assignment_ID, Assignment_Name, Due_Date, Max_Score } = req.body;
+  const { Assignment_ID, Assignment_Name, Due_Date, Max_Score, Subject_ID } = req.body;
 
   if (!Assignment_ID || !Assignment_Name || !Due_Date || !Max_Score) {
     return res.status(400).json({ success: false, message: 'กรุณากรอกข้อมูลให้ครบถ้วน' });
@@ -121,6 +121,7 @@ app.post('/api/assignments', (req, res) => {
   const newAssignment = db.addAssignment({
     Assignment_ID,
     Assignment_Name,
+    Subject_ID: Subject_ID || "S001",
     Due_Date,
     Max_Score: Number(Max_Score),
     QR_Link: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${Assignment_ID}`
@@ -197,12 +198,41 @@ app.get('/api/submissions', (req, res) => {
   res.json(detailedSubs);
 });
 
+function hasGradingPermission(teacherUsername, teacherRole, assignmentId) {
+  if (teacherRole === 'Admin' || (teacherUsername && teacherUsername.toLowerCase() === 'admin')) return true;
+  
+  const assignments = db.getAssignments();
+  const assign = assignments.find(a => a.Assignment_ID === assignmentId);
+  if (!assign) return false;
+  
+  const subjects = db.getSubjects();
+  const subj = subjects.find(s => s.Subject_ID === assign.Subject_ID);
+  if (!subj) return true;
+  
+  const name = subj.Subject_Name;
+  if (name.includes('ชุมนุม') || name.includes('ลูกเสือ') || subj.Teacher_Username === 'any') {
+    return true;
+  }
+  
+  return teacherUsername && subj.Teacher_Username.toLowerCase() === teacherUsername.toLowerCase();
+}
+
 // 6. Grade submission (Teacher)
 app.post('/api/grade', (req, res) => {
-  const { Submission_ID, Score, Status } = req.body;
+  const { Submission_ID, Score, Status, Teacher_Username, Teacher_Role } = req.body;
 
   if (!Submission_ID || Score === undefined) {
     return res.status(400).json({ success: false, message: 'ข้อมูลไม่ครบถ้วน' });
+  }
+
+  const submissions = db.getSubmissions();
+  const sub = submissions.find(s => s.Submission_ID === Submission_ID);
+  if (!sub) {
+    return res.status(404).json({ success: false, message: 'ไม่พบข้อมูลการส่งงานที่ระบุ' });
+  }
+
+  if (!hasGradingPermission(Teacher_Username, Teacher_Role, sub.Assignment_ID)) {
+    return res.status(403).json({ success: false, message: 'คุณไม่มีสิทธิ์ตรวจคะแนนในวิชานี้ (สิทธิ์เฉพาะครูประจำวิชา หรือผู้ดูแลระบบเท่านั้น)' });
   }
 
   const updated = db.updateSubmissionScore(Submission_ID, Score, Status || 'Graded');
@@ -240,10 +270,14 @@ app.post('/api/sync-sheets', (req, res) => {
 
 // 9. Quick Grade via scan
 app.post('/api/quick-grade', (req, res) => {
-  const { Student_ID, Assignment_ID, Score } = req.body;
+  const { Student_ID, Assignment_ID, Score, Teacher_Username, Teacher_Role } = req.body;
 
   if (!Student_ID || !Assignment_ID || Score === undefined) {
     return res.status(400).json({ success: false, message: 'ข้อมูลไม่ครบถ้วน' });
+  }
+
+  if (!hasGradingPermission(Teacher_Username, Teacher_Role, Assignment_ID)) {
+    return res.status(403).json({ success: false, message: 'คุณไม่มีสิทธิ์ตรวจคะแนนในวิชานี้ (สิทธิ์เฉพาะครูประจำวิชา หรือผู้ดูแลระบบเท่านั้น)' });
   }
 
   let student = db.findStudentById(Student_ID);
@@ -755,6 +789,132 @@ app.post('/api/teacher/delete', (req, res) => {
   } else {
     res.status(400).json({ success: false, message: 'ไม่สามารถลบบัญชีนี้ได้ (บัญชีแอดมินหลักไม่สามารถลบได้)' });
   }
+});
+
+// 14.1 Subjects Management API (NEW)
+app.get('/api/subjects', (req, res) => {
+  res.json(db.getSubjects());
+});
+
+app.post('/api/subjects', (req, res) => {
+  const { Subject_ID, Subject_Name, Teacher_Username } = req.body;
+  if (!Subject_ID || !Subject_Name || !Teacher_Username) {
+    return res.status(400).json({ success: false, message: 'ข้อมูลไม่ครบถ้วน' });
+  }
+  const newSub = db.addSubject({
+    Subject_ID: Subject_ID.trim(),
+    Subject_Name: Subject_Name.trim(),
+    Teacher_Username: Teacher_Username.trim()
+  });
+  if (newSub) {
+    res.status(201).json({ success: true, message: `สร้างรายวิชา ${Subject_Name} สำเร็จ`, subject: newSub });
+  } else {
+    res.status(400).json({ success: false, message: 'มีรหัสรายวิชานี้ในระบบอยู่แล้ว' });
+  }
+});
+
+app.post('/api/subjects/delete', (req, res) => {
+  const { Subject_ID } = req.body;
+  if (!Subject_ID) {
+    return res.status(400).json({ success: false, message: 'ไม่ระบุรหัสวิชา' });
+  }
+  const deleted = db.deleteSubject(Subject_ID);
+  if (deleted) {
+    res.json({ success: true, message: 'ลบรายวิชาเรียบร้อยแล้ว' });
+  } else {
+    res.status(404).json({ success: false, message: 'ไม่พบวิชาดังกล่าวในระบบ' });
+  }
+});
+
+// 14.2 Attendance Management API (NEW)
+app.get('/api/attendance', (req, res) => {
+  res.json(db.getAttendance());
+});
+
+app.post('/api/attendance/scan', (req, res) => {
+  const { Student_ID, Subject_ID, Recorded_By, Status } = req.body;
+  if (!Student_ID || !Subject_ID) {
+    return res.status(400).json({ success: false, message: 'ข้อมูลไม่ครบถ้วน' });
+  }
+
+  let student = db.findStudentById(Student_ID);
+  let isNewStudent = false;
+
+  if (!student) {
+    isNewStudent = true;
+    student = {
+      Student_ID: String(Student_ID),
+      FullName: `นักเรียนใหม่ (รหัส: ${Student_ID})`,
+      Class: "ม.ทั่วไป",
+      Email: `${Student_ID}@sjmr.ac.th`,
+      Status: "กำลังศึกษาอยู่"
+    };
+    const currentStudents = db.getStudents();
+    currentStudents.push(student);
+    db.setStudents(currentStudents);
+  }
+
+  const today = new Date().toLocaleDateString('en-CA');
+  const attList = db.getAttendance();
+  const existing = attList.find(a => a.Student_ID === String(Student_ID) && a.Subject_ID === Subject_ID && a.Date === today);
+
+  if (existing) {
+    existing.Status = Status || 'Present';
+    existing.Timestamp = new Date().toISOString();
+    existing.Recorded_By = Recorded_By || 'system';
+    db.updateAttendance(existing.Attendance_ID, existing.Status);
+    res.json({ success: true, message: `อัปเดตสถานะการเข้าเรียนของ ${student.FullName} เป็น ${existing.Status === 'Present' ? 'มาเรียน' : 'ขาดเรียน'}`, attendance: existing, student, isNewStudent });
+  } else {
+    const newAtt = db.addAttendance({
+      Student_ID: String(Student_ID),
+      Subject_ID: Subject_ID,
+      Date: today,
+      Status: Status || 'Present',
+      Recorded_By: Recorded_By || 'system'
+    });
+    res.status(201).json({ success: true, message: `เช็คชื่อเข้าเรียน ${student.FullName} เรียบร้อยแล้ว`, attendance: newAtt, student, isNewStudent });
+  }
+});
+
+app.post('/api/attendance/update', (req, res) => {
+  const { Student_ID, Subject_ID, Date: dateStr, Status, Recorded_By } = req.body;
+  if (!Student_ID || !Subject_ID || !dateStr || !Status) {
+    return res.status(400).json({ success: false, message: 'ข้อมูลไม่ครบถ้วน' });
+  }
+
+  const attList = db.getAttendance();
+  const existing = attList.find(a => a.Student_ID === String(Student_ID) && a.Subject_ID === Subject_ID && a.Date === dateStr);
+
+  if (existing) {
+    existing.Status = Status;
+    existing.Timestamp = new Date().toISOString();
+    existing.Recorded_By = Recorded_By || 'teacher';
+    db.updateAttendance(existing.Attendance_ID, Status);
+    res.json({ success: true, message: 'อัปเดตสถานะการเข้าเรียนสำเร็จ', attendance: existing });
+  } else {
+    const newAtt = db.addAttendance({
+      Student_ID: String(Student_ID),
+      Subject_ID: Subject_ID,
+      Date: dateStr,
+      Status: Status,
+      Recorded_By: Recorded_By || 'teacher'
+    });
+    res.status(201).json({ success: true, message: 'บันทึกสถานะการเข้าเรียนสำเร็จ', attendance: newAtt });
+  }
+});
+
+// 15. Agent AI Usage Logging Endpoints (NEW)
+app.post('/api/log', (req, res) => {
+  const { action, role, details } = req.body;
+  if (!action || !role) {
+    return res.status(400).json({ success: false, message: 'ข้อมูลล็อกไม่สมบูรณ์' });
+  }
+  const entry = db.addUsageLog({ action, role, details: details || {} });
+  res.json({ success: true, entry });
+});
+
+app.get('/api/logs', (req, res) => {
+  res.json(db.getUsageLogs());
 });
 
 // Start the server
