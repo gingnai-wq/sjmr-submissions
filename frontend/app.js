@@ -38,6 +38,8 @@ let state = {
   assignments: [],
   submissions: [], // For teacher dashboard
   students: [], // For teacher directory
+  directoryPage: 1, // Student directory pagination page
+  directoryLimit: 50, // Student directory pagination limit
   selectedFile: null,
   autoRouteAssignmentId: null // From URL query ?assign=AXXX
 };
@@ -233,16 +235,38 @@ btnTeacherMode.addEventListener('click', () => {
   document.getElementById('pwd-input').focus();
 });
 
-// Teacher password validation
-document.getElementById('pwd-form').addEventListener('submit', (e) => {
+// Teacher login validation (Updated to support multiple teacher accounts)
+document.getElementById('pwd-form').addEventListener('submit', async (e) => {
   e.preventDefault();
+  const username = document.getElementById('pwd-username').value.trim();
   const password = document.getElementById('pwd-input').value;
-  if (password === '1234') { // Default Teacher Password
-    closeModal(passwordModal);
-    showToast('เข้าสู่ระบบครูสำเร็จ', 'success');
-    switchView('teacher');
-  } else {
-    showToast('รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่', 'error');
+  
+  const btnSubmit = document.getElementById('pwd-form').querySelector('button[type="submit"]');
+  const btnOriginalText = btnSubmit.innerHTML;
+  btnSubmit.disabled = true;
+  btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังตรวจสอบ...';
+  
+  try {
+    const res = await fetch('/api/teacher/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    }).then(r => r.json());
+    
+    if (res.success) {
+      closeModal(passwordModal);
+      showToast(res.message, 'success');
+      state.teacherData = res.teacher;
+      switchView('teacher');
+    } else {
+      showToast(res.message, 'error');
+    }
+  } catch (err) {
+    console.error(err);
+    showToast('เกิดข้อผิดพลาดในการตรวจสอบบัญชีผู้ใช้', 'error');
+  } finally {
+    btnSubmit.disabled = false;
+    btnSubmit.innerHTML = btnOriginalText;
   }
 });
 
@@ -265,6 +289,12 @@ async function loginStudent(studentId) {
       studentClassDisplay.textContent = `ชั้นเรียน: ${res.student.Class}`;
       studentIdDisplay.textContent = res.student.Student_ID;
       studentEmailDisplay.textContent = res.student.Email || '-';
+      
+      // Update Student Personal QR Code (NEW)
+      const studentQrCodeImg = document.getElementById('student-qr-code-img');
+      if (studentQrCodeImg) {
+        studentQrCodeImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${res.student.Student_ID}&ecc=M`;
+      }
       
       // Switch layouts
       studentAuthCard.classList.add('hidden');
@@ -1251,19 +1281,26 @@ if (btnSyncSheets) {
   });
 }
 
-// Tab Switching in Teacher Dashboard
-document.getElementById('tab-submissions').addEventListener('click', (e) => {
-  document.getElementById('tab-submissions').classList.add('active');
-  document.getElementById('tab-students').classList.remove('active');
-  document.getElementById('panel-submissions-view').classList.add('active');
-  document.getElementById('panel-students-view').classList.remove('active');
-});
-
-document.getElementById('tab-students').addEventListener('click', (e) => {
-  document.getElementById('tab-students').classList.add('active');
-  document.getElementById('tab-submissions').classList.remove('active');
-  document.getElementById('panel-students-view').classList.add('active');
-  document.getElementById('panel-submissions-view').classList.remove('active');
+// Tab Switching in Teacher Dashboard (Updated to support Accounts Tab)
+const tabs = ['submissions', 'students', 'teachers'];
+tabs.forEach(t => {
+  const tabEl = document.getElementById(`tab-${t}`);
+  if (tabEl) {
+    tabEl.addEventListener('click', () => {
+      tabs.forEach(x => {
+        const xTab = document.getElementById(`tab-${x}`);
+        const xView = document.getElementById(`panel-${x}-view`);
+        if (xTab) xTab.classList.remove('active');
+        if (xView) xView.classList.remove('active');
+      });
+      document.getElementById(`tab-${t}`).classList.add('active');
+      document.getElementById(`panel-${t}-view`).classList.add('active');
+      
+      if (t === 'teachers') {
+        loadTeachersTable();
+      }
+    });
+  }
 });
 
 // Populate directory class filters dropdown
@@ -1285,7 +1322,7 @@ function populateDirectoryFilters(students) {
   filterDirClass.value = currentVal;
 }
 
-// Render Students Directory
+// Render Students Directory (Optimized with pagination for high performance)
 function renderStudentsDirectoryTable() {
   const studentsDirTableBody = document.getElementById('students-dir-table-body');
   const studentDirSearch = document.getElementById('student-dir-search');
@@ -1310,13 +1347,24 @@ function renderStudentsDirectoryTable() {
   
   if (filtered.length === 0) {
     studentsDirTableBody.innerHTML = '<tr><td colspan="7" class="text-center">ไม่พบรายชื่อนักเรียน</td></tr>';
+    document.getElementById('student-dir-page-info').textContent = 'หน้า 1 จาก 1';
+    document.getElementById('btn-student-dir-prev').disabled = true;
+    document.getElementById('btn-student-dir-next').disabled = true;
     return;
   }
   
   // Sort by Student ID
   filtered.sort((a, b) => a.Student_ID.localeCompare(b.Student_ID));
   
-  filtered.forEach(s => {
+  // Apply pagination
+  const totalPages = Math.ceil(filtered.length / state.directoryLimit) || 1;
+  if (state.directoryPage > totalPages) state.directoryPage = totalPages;
+  
+  const startIndex = (state.directoryPage - 1) * state.directoryLimit;
+  const endIndex = startIndex + state.directoryLimit;
+  const paginated = filtered.slice(startIndex, endIndex);
+  
+  paginated.forEach(s => {
     const avatarSrc = s.Photo ? s.Photo : `https://api.dicebear.com/7.x/adventurer/svg?seed=${s.Student_ID}`;
     
     const row = document.createElement('tr');
@@ -1336,10 +1384,22 @@ function renderStudentsDirectoryTable() {
                 data-photo="${s.Photo || ''}">
           <i class="fa-solid fa-user-gear"></i> แก้ไข
         </button>
+        <button class="btn btn-green btn-print-student-trigger" style="padding: 4px 10px; font-size: 0.8rem; margin-left: 4px;"
+                data-id="${s.Student_ID}"
+                data-name="${s.FullName}"
+                data-class="${s.Class || ''}"
+                data-photo="${avatarSrc}">
+          <i class="fa-solid fa-print"></i> พิมพ์บัตร
+        </button>
       </td>
     `;
     studentsDirTableBody.appendChild(row);
   });
+  
+  // Update Pagination Controls
+  document.getElementById('student-dir-page-info').textContent = `หน้า ${state.directoryPage} จาก ${totalPages}`;
+  document.getElementById('btn-student-dir-prev').disabled = (state.directoryPage === 1);
+  document.getElementById('btn-student-dir-next').disabled = (state.directoryPage === totalPages);
   
   // Attach event listener for clicking Edit button
   document.querySelectorAll('.btn-edit-student-trigger').forEach(btn => {
@@ -1369,9 +1429,225 @@ function renderStudentsDirectoryTable() {
   });
 }
 
-// Student directory search & filter inputs
-document.getElementById('student-dir-search').addEventListener('input', renderStudentsDirectoryTable);
-document.getElementById('filter-dir-class').addEventListener('change', renderStudentsDirectoryTable);
+// Student directory search & filter inputs (Reset pagination to page 1 on filter/search change)
+document.getElementById('student-dir-search').addEventListener('input', () => {
+  state.directoryPage = 1;
+  renderStudentsDirectoryTable();
+});
+document.getElementById('filter-dir-class').addEventListener('change', () => {
+  state.directoryPage = 1;
+  renderStudentsDirectoryTable();
+});
+
+// Bind Pagination Button clicks
+document.getElementById('btn-student-dir-prev').addEventListener('click', () => {
+  if (state.directoryPage > 1) {
+    state.directoryPage--;
+    renderStudentsDirectoryTable();
+  }
+});
+
+document.getElementById('btn-student-dir-next').addEventListener('click', () => {
+  const query = document.getElementById('student-dir-search').value.toLowerCase().trim();
+  const selectedClass = document.getElementById('filter-dir-class').value;
+  const filtered = state.students.filter(s => {
+    const matchQuery = !query || 
+                       s.FullName.toLowerCase().includes(query) || 
+                       s.Student_ID.toLowerCase().includes(query) ||
+                       (s.Email && s.Email.toLowerCase().includes(query));
+    const matchClass = !selectedClass || s.Class === selectedClass;
+    return matchQuery && matchClass;
+  });
+  const totalPages = Math.ceil(filtered.length / state.directoryLimit) || 1;
+  if (state.directoryPage < totalPages) {
+    state.directoryPage++;
+    renderStudentsDirectoryTable();
+  }
+});
+
+// Event delegation for single student card printing
+document.getElementById('students-dir-table-body').addEventListener('click', (e) => {
+  const printBtn = e.target.closest('.btn-print-student-trigger');
+  if (printBtn) {
+    const s = {
+      Student_ID: printBtn.dataset.id,
+      FullName: printBtn.dataset.name,
+      Class: printBtn.dataset.class,
+      Photo: printBtn.dataset.photo
+    };
+    printStudentCards([s]);
+  }
+});
+
+// Mass print cards button trigger
+document.getElementById('btn-print-class-cards').addEventListener('click', () => {
+  const query = document.getElementById('student-dir-search').value.toLowerCase().trim();
+  const selectedClass = document.getElementById('filter-dir-class').value;
+  const filtered = state.students.filter(s => {
+    const matchQuery = !query || 
+                       s.FullName.toLowerCase().includes(query) || 
+                       s.Student_ID.toLowerCase().includes(query) ||
+                       (s.Email && s.Email.toLowerCase().includes(query));
+    const matchClass = !selectedClass || s.Class === selectedClass;
+    return matchQuery && matchClass;
+  });
+  
+  printStudentCards(filtered);
+});
+
+// Student Card Printing Generation logic
+function printStudentCards(studentList) {
+  const printArea = document.getElementById('print-cards-area');
+  const selectedStyle = document.getElementById('select-card-style').value;
+  printArea.innerHTML = '';
+  
+  if (studentList.length === 0) {
+    showToast('ไม่มีรายชื่อนักเรียนที่ต้องการพิมพ์บัตร', 'error');
+    return;
+  }
+  
+  studentList.forEach(s => {
+    const avatarSrc = s.Photo ? s.Photo : `https://api.dicebear.com/7.x/adventurer/svg?seed=${s.Student_ID}`;
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${s.Student_ID}&ecc=M`;
+    
+    const card = document.createElement('div');
+    card.className = `printable-student-card ${selectedStyle}`;
+    card.innerHTML = `
+      <div class="card-left">
+        <img class="student-avatar" src="${avatarSrc}" alt="Avatar">
+      </div>
+      <div class="card-right">
+        <div class="card-right-top">
+          <div class="school-logo">SJMR SUBMISSION PORTAL</div>
+          <div class="student-name">${s.FullName}</div>
+          <div class="student-id">รหัสประจำตัว: ${s.Student_ID}</div>
+        </div>
+        <div class="card-right-bottom">
+          <span class="student-class">${s.Class || '-'}</span>
+          <img class="qr-code" src="${qrUrl}" alt="QR">
+        </div>
+      </div>
+    `;
+    printArea.appendChild(card);
+  });
+  
+  // Fire browser print dialog with slight timeout
+  setTimeout(() => {
+    window.print();
+  }, 450);
+}
+
+// Teacher Accounts Management Table Populator
+async function loadTeachersTable() {
+  const teachersTableBody = document.getElementById('teachers-table-body');
+  teachersTableBody.innerHTML = '<tr><td colspan="4" class="text-center"><i class="fa-solid fa-spinner fa-spin"></i> กำลังโหลดข้อมูล...</td></tr>';
+  
+  try {
+    const list = await fetch('/api/teachers').then(r => r.json());
+    teachersTableBody.innerHTML = '';
+    
+    if (list.length === 0) {
+      teachersTableBody.innerHTML = '<tr><td colspan="4" class="text-center">ไม่พบบัญชีคุณครูร่วมสอน</td></tr>';
+      return;
+    }
+    
+    list.forEach(t => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td><strong>${t.username}</strong></td>
+        <td>${t.fullName}</td>
+        <td><span class="badge-class" style="background: ${t.role === 'Admin' ? 'var(--purple)' : 'var(--blue)'}; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem;">${t.role}</span></td>
+        <td>
+          ${t.username.toLowerCase() === 'admin' ? '<small class="text-muted">บัญชีหลักไม่สามารถลบได้</small>' : `
+            <button class="btn btn-red btn-delete-teacher-trigger" data-username="${t.username}" style="padding: 4px 10px; font-size: 0.8rem;">
+              <i class="fa-solid fa-trash-can"></i> ลบ
+            </button>
+          `}
+        </td>
+      `;
+      teachersTableBody.appendChild(row);
+    });
+  } catch (err) {
+    console.error(err);
+    teachersTableBody.innerHTML = '<tr><td colspan="4" class="text-center text-red">เกิดข้อผิดพลาดในการโหลดข้อมูล</td></tr>';
+  }
+}
+
+// Modal bindings for adding new teachers
+const addTeacherModal = document.getElementById('add-teacher-modal');
+const btnAddTeacherTrigger = document.getElementById('btn-add-teacher-trigger');
+const addTeacherForm = document.getElementById('add-teacher-form');
+
+if (btnAddTeacherTrigger && addTeacherModal) {
+  btnAddTeacherTrigger.addEventListener('click', () => {
+    addTeacherForm.reset();
+    openModal(addTeacherModal);
+  });
+}
+
+if (addTeacherForm) {
+  addTeacherForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const username = document.getElementById('new-teacher-username').value.trim();
+    const password = document.getElementById('new-teacher-password').value;
+    const fullName = document.getElementById('new-teacher-fullname').value.trim();
+    const role = document.getElementById('new-teacher-role').value;
+    
+    const btnSubmit = addTeacherForm.querySelector('button[type="submit"]');
+    const btnOriginalText = btnSubmit.innerHTML;
+    btnSubmit.disabled = true;
+    btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังบันทึก...';
+    
+    try {
+      const res = await fetch('/api/teacher/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password, fullName, role })
+      }).then(r => r.json());
+      
+      if (res.success) {
+        showToast(res.message, 'success');
+        closeModal(addTeacherModal);
+        loadTeachersTable();
+      } else {
+        showToast(res.message, 'error');
+      }
+    } catch (err) {
+      console.error(err);
+      showToast('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์', 'error');
+    } finally {
+      btnSubmit.disabled = false;
+      btnSubmit.innerHTML = btnOriginalText;
+    }
+  });
+}
+
+// Delete teacher click delegation handler
+document.getElementById('teachers-table-body').addEventListener('click', async (e) => {
+  const delBtn = e.target.closest('.btn-delete-teacher-trigger');
+  if (delBtn) {
+    const username = delBtn.dataset.username;
+    if (confirm(`คุณครูยืนยันว่าต้องการลบบัญชีผู้ใช้งาน "${username}" ใช่หรือไม่?`)) {
+      try {
+        const res = await fetch('/api/teacher/delete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username })
+        }).then(r => r.json());
+        
+        if (res.success) {
+          showToast(res.message, 'success');
+          loadTeachersTable();
+        } else {
+          showToast(res.message, 'error');
+        }
+      } catch (err) {
+        console.error(err);
+        showToast('เกิดข้อผิดพลาดในการลบบัญชีผู้ใช้', 'error');
+      }
+    }
+  }
+});
 
 // Student photo edit preview
 document.getElementById('edit-photo-input').addEventListener('change', (e) => {
@@ -1419,9 +1695,20 @@ document.getElementById('student-edit-form').addEventListener('submit', async (e
   }
 });
 
-// Initialize on window load
+// Initialize on window load (Includes automatic backend configuration sync handshake)
 window.addEventListener('load', () => {
   checkQueryParams();
+  
+  // Sync locally saved cloud configs to server on startup (Real-time sync handshake)
+  const scriptUrl = localStorage.getItem('drive_script_url');
+  const folderId = localStorage.getItem('drive_folder_id');
+  if (scriptUrl && folderId) {
+    fetch('/api/save-config', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ scriptUrl, folderId })
+    }).catch(err => console.error('Handshake config sync to cloud database failed:', err));
+  }
   
   // Theme Toggle Initializer
   const savedTheme = localStorage.getItem('theme');

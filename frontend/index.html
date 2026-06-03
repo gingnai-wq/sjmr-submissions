@@ -106,6 +106,12 @@
                   <span id="student-email-display" class="value">-</span>
                 </div>
               </div>
+              
+              <!-- Student Personal QR Code (NEW) -->
+              <div class="student-qr-container" style="margin-top: 15px; text-align: center; background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px; border: 1px solid var(--glass-border);">
+                <span class="label" style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 8px;"><i class="fa-solid fa-qrcode"></i> คิวอาร์โค้ดประจำตัวของคุณ</span>
+                <img id="student-qr-code-img" src="" alt="Student QR Code" style="width: 120px; height: 120px; border-radius: 6px; padding: 4px; background: white; margin: 0 auto; display: block;">
+              </div>
             </div>
             <button id="btn-student-logout" class="btn btn-secondary btn-block">
               <i class="fa-solid fa-right-from-bracket"></i> ออกจากระบบ
@@ -172,6 +178,7 @@
               <div class="panel-tabs">
                 <button id="tab-submissions" class="tab-link active"><i class="fa-solid fa-clipboard-list"></i> รายการส่งงานของนักเรียน</button>
                 <button id="tab-students" class="tab-link"><i class="fa-solid fa-address-book"></i> ทะเบียนรายชื่อนักเรียนทั้งหมด</button>
+                <button id="tab-teachers" class="tab-link"><i class="fa-solid fa-user-tie"></i> จัดการบัญชีคุณครู</button>
               </div>
 
               <!-- View 1: Submissions Table -->
@@ -219,8 +226,8 @@
 
               <!-- View 2: Student Directory Table (NEW) -->
               <div id="panel-students-view" class="tab-view">
-                <div class="panel-header" style="margin-top: 15px;">
-                  <div class="filter-actions">
+                <div class="panel-header" style="margin-top: 15px; flex-wrap: wrap; gap: 15px;">
+                  <div class="filter-actions" style="flex-wrap: wrap;">
                     <div class="search-box">
                       <i class="fa-solid fa-magnifying-glass"></i>
                       <input type="text" id="student-dir-search" placeholder="ค้นหาชื่อ หรือ รหัสนักเรียน...">
@@ -228,6 +235,19 @@
                     <select id="filter-dir-class">
                       <option value="">ชั้นเรียนทั้งหมด</option>
                     </select>
+                    
+                    <!-- Print Selector & Controller (NEW) -->
+                    <div class="print-style-selector" style="display: flex; align-items: center; gap: 8px; margin-left: 5px;">
+                      <label for="select-card-style" style="font-size: 0.85rem; color: var(--text-muted); font-weight: bold; white-space: nowrap;">รูปแบบบัตร:</label>
+                      <select id="select-card-style" style="background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--glass-border); padding: 5px 10px; border-radius: 6px; font-size: 0.85rem;">
+                        <option value="style-modern">1. โมเดิร์นสะท้อนแสง (Modern)</option>
+                        <option value="style-minimal">2. มินิมอลประหยัดหมึก (Minimal)</option>
+                        <option value="style-cute">3. พาสเทลสีหวาน (Cute Pastel)</option>
+                      </select>
+                    </div>
+                    <button id="btn-print-class-cards" class="btn btn-purple btn-icon-left" style="padding: 6px 12px; font-size: 0.85rem;">
+                      <i class="fa-solid fa-print"></i> พิมพ์บัตรของห้องนี้
+                    </button>
                   </div>
                   <span id="student-dir-count" class="badge">0 คน</span>
                 </div>
@@ -252,9 +272,44 @@
                     </tbody>
                   </table>
                 </div>
+                
+                <!-- Pagination Controls for Directory (NEW) -->
+                <div class="pagination-container" style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.02); padding: 8px 12px; border-radius: 8px; border: 1px solid var(--glass-border);">
+                  <span id="student-dir-page-info" style="color: var(--text-muted); font-size: 0.85rem;">หน้า 1 จาก 1</span>
+                  <div class="pagination-buttons" style="display: flex; gap: 8px;">
+                    <button id="btn-student-dir-prev" class="btn btn-secondary" style="padding: 4px 12px; font-size: 0.8rem;"><i class="fa-solid fa-chevron-left"></i> ก่อนหน้า</button>
+                    <button id="btn-student-dir-next" class="btn btn-secondary" style="padding: 4px 12px; font-size: 0.8rem;">ถัดไป <i class="fa-solid fa-chevron-right"></i></button>
+                  </div>
+                </div>
               </div>
 
-            </div>
+              <!-- View 3: Teacher Accounts Management Table (NEW) -->
+              <div id="panel-teachers-view" class="tab-view">
+                <div class="panel-header" style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center;">
+                  <h3><i class="fa-solid fa-user-shield text-purple"></i> บัญชีคุณครูร่วมสอน</h3>
+                  <button id="btn-add-teacher-trigger" class="btn btn-purple btn-icon-left" style="font-size: 0.85rem; padding: 6px 12px;">
+                    <i class="fa-solid fa-user-plus"></i> เพิ่มบัญชีครูใหม่
+                  </button>
+                </div>
+
+                <div class="table-container" style="margin-top: 15px;">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>ชื่อผู้ใช้งาน (Username)</th>
+                        <th>ชื่อ-นามสกุล</th>
+                        <th>บทบาท (Role)</th>
+                        <th>การจัดการ</th>
+                      </tr>
+                    </thead>
+                    <tbody id="teachers-table-body">
+                      <tr>
+                        <td colspan="4" class="text-center">กำลังโหลดข้อมูล...</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
 
             <!-- Right Panel: Admin Settings & Actions -->
             <div class="teacher-sidebar-panel">
@@ -523,19 +578,60 @@
   <div id="password-modal" class="modal-overlay">
     <div class="modal-container glass-card modal-small animate-zoom-in">
       <div class="modal-header">
-        <h2><i class="fa-solid fa-lock text-yellow"></i> สิทธิ์การเข้าถึงครู</h2>
-        <button class="btn-close-pwd-modal"><i class="fa-solid fa-xmark"></i></button>
+        <h2><i class="fa-solid fa-lock text-yellow"></i> เข้าสู่ระบบคุณครู</h2>
+        <button class="btn-close-pwd-modal btn-close-modal"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div class="modal-body">
         <form id="pwd-form">
+          <div class="input-group" style="margin-bottom: 12px;">
+            <label for="pwd-username">ชื่อผู้ใช้งาน (Username)</label>
+            <input type="text" id="pwd-username" placeholder="ระบุชื่อผู้ใช้งาน..." required autocomplete="off" style="width: 100%;">
+          </div>
           <div class="input-group">
-            <label for="pwd-input">กรุณากรอกรหัสผ่านเพื่อเข้าหน้าคุณครู</label>
-            <input type="password" id="pwd-input" placeholder="กรอกรหัสผ่าน..." required autocomplete="off">
-            <small class="hint-text">(คำใบ้รหัสผ่านเริ่มต้น: 1234)</small>
+            <label for="pwd-input">รหัสผ่าน (Password)</label>
+            <input type="password" id="pwd-input" placeholder="ระบุรหัสผ่าน..." required autocomplete="off" style="width: 100%;">
+            <small class="hint-text">(แอดมินเริ่มต้น Username: <code>admin</code> รหัสผ่าน: <code>1234</code>)</small>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary btn-close-pwd-modal-btn">ยกเลิก</button>
-            <button type="submit" class="btn btn-yellow">ยืนยันรหัสผ่าน</button>
+            <button type="submit" class="btn btn-yellow">เข้าสู่ระบบ</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Teacher Modal (NEW) -->
+  <div id="add-teacher-modal" class="modal-overlay">
+    <div class="modal-container glass-card modal-small animate-zoom-in">
+      <div class="modal-header">
+        <h2><i class="fa-solid fa-user-plus text-purple"></i> เพิ่มบัญชีครูใหม่</h2>
+        <button class="btn-close-modal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="add-teacher-form">
+          <div class="input-group" style="margin-bottom: 12px;">
+            <label for="new-teacher-username">ชื่อผู้ใช้งาน (Username)</label>
+            <input type="text" id="new-teacher-username" placeholder="เช่น teacher_somchai" required autocomplete="off">
+          </div>
+          <div class="input-group" style="margin-bottom: 12px;">
+            <label for="new-teacher-password">รหัสผ่าน (Password)</label>
+            <input type="password" id="new-teacher-password" placeholder="ระบุรหัสผ่าน..." required autocomplete="off">
+          </div>
+          <div class="input-group" style="margin-bottom: 12px;">
+            <label for="new-teacher-fullname">ชื่อ - นามสกุล</label>
+            <input type="text" id="new-teacher-fullname" placeholder="เช่น คุณครู สมชาย ใจดี" required autocomplete="off">
+          </div>
+          <div class="input-group" style="margin-bottom: 15px;">
+            <label for="new-teacher-role">บทบาท (Role)</label>
+            <select id="new-teacher-role" style="background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--glass-border); padding: 8px; border-radius: 6px; width: 100%;">
+              <option value="Teacher">คุณครูผู้ร่วมสอน (Teacher)</option>
+              <option value="Admin">ผู้ดูแลระบบสูงสุด (Admin)</option>
+            </select>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary btn-close-modal-btn">ยกเลิก</button>
+            <button type="submit" class="btn btn-purple">เพิ่มบัญชีคุณครู</button>
           </div>
         </form>
       </div>
@@ -640,6 +736,9 @@
       </div>
     </div>
   </div>
+
+  <!-- Invisible Print Cards Container (NEW) -->
+  <div id="print-cards-area" class="print-only-container"></div>
 
   <!-- Notification Toast Container -->
   <div id="toast-container" class="toast-container"></div>

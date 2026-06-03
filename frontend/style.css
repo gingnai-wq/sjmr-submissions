@@ -1568,3 +1568,253 @@ body.pastel-theme .theme-toggle-btn:hover {
   background: rgba(79, 70, 229, 0.15);
   border-color: var(--primary);
 }
+
+/* ================= PRINT STUDENT CARDS STYLING (NEW) ================= */
+
+.print-only-container {
+  display: none;
+}
+
+@media print {
+  /* Hide all main portal views */
+  body * {
+    visibility: hidden;
+  }
+  
+  /* Show only the printable cards container */
+  #print-cards-area, #print-cards-area * {
+    visibility: visible;
+  }
+  
+  #print-cards-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    background: white !important;
+    color: black !important;
+    padding: 10px;
+  }
+  
+  .printable-student-card {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  
+  /* Reset page borders/margins for nice printing */
+  @page {
+    margin: 10mm;
+    size: A4 portrait;
+  }
+}
+
+/* 3 Design Styles for Student Cards */
+
+/* Common printable card wrapper */
+.printable-student-card {
+  width: 85mm;
+  height: 54mm;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  box-sizing: border-box;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.printable-student-card .card-left {
+  width: 32%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+.printable-student-card .card-right {
+  width: 68%;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+
+.printable-student-card .card-right-top {
+  display: flex;
+  flex-direction: column;
+}
+
+.printable-student-card .card-right-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+/* Style 1: Modern Tech / Premium */
+.printable-student-card.style-modern {
+  border: 2px solid #3b82f6;
+  background: linear-gradient(135deg, #1e293b, #0f172a);
+  color: white;
+}
+.printable-student-card.style-modern .card-left {
+  background: rgba(255, 255, 255, 0.03);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+.printable-student-card.style-modern .student-avatar {
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  border: 2px solid #3b82f6;
+  object-fit: cover;
+  background: #334155;
+}
+.printable-student-card.style-modern .qr-code {
+  width: 65px;
+  height: 65px;
+  border-radius: 4px;
+  background: white;
+  padding: 3px;
+  box-sizing: border-box;
+}
+.printable-student-card.style-modern .school-logo {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #60a5fa;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+.printable-student-card.style-modern .student-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 2px;
+}
+.printable-student-card.style-modern .student-id {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+.printable-student-card.style-modern .student-class {
+  font-size: 0.7rem;
+  background: #3b82f6;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: bold;
+  align-self: flex-start;
+}
+
+/* Style 2: Minimalist Clean (Ink Saving) */
+.printable-student-card.style-minimal {
+  border: 1px solid #000000;
+  background: #ffffff;
+  color: #000000;
+  border-radius: 0px; /* Traditional flat card border */
+  box-shadow: none;
+}
+.printable-student-card.style-minimal .card-left {
+  border-right: 1px dashed #000000;
+}
+.printable-student-card.style-minimal .student-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 1px solid #000000;
+  object-fit: cover;
+  background: #f1f5f9;
+}
+.printable-student-card.style-minimal .qr-code {
+  width: 65px;
+  height: 65px;
+  border: 1px solid #000000;
+  padding: 2px;
+  box-sizing: border-box;
+}
+.printable-student-card.style-minimal .school-logo {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #000000;
+  text-transform: uppercase;
+  border-bottom: 1px solid #000000;
+  padding-bottom: 2px;
+  margin-bottom: 4px;
+}
+.printable-student-card.style-minimal .student-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #000000;
+  margin-bottom: 2px;
+}
+.printable-student-card.style-minimal .student-id {
+  font-size: 0.75rem;
+  color: #000000;
+}
+.printable-student-card.style-minimal .student-class {
+  font-size: 0.7rem;
+  border: 1px solid #000000;
+  padding: 1px 5px;
+  border-radius: 2px;
+  font-weight: bold;
+  align-self: flex-start;
+}
+
+/* Style 3: Cute Pastel Theme */
+.printable-student-card.style-cute {
+  border: 2px solid #fbcfe8;
+  background: #fffdfa;
+  color: #4c1d95;
+}
+.printable-student-card.style-cute .card-left {
+  background: #fdf2f8;
+  border-right: 2px solid #fbcfe8;
+}
+.printable-student-card.style-cute .student-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 2px solid #db2777;
+  object-fit: cover;
+  background: #fff1f2;
+}
+.printable-student-card.style-cute .qr-code {
+  width: 65px;
+  height: 65px;
+  border-radius: 6px;
+  border: 2px solid #fbcfe8;
+  padding: 2px;
+  background: white;
+  box-sizing: border-box;
+}
+.printable-student-card.style-cute .school-logo {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #db2777;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+.printable-student-card.style-cute .student-name {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #4c1d95;
+  margin-bottom: 2px;
+}
+.printable-student-card.style-cute .student-id {
+  font-size: 0.75rem;
+  color: #6d28d9;
+}
+.printable-student-card.style-cute .student-class {
+  font-size: 0.7rem;
+  background: #ec4899;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-weight: bold;
+  align-self: flex-start;
+}
+

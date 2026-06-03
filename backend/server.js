@@ -464,6 +464,9 @@ app.post('/api/import-photos-drive', (req, res) => {
     return res.status(400).json({ success: false, message: 'กรุณาระบุ URL ของ Google Apps Script และ Folder ID' });
   }
 
+  // Auto-save/update cloud database configuration
+  db.updateConfig(scriptUrl, folderId);
+
   const url = `${scriptUrl}?folderId=${folderId}`;
   
   downloadJson(url, (err, body) => {
@@ -607,6 +610,9 @@ app.post('/api/export-drive', (req, res) => {
     return res.status(400).json({ success: false, message: 'กรุณาระบุ URL ของ Google Apps Script และ Folder ID' });
   }
 
+  // Auto-save/update cloud database configuration
+  db.updateConfig(scriptUrl, folderId);
+
   // 1. Export submissions to local Excel file first
   const fileExported = excelHelper.exportSubmissions(
     db.getSubmissions(),
@@ -677,6 +683,78 @@ app.post('/api/student/update', uploadPhoto.single('photo'), (req, res) => {
 // 12. Get all students directory (Teacher/Web UI) (NEW)
 app.get('/api/students', (req, res) => {
   res.json(db.getStudents());
+});
+
+// 13. Save Config Endpoint (NEW)
+app.post('/api/save-config', (req, res) => {
+  const { scriptUrl, folderId } = req.body;
+  if (!scriptUrl || !folderId) {
+    return res.status(400).json({ success: false, message: 'กรุณาระบุ URL ของ Google Apps Script และ Folder ID' });
+  }
+  const config = db.updateConfig(scriptUrl, folderId);
+  res.json({ success: true, message: 'บันทึกการเชื่อมโยงระบบคลาวด์สำเร็จ!', config });
+});
+
+// 14. Teacher Auth & Management Endpoints (NEW)
+app.post('/api/teacher/login', (req, res) => {
+  const { username, password } = req.body;
+  if (!username || !password) {
+    return res.status(400).json({ success: false, message: 'กรุณาระบุชื่อผู้ใช้งานและรหัสผ่าน' });
+  }
+  const teacher = db.findTeacher(username, password);
+  if (teacher) {
+    res.json({
+      success: true,
+      message: `เข้าสู่ระบบสำเร็จ ยินดีต้อนรับ ${teacher.fullName}`,
+      teacher: {
+        username: teacher.username,
+        fullName: teacher.fullName,
+        role: teacher.role
+      }
+    });
+  } else {
+    res.status(401).json({ success: false, message: 'ชื่อผู้ใช้งานหรือรหัสผ่านไม่ถูกต้อง' });
+  }
+});
+
+app.get('/api/teachers', (req, res) => {
+  const list = db.getTeachers().map(t => ({
+    username: t.username,
+    fullName: t.fullName,
+    role: t.role
+  }));
+  res.json(list);
+});
+
+app.post('/api/teacher/create', (req, res) => {
+  const { username, password, fullName, role } = req.body;
+  if (!username || !password || !fullName) {
+    return res.status(400).json({ success: false, message: 'กรุณากรอกข้อมูลครูให้ครบถ้วน' });
+  }
+  const newTeacher = db.addTeacher({
+    username: username.trim(),
+    password: password,
+    fullName: fullName.trim(),
+    role: role || 'Teacher'
+  });
+  if (newTeacher) {
+    res.json({ success: true, message: `เพิ่มบัญชีคุณครู ${fullName} เรียบร้อยแล้ว` });
+  } else {
+    res.status(400).json({ success: false, message: 'มีชื่อผู้ใช้งานนี้อยู่ในระบบแล้ว' });
+  }
+});
+
+app.post('/api/teacher/delete', (req, res) => {
+  const { username } = req.body;
+  if (!username) {
+    return res.status(400).json({ success: false, message: 'กรุณาระบุชื่อผู้ใช้งานที่ต้องการลบ' });
+  }
+  const deleted = db.deleteTeacher(username);
+  if (deleted) {
+    res.json({ success: true, message: `ลบบัญชีคุณครูเรียบร้อยแล้ว` });
+  } else {
+    res.status(400).json({ success: false, message: 'ไม่สามารถลบบัญชีนี้ได้ (บัญชีแอดมินหลักไม่สามารถลบได้)' });
+  }
 });
 
 // Start the server
