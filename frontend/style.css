@@ -1834,7 +1834,7 @@ body.pastel-theme .theme-toggle-btn:hover {
 
 @media (min-width: 992px) {
   /* Lock Teacher view to single page (No page-level scroll) */
-  #teacher-view {
+  #teacher-view.active {
     height: calc(100vh - 100px);
     overflow: hidden;
     display: flex;
