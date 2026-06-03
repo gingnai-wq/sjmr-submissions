@@ -36,6 +36,14 @@ function loadData() {
     }
   }
 
+  // Fallback to environment variables if config file has empty values (e.g. after cloud redeploy resets disk)
+  if (process.env.DRIVE_SCRIPT_URL && !config.scriptUrl) {
+    config.scriptUrl = process.env.DRIVE_SCRIPT_URL;
+  }
+  if (process.env.DRIVE_FOLDER_ID && !config.folderId) {
+    config.folderId = process.env.DRIVE_FOLDER_ID;
+  }
+
   // Load students
   if (fs.existsSync(STUDENTS_FILE)) {
     try {
