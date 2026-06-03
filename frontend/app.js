@@ -832,17 +832,21 @@ function stopStudentScanner() {
 function hasSubjectAccess(subjectId) {
   if (!state.teacherData) return false;
   if (state.teacherData.role === 'Admin') return true;
+  if (!subjectId) return false;
   
-  const subj = state.subjects.find(s => s.Subject_ID === subjectId);
+  const subj = Array.isArray(state.subjects) ? state.subjects.find(s => s && s.Subject_ID === subjectId) : null;
   if (!subj) return false;
   
-  if (subj.Teacher_Username === 'any' || 
-      subj.Subject_Name.includes('ชุมนุม') || 
-      subj.Subject_Name.includes('ลูกเสือ')) {
+  const teacherUsername = subj.Teacher_Username || '';
+  const subjectName = subj.Subject_Name || '';
+  
+  if (teacherUsername === 'any' || 
+      subjectName.includes('ชุมนุม') || 
+      subjectName.includes('ลูกเสือ')) {
     return true;
   }
   
-  return subj.Teacher_Username.toLowerCase() === state.teacherData.username.toLowerCase();
+  return teacherUsername.toLowerCase() === (state.teacherData.username || '').toLowerCase();
 }
 
 // Helper to apply UI visibility rules based on the user's role (NEW)
@@ -1061,19 +1065,27 @@ function renderSubmissionsTable() {
   const selectedClass = filterClass.value;
   const selectedAssign = filterAssignment.value;
 
-  const filtered = state.submissions.filter(sub => {
+  const submissionsList = Array.isArray(state.submissions) ? state.submissions : [];
+  const assignmentsList = Array.isArray(state.assignments) ? state.assignments : [];
+
+  const filtered = submissionsList.filter(sub => {
+    if (!sub) return false;
     // Enforce subject access controls (NEW)
-    const assign = state.assignments.find(a => a.Assignment_ID === sub.Assignment_ID);
+    const assign = assignmentsList.find(a => a && a.Assignment_ID === sub.Assignment_ID);
     if (!assign || !hasSubjectAccess(assign.Subject_ID)) {
       return false;
     }
 
+    const fullName = sub.FullName || '';
+    const studentId = sub.Student_ID || '';
+    const subClass = sub.Class || '';
+
     const matchQuery = !query || 
-                       sub.FullName.toLowerCase().includes(query) || 
-                       sub.Student_ID.toLowerCase().includes(query) ||
-                       (sub.Class && sub.Class.toLowerCase().includes(query));
+                       fullName.toLowerCase().includes(query) || 
+                       studentId.toLowerCase().includes(query) ||
+                       subClass.toLowerCase().includes(query);
                        
-    const matchClass = !selectedClass || sub.Class === selectedClass;
+    const matchClass = !selectedClass || subClass === selectedClass;
     const matchAssign = !selectedAssign || sub.Assignment_ID === selectedAssign;
 
     return matchQuery && matchClass && matchAssign;
@@ -1794,63 +1806,89 @@ function renderStudentsDirectoryTable() {
   const filterDirClass = document.getElementById('filter-dir-class');
   const studentDirCount = document.getElementById('student-dir-count');
   
+  if (!studentsDirTableBody) return;
   studentsDirTableBody.innerHTML = '';
   
-  const query = studentDirSearch.value.toLowerCase().trim();
-  const selectedClass = filterDirClass.value;
+  const query = studentDirSearch ? studentDirSearch.value.toLowerCase().trim() : '';
+  const selectedClass = filterDirClass ? filterDirClass.value : '';
   
-  const filtered = state.students.filter(s => {
+  const studentsList = Array.isArray(state.students) ? state.students : [];
+  
+  const filtered = studentsList.filter(s => {
+    if (!s) return false;
+    const fullName = s.FullName || '';
+    const studentId = s.Student_ID || '';
+    const email = s.Email || '';
+    const sClass = s.Class || '';
+
     const matchQuery = !query || 
-                       s.FullName.toLowerCase().includes(query) || 
-                       s.Student_ID.toLowerCase().includes(query) ||
-                       (s.Email && s.Email.toLowerCase().includes(query));
-    const matchClass = !selectedClass || s.Class === selectedClass;
+                       fullName.toLowerCase().includes(query) || 
+                       studentId.toLowerCase().includes(query) ||
+                       email.toLowerCase().includes(query);
+    const matchClass = !selectedClass || sClass === selectedClass;
     return matchQuery && matchClass;
   });
   
-  studentDirCount.textContent = `${filtered.length} คน`;
+  if (studentDirCount) {
+    studentDirCount.textContent = `${filtered.length} คน`;
+  }
   
   if (filtered.length === 0) {
     studentsDirTableBody.innerHTML = '<tr><td colspan="7" class="text-center">ไม่พบรายชื่อนักเรียน</td></tr>';
-    document.getElementById('student-dir-page-info').textContent = 'หน้า 1 จาก 1';
-    document.getElementById('btn-student-dir-prev').disabled = true;
-    document.getElementById('btn-student-dir-next').disabled = true;
+    const pageInfo = document.getElementById('student-dir-page-info');
+    if (pageInfo) pageInfo.textContent = 'หน้า 1 จาก 1';
+    const btnPrev = document.getElementById('btn-student-dir-prev');
+    if (btnPrev) btnPrev.disabled = true;
+    const btnNext = document.getElementById('btn-student-dir-next');
+    if (btnNext) btnNext.disabled = true;
     return;
   }
   
   // Sort by Student ID
-  filtered.sort((a, b) => a.Student_ID.localeCompare(b.Student_ID));
+  filtered.sort((a, b) => {
+    const idA = a && a.Student_ID ? String(a.Student_ID) : '';
+    const idB = b && b.Student_ID ? String(b.Student_ID) : '';
+    return idA.localeCompare(idB);
+  });
   
   // Apply pagination
-  const totalPages = Math.ceil(filtered.length / state.directoryLimit) || 1;
+  const limit = state.directoryLimit || 50;
+  const totalPages = Math.ceil(filtered.length / limit) || 1;
   if (state.directoryPage > totalPages) state.directoryPage = totalPages;
   
-  const startIndex = (state.directoryPage - 1) * state.directoryLimit;
-  const endIndex = startIndex + state.directoryLimit;
+  const page = state.directoryPage || 1;
+  const startIndex = (page - 1) * limit;
+  const endIndex = startIndex + limit;
   const paginated = filtered.slice(startIndex, endIndex);
   
-    paginated.forEach(s => {
-      const avatarSrc = s.Photo ? s.Photo : `https://api.dicebear.com/7.x/adventurer/svg?seed=${s.Student_ID}`;
-      
-      // Attendance Today (NEW)
-      const today = new Date().toLocaleDateString('en-CA');
-      const todayAtt = state.attendance.find(a => a.Student_ID === String(s.Student_ID) && a.Date === today);
-      let attBadge = '<span class="status-badge pending" style="padding: 2px 6px; font-size: 0.65rem; display: inline-flex;"><i class="fa-solid fa-clock"></i> ยังไม่เช็คชื่อ</span>';
-      if (todayAtt) {
-        if (todayAtt.Status === 'Present') {
-          attBadge = '<span class="status-badge graded" style="padding: 2px 6px; font-size: 0.65rem; display: inline-flex;"><i class="fa-solid fa-circle-check"></i> มาเรียน</span>';
-        } else {
-          attBadge = '<span class="status-badge correction" style="padding: 2px 6px; font-size: 0.65rem; display: inline-flex;"><i class="fa-solid fa-circle-xmark"></i> ขาดเรียน</span>';
-        }
+  const attendanceList = Array.isArray(state.attendance) ? state.attendance : [];
+  const submissionsList = Array.isArray(state.submissions) ? state.submissions : [];
+  const assignmentsList = Array.isArray(state.assignments) ? state.assignments : [];
+
+  paginated.forEach(s => {
+    if (!s) return;
+    const studentId = s.Student_ID || '';
+    const avatarSrc = s.Photo ? s.Photo : `https://api.dicebear.com/7.x/adventurer/svg?seed=${studentId}`;
+    
+    // Attendance Today (NEW)
+    const today = new Date().toLocaleDateString('en-CA');
+    const todayAtt = attendanceList.find(a => a && String(a.Student_ID) === String(studentId) && a.Date === today);
+    let attBadge = '<span class="status-badge pending" style="padding: 2px 6px; font-size: 0.65rem; display: inline-flex;"><i class="fa-solid fa-clock"></i> ยังไม่เช็คชื่อ</span>';
+    if (todayAtt) {
+      if (todayAtt.Status === 'Present') {
+        attBadge = '<span class="status-badge graded" style="padding: 2px 6px; font-size: 0.65rem; display: inline-flex;"><i class="fa-solid fa-circle-check"></i> มาเรียน</span>';
+      } else {
+        attBadge = '<span class="status-badge correction" style="padding: 2px 6px; font-size: 0.65rem; display: inline-flex;"><i class="fa-solid fa-circle-xmark"></i> ขาดเรียน</span>';
       }
-      
-      // Submissions Stats (NEW)
-      const studentSubs = state.submissions.filter(sub => sub.Student_ID === s.Student_ID);
-      const totalAssigns = state.assignments.length;
-      const submittedCount = studentSubs.filter(sub => sub.Status === 'Graded' || sub.Status === 'Submitted' || sub.Status === 'Resubmitted').length;
-      
-      let taskBadge = `<span class="status-badge pending" style="padding: 2px 6px; font-size: 0.65rem; display: inline-flex;"><i class="fa-solid fa-file-invoice"></i> ส่งงาน ${submittedCount}/${totalAssigns}</span>`;
-      if (totalAssigns > 0) {
+    }
+    
+    // Submissions Stats (NEW)
+    const studentSubs = submissionsList.filter(sub => sub && sub.Student_ID === studentId);
+    const totalAssigns = assignmentsList.length;
+    const submittedCount = studentSubs.filter(sub => sub && (sub.Status === 'Graded' || sub.Status === 'Submitted' || sub.Status === 'Resubmitted')).length;
+    
+    let taskBadge = `<span class="status-badge pending" style="padding: 2px 6px; font-size: 0.65rem; display: inline-flex;"><i class="fa-solid fa-file-invoice"></i> ส่งงาน ${submittedCount}/${totalAssigns}</span>`;
+    if (totalAssigns > 0) {
         if (submittedCount === totalAssigns) {
           taskBadge = `<span class="status-badge graded" style="padding: 2px 6px; font-size: 0.65rem; display: inline-flex;"><i class="fa-solid fa-check-double"></i> ส่งครบ ${submittedCount}/${totalAssigns}</span>`;
         } else if (submittedCount > 0) {
@@ -2045,26 +2083,33 @@ function printStudentCards(studentList) {
 // Teacher Accounts Management Table Populator
 async function loadTeachersTable() {
   const teachersTableBody = document.getElementById('teachers-table-body');
+  if (!teachersTableBody) return;
   teachersTableBody.innerHTML = '<tr><td colspan="4" class="text-center"><i class="fa-solid fa-spinner fa-spin"></i> กำลังโหลดข้อมูล...</td></tr>';
   
   try {
     const list = await fetch('/api/teachers').then(r => r.json());
     teachersTableBody.innerHTML = '';
     
-    if (list.length === 0) {
+    if (!Array.isArray(list) || list.length === 0) {
       teachersTableBody.innerHTML = '<tr><td colspan="4" class="text-center">ไม่พบบัญชีคุณครูร่วมสอน</td></tr>';
+      loadSystemLogs();
+      loadSubjectsTable();
       return;
     }
     
     list.forEach(t => {
+      if (!t || !t.username) return;
+      const username = t.username;
+      const fullName = t.fullName || '-';
+      const role = t.role || 'Teacher';
       const row = document.createElement('tr');
       row.innerHTML = `
-        <td><strong>${t.username}</strong></td>
-        <td>${t.fullName}</td>
-        <td><span class="badge-class" style="background: ${t.role === 'Admin' ? 'var(--purple)' : 'var(--blue)'}; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem;">${t.role}</span></td>
+        <td><strong>${username}</strong></td>
+        <td>${fullName}</td>
+        <td><span class="badge-class" style="background: ${role === 'Admin' ? 'var(--purple)' : 'var(--blue)'}; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem;">${role}</span></td>
         <td>
-          ${t.username.toLowerCase() === 'admin' ? '<small class="text-muted">บัญชีหลักไม่สามารถลบได้</small>' : `
-            <button class="btn btn-red btn-delete-teacher-trigger" data-username="${t.username}" style="padding: 4px 10px; font-size: 0.8rem;">
+          ${username.toLowerCase() === 'admin' ? '<small class="text-muted">บัญชีหลักไม่สามารถลบได้</small>' : `
+            <button class="btn btn-red btn-delete-teacher-trigger" data-username="${username}" style="padding: 4px 10px; font-size: 0.8rem;">
               <i class="fa-solid fa-trash-can"></i> ลบ
             </button>
           `}
@@ -2076,7 +2121,7 @@ async function loadTeachersTable() {
     loadSystemLogs();
     loadSubjectsTable();
   } catch (err) {
-    console.error(err);
+    console.error('Error in loadTeachersTable:', err);
     teachersTableBody.innerHTML = '<tr><td colspan="4" class="text-center text-red">เกิดข้อผิดพลาดในการโหลดข้อมูล</td></tr>';
   }
 }
@@ -3097,22 +3142,27 @@ async function loadSubjectsTable() {
     
     subjectsTableBody.innerHTML = '';
     
-    if (list.length === 0) {
+    if (!Array.isArray(list) || list.length === 0) {
       subjectsTableBody.innerHTML = '<tr><td colspan="4" class="text-center">ไม่พบรายการวิชาเรียน</td></tr>';
       return;
     }
     
+    const tList = Array.isArray(teachersList) ? teachersList : [];
+    
     list.forEach(s => {
+      if (!s || !s.Subject_ID) return;
       let teacherName = 'ครูทุกคน (วิชากิจกรรม)';
-      if (s.Teacher_Username !== 'any') {
-        const t = teachersList.find(x => x.username.toLowerCase() === s.Teacher_Username.toLowerCase());
-        teacherName = t ? `${t.fullName} (${s.Teacher_Username})` : s.Teacher_Username;
+      const tUsername = s.Teacher_Username || '';
+      
+      if (tUsername && tUsername !== 'any') {
+        const t = tList.find(x => x && x.username && x.username.toLowerCase() === tUsername.toLowerCase());
+        teacherName = t ? `${t.fullName || '-'} (${tUsername})` : tUsername;
       }
       
       const row = document.createElement('tr');
       row.innerHTML = `
         <td><strong>${s.Subject_ID}</strong></td>
-        <td>${s.Subject_Name}</td>
+        <td>${s.Subject_Name || '-'}</td>
         <td><span class="badge-class" style="background: rgba(139,92,246,0.15); color: #c084fc; border: 1px solid rgba(139,92,246,0.3); font-size: 0.75rem;">${teacherName}</span></td>
         <td>
           <button class="btn btn-red btn-delete-subject-trigger" data-id="${s.Subject_ID}" style="padding: 4px 10px; font-size: 0.8rem;">
@@ -3123,7 +3173,7 @@ async function loadSubjectsTable() {
       subjectsTableBody.appendChild(row);
     });
   } catch (err) {
-    console.error(err);
+    console.error('Error in loadSubjectsTable:', err);
     subjectsTableBody.innerHTML = '<tr><td colspan="4" class="text-center text-red">เกิดข้อผิดพลาดในการโหลดวิชาเรียน</td></tr>';
   }
 }
@@ -3240,13 +3290,17 @@ async function loadAssignmentsTable() {
 
   try {
     // Sort assignments by ID descending
-    const list = [...state.assignments];
-    list.sort((a, b) => b.Assignment_ID.localeCompare(a.Assignment_ID));
+    const list = Array.isArray(state.assignments) ? [...state.assignments] : [];
+    list.sort((a, b) => {
+      const idA = a && a.Assignment_ID ? String(a.Assignment_ID) : '';
+      const idB = b && b.Assignment_ID ? String(b.Assignment_ID) : '';
+      return idB.localeCompare(idA);
+    });
 
     assignmentsTableBody.innerHTML = '';
     
     // Filter assignments that are permitted
-    const permitted = list.filter(a => hasSubjectAccess(a.Subject_ID));
+    const permitted = list.filter(a => a && hasSubjectAccess(a.Subject_ID));
 
     if (permitted.length === 0) {
       assignmentsTableBody.innerHTML = '<tr><td colspan="7" class="text-center">ไม่พบข้อมูลภาระงานที่ท่านมีสิทธิ์เข้าถึง</td></tr>';
@@ -3254,32 +3308,48 @@ async function loadAssignmentsTable() {
     }
     
     permitted.forEach(assign => {
-      const subj = state.subjects.find(s => s.Subject_ID === assign.Subject_ID);
-      const subjectName = subj ? `${subj.Subject_Name} (${assign.Subject_ID})` : assign.Subject_ID;
+      if (!assign || !assign.Assignment_ID) return;
+      const subj = Array.isArray(state.subjects) ? state.subjects.find(s => s && s.Subject_ID === assign.Subject_ID) : null;
+      const subjectName = subj ? `${subj.Subject_Name || '-'} (${assign.Subject_ID || '-'})` : (assign.Subject_ID || '-');
       
-      const formattedDate = new Date(assign.Due_Date).toLocaleDateString('th-TH', {
-        day: 'numeric',
-        month: 'short',
-        year: '2-digit'
-      });
+      let formattedDate = '-';
+      if (assign.Due_Date) {
+        try {
+          const d = new Date(assign.Due_Date);
+          if (!isNaN(d.getTime())) {
+            formattedDate = d.toLocaleDateString('th-TH', {
+              day: 'numeric',
+              month: 'short',
+              year: '2-digit'
+            });
+          } else {
+            formattedDate = assign.Due_Date;
+          }
+        } catch (e) {
+          formattedDate = assign.Due_Date;
+        }
+      }
+
+      const maxScore = assign.Max_Score !== undefined ? assign.Max_Score : '-';
+      const assignClass = assign.Class || 'all';
 
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td><strong>${assign.Assignment_ID}</strong></td>
-        <td>${assign.Assignment_Name}</td>
+        <td>${assign.Assignment_Name || '-'}</td>
         <td>${subjectName}</td>
-        <td><span class="badge" style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);">${assign.Class === 'all' || assign.Class === 'ทุกชั้นเรียน' ? 'ทุกชั้นเรียน' : assign.Class}</span></td>
+        <td><span class="badge" style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);">${assignClass === 'all' || assignClass === 'ทุกชั้นเรียน' ? 'ทุกชั้นเรียน' : assignClass}</span></td>
         <td>${formattedDate}</td>
-        <td><strong>${assign.Max_Score}</strong></td>
+        <td><strong>${maxScore}</strong></td>
         <td>
           <div class="actions-group" style="display: flex; gap: 8px;">
             <button class="btn btn-secondary btn-icon-only btn-edit-assign-trigger" 
                     data-id="${assign.Assignment_ID}"
-                    data-name="${assign.Assignment_Name}"
-                    data-subject="${assign.Subject_ID}"
-                    data-class="${assign.Class}"
-                    data-due="${assign.Due_Date}"
-                    data-score="${assign.Max_Score}"
+                    data-name="${assign.Assignment_Name || ''}"
+                    data-subject="${assign.Subject_ID || ''}"
+                    data-class="${assignClass}"
+                    data-due="${assign.Due_Date || ''}"
+                    data-score="${maxScore}"
                     style="padding: 4px 8px; font-size: 0.8rem;"
                     title="แก้ไขการบ้าน">
               <i class="fa-solid fa-pen"></i>
@@ -3296,7 +3366,7 @@ async function loadAssignmentsTable() {
       assignmentsTableBody.appendChild(tr);
     });
   } catch (err) {
-    console.error(err);
+    console.error('Error in loadAssignmentsTable:', err);
     assignmentsTableBody.innerHTML = '<tr><td colspan="7" class="text-center text-red">เกิดข้อผิดพลาดในการแสดงตารางภาระงาน</td></tr>';
   }
 }
