@@ -151,28 +151,28 @@
         <div class="teacher-dashboard-layout animate-fade-in">
           <!-- Stats Summary Bar -->
           <div class="stats-row">
-            <div class="stat-card glass-card">
+            <div id="card-stat-students" class="stat-card glass-card" style="cursor: pointer;">
               <div class="stat-icon icon-blue"><i class="fa-solid fa-users"></i></div>
               <div class="stat-info">
                 <h3>นักเรียนทั้งหมด</h3>
                 <p id="stat-total-students">0 คน</p>
               </div>
             </div>
-            <div class="stat-card glass-card">
+            <div id="card-stat-assignments" class="stat-card glass-card" style="cursor: pointer;">
               <div class="stat-icon icon-purple"><i class="fa-solid fa-book-open"></i></div>
               <div class="stat-info">
                 <h3>การบ้านทั้งหมด</h3>
                 <p id="stat-total-assignments">0 งาน</p>
               </div>
             </div>
-            <div class="stat-card glass-card">
+            <div id="card-stat-submissions" class="stat-card glass-card" style="cursor: pointer;">
               <div class="stat-icon icon-yellow"><i class="fa-solid fa-file-arrow-up"></i></div>
               <div class="stat-info">
                 <h3>ส่งงานแล้ว</h3>
                 <p id="stat-total-submissions">0 รายการ</p>
               </div>
             </div>
-            <div class="stat-card glass-card">
+            <div id="card-stat-graded" class="stat-card glass-card" style="cursor: pointer;">
               <div class="stat-icon icon-green"><i class="fa-solid fa-square-check"></i></div>
               <div class="stat-info">
                 <h3>ตรวจคะแนนแล้ว</h3>
@@ -194,6 +194,7 @@
                 <button id="tab-subjects" class="tab-link hidden"><i class="fa-solid fa-book"></i> จัดการรายวิชาเรียน</button>
                 <button id="tab-teachers" class="tab-link hidden"><i class="fa-solid fa-user-tie"></i> จัดการบัญชีคุณครู</button>
                 <button id="tab-reports" class="tab-link"><i class="fa-solid fa-chart-line"></i> สรุปรายงานและพิมพ์ A4</button>
+                <button id="tab-analytics" class="tab-link hidden"><i class="fa-solid fa-chart-pie"></i> วิเคราะห์การใช้งาน (Analytics)</button>
               </div>
 
               <!-- View 1: Submissions Table -->
@@ -205,12 +206,22 @@
                       <input type="text" id="teacher-search" placeholder="ค้นหาชื่อ, รหัสนักเรียน...">
                     </div>
                     
-                    <select id="filter-class">
-                      <option value="">ชั้นเรียนทั้งหมด</option>
+                    <select id="filter-subject">
+                      <option value="">รายวิชาทั้งหมด</option>
                     </select>
 
                     <select id="filter-assignment">
                       <option value="">การบ้านทั้งหมด</option>
+                    </select>
+                    
+                    <select id="filter-class">
+                      <option value="">ชั้นเรียนทั้งหมด</option>
+                    </select>
+
+                    <select id="filter-status">
+                      <option value="">สถานะทั้งหมด</option>
+                      <option value="Submitted">ส่งแล้ว (รอตรวจ)</option>
+                      <option value="Graded">ตรวจแล้ว</option>
                     </select>
                   </div>
                 </div>
@@ -274,10 +285,26 @@
                   <span id="student-dir-count" class="badge">0 คน</span>
                 </div>
 
+                <!-- Admin Bulk Actions Toolbar (NEW) -->
+                <div id="admin-bulk-toolbar" class="glass-card" style="margin-bottom: 12px; padding: 10px 15px; display: none; align-items: center; justify-content: space-between; background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.25); border-radius: 8px;">
+                  <div>
+                    <span id="bulk-selected-count" style="font-weight: 700; color: #c084fc; font-size: 0.9rem;">เลือกแล้ว 0 คน</span>
+                  </div>
+                  <div style="display: flex; gap: 8px;">
+                    <button id="btn-bulk-promote" class="btn btn-purple" style="padding: 6px 12px; font-size: 0.8rem;">
+                      <i class="fa-solid fa-angles-up"></i> เลื่อนชั้นเรียน (+1 ชั้น)
+                    </button>
+                    <button id="btn-bulk-delete" class="btn btn-danger" style="padding: 6px 12px; font-size: 0.8rem;">
+                      <i class="fa-solid fa-trash-can"></i> ลบกลุ่มที่เลือก
+                    </button>
+                  </div>
+                </div>
+
                 <div class="table-container">
                   <table class="data-table">
                     <thead>
                       <tr>
+                        <th class="admin-only-cell" style="width: 40px; text-align: center; display: none;"><input type="checkbox" id="check-all-students"></th>
                         <th>รูปภาพ</th>
                         <th>รหัสนักเรียน</th>
                         <th>ชื่อ-นามสกุล</th>
@@ -308,7 +335,7 @@
               <!-- View 3: Teacher Accounts Management Table (NEW) -->
               <div id="panel-teachers-view" class="tab-view">
                 <div class="panel-header" style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center;">
-                  <h3><i class="fa-solid fa-user-shield text-purple"></i> บัญชีคุณครูร่วมสอน</h3>
+                  <h3><i class="fa-solid fa-user-shield text-purple"></i> บัญชีคุณครูผู้สอน</h3>
                   <button id="btn-add-teacher-trigger" class="btn btn-purple btn-icon-left" style="font-size: 0.85rem; padding: 6px 12px;">
                     <i class="fa-solid fa-user-plus"></i> เพิ่มบัญชีครูใหม่
                   </button>
@@ -346,6 +373,7 @@
                   <table class="data-table">
                     <thead>
                       <tr>
+                        <th>กลุ่มสาระฯ (Department)</th>
                         <th>รหัสวิชา (Subject ID)</th>
                         <th>ชื่อรายวิชา</th>
                         <th>ครูผู้สอนประจำวิชา</th>
@@ -354,7 +382,7 @@
                     </thead>
                     <tbody id="subjects-table-body">
                       <tr>
-                        <td colspan="4" class="text-center">กำลังโหลดข้อมูล...</td>
+                        <td colspan="5" class="text-center">กำลังโหลดข้อมูล...</td>
                       </tr>
                     </tbody>
                   </table>
@@ -452,6 +480,68 @@
                   <p style="color: var(--text-muted);">กรุณากดปุ่ม <strong>"ดึงรายงาน"</strong> เพื่อประมวลผลสรุปข้อมูล</p>
                 </div>
               </div>
+
+              <!-- View 5: Real-Time Usage & Behavior Analytics (NEW) -->
+              <div id="panel-analytics-view" class="tab-view">
+                <div class="panel-header" style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                  <h3><i class="fa-solid fa-chart-pie text-purple"></i> วิเคราะห์การใช้งานและพฤติกรรมระบบ (Analytics)</h3>
+                  <div style="display: flex; gap: 8px;">
+                    <button id="btn-refresh-analytics" class="btn btn-purple btn-icon-left" style="font-size: 0.85rem; padding: 6px 12px;">
+                      <i class="fa-solid fa-arrows-rotate"></i> อัปเดตข้อมูลสด
+                    </button>
+                    <a id="btn-download-logs" href="/api/logs" download="usage_logs.json" class="btn btn-secondary btn-icon-left" style="font-size: 0.85rem; padding: 6px 12px; display: inline-flex; align-items: center; justify-content: center; text-decoration: none;">
+                      <i class="fa-solid fa-file-arrow-down"></i> ดาวน์โหลดล็อก (.json)
+                    </a>
+                  </div>
+                </div>
+
+                <!-- Analytics Metrics Row -->
+                <div class="stats-row" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-top: 15px; margin-bottom: 20px;">
+                  <div class="stat-card glass-card" style="padding: 12px; display: flex; gap: 12px; align-items: center; min-height: 75px;">
+                    <div class="stat-icon icon-blue" style="width: 40px; height: 40px; border-radius: 50%; font-size: 16px; background: rgba(59, 130, 246, 0.15); color: #3b82f6; display: flex; align-items: center; justify-content: center;"><i class="fa-solid fa-right-to-bracket"></i></div>
+                    <div class="stat-info">
+                      <h4 style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px;">ความถี่การเข้าสู่ระบบ</h4>
+                      <p id="metric-logins" style="font-size: 1.05rem; font-weight: bold; color: var(--text-primary);">A: 0 | T: 0 | S: 0</p>
+                    </div>
+                  </div>
+                  <div class="stat-card glass-card" style="padding: 12px; display: flex; gap: 12px; align-items: center; min-height: 75px;">
+                    <div class="stat-icon icon-purple" style="width: 40px; height: 40px; border-radius: 50%; font-size: 16px; background: rgba(139, 92, 246, 0.15); color: #a78bfa; display: flex; align-items: center; justify-content: center;"><i class="fa-solid fa-gears"></i></div>
+                    <div class="stat-info">
+                      <h4 style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px;">การโต้ตอบสะสม</h4>
+                      <p id="metric-actions" style="font-size: 1.05rem; font-weight: bold; color: var(--text-primary);">0 ครั้ง</p>
+                    </div>
+                  </div>
+                  <div class="stat-card glass-card" style="padding: 12px; display: flex; gap: 12px; align-items: center; min-height: 75px;">
+                    <div class="stat-icon icon-yellow" style="width: 40px; height: 40px; border-radius: 50%; font-size: 16px; background: rgba(251, 191, 36, 0.15); color: #fbbf24; display: flex; align-items: center; justify-content: center;"><i class="fa-solid fa-clock"></i></div>
+                    <div class="stat-info">
+                      <h4 style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px;">ช่วงเวลาใช้งานหนาแน่น</h4>
+                      <p id="metric-peak-hour" style="font-size: 1.05rem; font-weight: bold; color: var(--text-primary);">-</p>
+                    </div>
+                  </div>
+                  <div class="stat-card glass-card" style="padding: 12px; display: flex; gap: 12px; align-items: center; min-height: 75px;">
+                    <div class="stat-icon icon-green" style="width: 40px; height: 40px; border-radius: 50%; font-size: 16px; background: rgba(16, 185, 129, 0.15); color: #34d399; display: flex; align-items: center; justify-content: center;"><i class="fa-solid fa-trophy"></i></div>
+                    <div class="stat-info">
+                      <h4 style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px;">บัญชีผู้ใช้งานสูงสุด</h4>
+                      <p id="metric-top-user" style="font-size: 1.05rem; font-weight: bold; color: var(--text-primary); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; max-width: 140px;">-</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Terminal Display Console Card -->
+                <div class="glass-card" style="padding: 16px; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--glass-border); border-radius: 12px; box-shadow: inset 0 0 20px rgba(0,0,0,0.4); display: flex; flex-direction: column; height: 320px; min-height: 0;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px; margin-bottom: 10px;">
+                    <span style="font-family: monospace; font-size: 0.8rem; font-weight: bold; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;"><i class="fa-solid fa-terminal text-purple"></i> System Activity Live Stream Terminal</span>
+                    <div style="display: flex; gap: 4px;">
+                      <span style="width: 10px; height: 10px; border-radius: 50%; background: #ef4444; display: inline-block;"></span>
+                      <span style="width: 10px; height: 10px; border-radius: 50%; background: #eab308; display: inline-block;"></span>
+                      <span style="width: 10px; height: 10px; border-radius: 50%; background: #22c55e; display: inline-block;"></span>
+                    </div>
+                  </div>
+                  <div id="ai-logs-terminal" style="flex: 1; overflow-y: auto; font-family: monospace; font-size: 0.85rem; line-height: 1.5; color: #cbd5e1; padding: 5px; box-sizing: border-box;">
+                    <!-- Color-coded log items will be injected here -->
+                  </div>
+                </div>
+              </div>
             </div>
  
             <!-- Right Panel: Admin Settings & Actions -->
@@ -514,6 +604,15 @@
                     <i class="fa-solid fa-camera"></i> <span>เปิดกล้องสแกนด่วน</span>
                   </button>
 
+                  <!-- Manual ID Keyboard Entry (NEW) -->
+                  <div class="manual-id-entry-container" style="margin-top: 12px; margin-bottom: 12px; padding: 12px; border: 1px solid var(--glass-border); border-radius: var(--border-radius-md); background: rgba(255,255,255,0.01);">
+                    <label for="manual-scan-student-id" style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 6px;">หรือกรอกรหัสประจำตัวตรงนี้ (หากสแกนกล้องไม่ได้)</label>
+                    <div style="display: flex; gap: 8px;">
+                      <input type="text" id="manual-scan-student-id" placeholder="กรอกรหัสนักเรียน เช่น 3152" style="flex: 1; padding: 8px 12px; font-size: 0.9rem; border-radius: 6px; background: var(--bg-secondary); border: 1px solid var(--glass-border); color: var(--text-primary);">
+                      <button type="button" id="btn-manual-scan-submit" class="btn btn-purple" style="padding: 8px 16px; font-size: 0.85rem; font-weight: bold; white-space: nowrap;">บันทึก</button>
+                    </div>
+                  </div>
+
                   <!-- Scanner Simulator -->
                   <div class="scanner-simulator">
                     <h4><i class="fa-solid fa-laptop-code text-purple"></i> ตัวจำลองการสแกน (จำลองสแกนด่วน)</h4>
@@ -560,10 +659,10 @@
                     </select>
                   </div>
                   <div class="input-group">
-                    <label for="new-assign-class">ระดับชั้นเรียนที่มอบหมายภาระงาน</label>
-                    <select id="new-assign-class" required style="background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--glass-border); padding: 8px; border-radius: 6px; width: 100%;">
-                      <option value="all">ทุกชั้นเรียน (All Classes)</option>
-                    </select>
+                    <label>ระดับชั้นเรียนที่มอบหมายภาระงาน</label>
+                    <div id="new-assign-class-checkboxes" class="class-checkboxes-container">
+                      <!-- Populated dynamically -->
+                    </div>
                   </div>
                   <div class="form-row">
                     <div class="input-group">
@@ -679,6 +778,52 @@
     </div>
   </div>
 
+  <!-- Student Submission Preview Modal (NEW) -->
+  <div id="student-submission-preview-modal" class="modal-overlay">
+    <div class="modal-container glass-card modal-medium animate-zoom-in">
+      <div class="modal-header">
+        <h2><i class="fa-solid fa-file-invoice text-purple"></i> รายละเอียดงานที่ส่ง</h2>
+        <button id="btn-close-sub-preview-modal" class="btn-close-modal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body" style="font-size: 0.95rem; line-height: 1.6; color: var(--text-primary);">
+        <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+          <h4 id="preview-assign-title" style="margin-bottom: 8px; color: var(--purple); font-size: 1.05rem;">-</h4>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">รหัสภาระงาน: <span id="preview-assign-id" style="font-weight: bold;">-</span></p>
+        </div>
+        
+        <div style="margin-bottom: 12px;">
+          <span style="font-weight: bold; color: var(--text-muted); display: block; font-size: 0.85rem;">ไฟล์ที่อัปโหลด/ลิงก์งาน:</span>
+          <div id="preview-file-container" style="margin-top: 6px;">
+            <!-- File link will be injected here -->
+          </div>
+        </div>
+        
+        <div style="margin-bottom: 12px;">
+          <span style="font-weight: bold; color: var(--text-muted); display: block; font-size: 0.85rem;">บันทึกเพิ่มเติมจากนักเรียน:</span>
+          <div id="preview-student-notes" style="background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); padding: 10px; border-radius: 6px; margin-top: 4px; font-size: 0.85rem; white-space: pre-wrap; min-height: 40px; color: var(--text-primary);"> - </div>
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <span style="font-weight: bold; color: var(--text-muted); display: block; font-size: 0.85rem;">วันที่ส่งงานล่าสุด:</span>
+          <p id="preview-sub-date" style="margin-top: 4px; font-size: 0.85rem; font-weight: bold; color: var(--text-primary);">-</p>
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <span style="font-weight: bold; color: var(--text-muted); display: block; font-size: 0.85rem;">คะแนนที่ได้:</span>
+          <p id="preview-sub-score" style="margin-top: 4px; font-weight: 700; font-size: 1.1rem; color: var(--success);">-</p>
+        </div>
+        
+        <div style="margin-bottom: 12px;">
+          <span style="font-weight: bold; color: var(--text-muted); display: block; font-size: 0.85rem;">คำแนะนำ/ข้อเสนอแนะจากคุณครู:</span>
+          <div id="preview-teacher-feedback" style="background: rgba(139,92,246,0.05); border: 1px solid rgba(139,92,246,0.15); padding: 10px; border-radius: 6px; margin-top: 4px; font-size: 0.85rem; white-space: pre-wrap; min-height: 40px; color: #c084fc;">ไม่มีข้อเสนอแนะ</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-close-sub-preview-btn">ปิดหน้าต่าง</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Edit Assignment Modal (NEW) -->
   <div id="assignment-edit-modal" class="modal-overlay">
     <div class="modal-container glass-card modal-medium animate-zoom-in">
@@ -708,10 +853,10 @@
               </select>
             </div>
             <div class="input-group">
-              <label for="edit-assign-class">ระดับชั้นเรียนที่มอบหมาย</label>
-              <select id="edit-assign-class" name="Class" required style="background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--glass-border); padding: 8px; border-radius: 6px; width: 100%;">
-                <option value="all">ทุกชั้นเรียน (All Classes)</option>
-              </select>
+              <label>ระดับชั้นเรียนที่มอบหมาย</label>
+              <div id="edit-assign-class-checkboxes" class="class-checkboxes-container">
+                <!-- Populated dynamically -->
+              </div>
             </div>
           </div>
 
@@ -730,6 +875,101 @@
             <button type="button" class="btn btn-secondary btn-close-assignment-edit-modal-btn">ยกเลิก</button>
             <button type="submit" class="btn btn-purple">
               <i class="fa-solid fa-circle-check"></i> บันทึกข้อมูลภาระงาน
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Subject Modal (NEW) -->
+  <div id="subject-edit-modal" class="modal-overlay">
+    <div class="modal-container glass-card modal-small animate-zoom-in">
+      <div class="modal-header">
+        <h2><i class="fa-solid fa-book-open text-purple"></i> แก้ไขข้อมูลรายวิชา</h2>
+        <button id="btn-close-subject-edit-modal" class="btn-close-modal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="subject-edit-form">
+          <input type="hidden" id="edit-subject-id" name="Subject_ID">
+          <div class="input-group" style="margin-bottom: 12px;">
+            <label for="edit-subject-id-display">รหัสวิชา (แก้ไขไม่ได้)</label>
+            <input type="text" id="edit-subject-id-display" readonly style="background: rgba(255,255,255,0.05); color: var(--text-muted);">
+          </div>
+          <div class="input-group" style="margin-bottom: 12px;">
+            <label for="edit-subject-name">ชื่อรายวิชา</label>
+            <input type="text" id="edit-subject-name" name="Subject_Name" required autocomplete="off">
+          </div>
+          <div class="input-group" style="margin-bottom: 12px;">
+            <label for="edit-subject-department">กลุ่มสาระการเรียนรู้</label>
+            <select id="edit-subject-department" name="Department" required style="background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--glass-border); padding: 8px; border-radius: 6px; width: 100%;">
+              <option value="วิทยาศาสตร์และเทคโนโลยี">วิทยาศาสตร์และเทคโนโลยี</option>
+              <option value="คณิตศาสตร์">คณิตศาสตร์</option>
+              <option value="ภาษาไทย">ภาษาไทย</option>
+              <option value="สังคมศึกษา ศาสนา และวัฒนธรรม">สังคมศึกษา ศาสนา และวัฒนธรรม</option>
+              <option value="ภาษาต่างประเทศ">ภาษาต่างประเทศ</option>
+              <option value="สุขศึกษาและพลศึกษา">สุขศึกษาและพลศึกษา</option>
+              <option value="ศิลปะ">ศิลปะ</option>
+              <option value="การงานอาชีพ">การงานอาชีพ</option>
+              <option value="กิจกรรมพัฒนาผู้เรียน">กิจกรรมพัฒนาผู้เรียน</option>
+            </select>
+          </div>
+          <div class="input-group" style="margin-bottom: 12px;">
+            <label>ระดับชั้นเรียนที่เรียนวิชานี้</label>
+            <div id="edit-subject-classes-checkboxes" class="class-checkboxes-container">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+          <div class="input-group" style="margin-bottom: 15px;">
+            <label for="edit-subject-teacher">ครูผู้สอนประจำวิชา</label>
+            <select id="edit-subject-teacher" name="Teacher_Username" required style="background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--glass-border); padding: 8px; border-radius: 6px; width: 100%;">
+              <!-- Will load dynamically -->
+            </select>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary btn-close-subject-edit-modal-btn">ยกเลิก</button>
+            <button type="submit" class="btn btn-purple">
+              <i class="fa-solid fa-circle-check"></i> บันทึกข้อมูลรายวิชา
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Teacher Modal (NEW) -->
+  <div id="teacher-edit-modal" class="modal-overlay">
+    <div class="modal-container glass-card modal-small animate-zoom-in">
+      <div class="modal-header">
+        <h2><i class="fa-solid fa-user-gear text-purple"></i> แก้ไขบัญชีครูผู้สอน</h2>
+        <button id="btn-close-teacher-edit-modal" class="btn-close-modal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="teacher-edit-form">
+          <input type="hidden" id="edit-teacher-username" name="username">
+          <div class="input-group" style="margin-bottom: 12px;">
+            <label for="edit-teacher-username-display">ชื่อผู้ใช้งาน (แก้ไขไม่ได้)</label>
+            <input type="text" id="edit-teacher-username-display" readonly style="background: rgba(255,255,255,0.05); color: var(--text-muted);">
+          </div>
+          <div class="input-group" style="margin-bottom: 12px;">
+            <label for="edit-teacher-password">รหัสผ่านใหม่ (หากต้องการเปลี่ยน)</label>
+            <input type="password" id="edit-teacher-password" placeholder="เว้นว่างไว้หากใช้รหัสผ่านเดิม..." autocomplete="off">
+          </div>
+          <div class="input-group" style="margin-bottom: 12px;">
+            <label for="edit-teacher-fullname">ชื่อ - นามสกุล</label>
+            <input type="text" id="edit-teacher-fullname" name="fullName" required autocomplete="off">
+          </div>
+          <div class="input-group" style="margin-bottom: 15px;">
+            <label for="edit-teacher-role">บทบาท (Role)</label>
+            <select id="edit-teacher-role" name="role" required style="background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--glass-border); padding: 8px; border-radius: 6px; width: 100%;">
+              <option value="Teacher">คุณครูผู้สอน (Teacher)</option>
+              <option value="Admin">ผู้ดูแลระบบสูงสุด (Admin)</option>
+            </select>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary btn-close-teacher-edit-modal-btn">ยกเลิก</button>
+            <button type="submit" class="btn btn-purple">
+              <i class="fa-solid fa-circle-check"></i> บันทึกข้อมูลบัญชีครู
             </button>
           </div>
         </form>
@@ -885,7 +1125,7 @@
           <div class="input-group" style="margin-bottom: 15px;">
             <label for="new-teacher-role">บทบาท (Role)</label>
             <select id="new-teacher-role" style="background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--glass-border); padding: 8px; border-radius: 6px; width: 100%;">
-              <option value="Teacher">คุณครูผู้ร่วมสอน (Teacher)</option>
+              <option value="Teacher">คุณครูผู้สอน (Teacher)</option>
               <option value="Admin">ผู้ดูแลระบบสูงสุด (Admin)</option>
             </select>
           </div>
@@ -914,6 +1154,26 @@
           <div class="input-group" style="margin-bottom: 12px;">
             <label for="new-subject-name">ชื่อวิชา (เช่น ภาษาอังกฤษ)</label>
             <input type="text" id="new-subject-name" placeholder="ระบุชื่อวิชา..." required autocomplete="off">
+          </div>
+          <div class="input-group" style="margin-bottom: 12px;">
+            <label for="new-subject-department">กลุ่มสาระการเรียนรู้</label>
+            <select id="new-subject-department" required style="background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--glass-border); padding: 8px; border-radius: 6px; width: 100%;">
+              <option value="วิทยาศาสตร์และเทคโนโลยี">วิทยาศาสตร์และเทคโนโลยี</option>
+              <option value="คณิตศาสตร์">คณิตศาสตร์</option>
+              <option value="ภาษาไทย">ภาษาไทย</option>
+              <option value="สังคมศึกษา ศาสนา และวัฒนธรรม">สังคมศึกษา ศาสนา และวัฒนธรรม</option>
+              <option value="ภาษาต่างประเทศ">ภาษาต่างประเทศ</option>
+              <option value="สุขศึกษาและพลศึกษา">สุขศึกษาและพลศึกษา</option>
+              <option value="ศิลปะ">ศิลปะ</option>
+              <option value="การงานอาชีพ">การงานอาชีพ</option>
+              <option value="กิจกรรมพัฒนาผู้เรียน">กิจกรรมพัฒนาผู้เรียน</option>
+            </select>
+          </div>
+          <div class="input-group" style="margin-bottom: 12px;">
+            <label>ระดับชั้นเรียนที่เรียนวิชานี้</label>
+            <div id="new-subject-classes-checkboxes" class="class-checkboxes-container">
+              <!-- Populated dynamically -->
+            </div>
           </div>
           <div class="input-group" style="margin-bottom: 12px;">
             <label for="new-subject-teacher">คุณครูผู้สอนประจำวิชา</label>
@@ -973,6 +1233,11 @@
                 <option value="Need_Correction">ต้องแก้ไขใหม่ (ปรับปรุง)</option>
               </select>
             </div>
+          </div>
+
+          <div class="input-group" style="margin-top: 12px; margin-bottom: 12px;">
+            <label for="grade-feedback-input">คำแนะนำ/ข้อเสนอแนะเพิ่มเติมจากคุณครู</label>
+            <textarea id="grade-feedback-input" rows="2" placeholder="เช่น แก้ไขจุดที่ 2 นะคะ หรือ งานดีมากเรียบร้อยดี" style="background: var(--bg-secondary); border: 1px solid var(--glass-border); padding: 8px; border-radius: 6px; width: 100%; color: var(--text-primary); font-family: inherit;"></textarea>
           </div>
 
           <div class="modal-footer">

@@ -75,7 +75,7 @@ function loadData() {
         Subject_ID: "S001",
         Due_Date: "2026-06-15",
         Max_Score: 10,
-        QR_Link: "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=A001"
+        QR_Link: "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=A001"
       },
       {
         Assignment_ID: "A002",
@@ -83,7 +83,7 @@ function loadData() {
         Subject_ID: "S001",
         Due_Date: "2026-06-22",
         Max_Score: 20,
-        QR_Link: "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=A002"
+        QR_Link: "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=A002"
       },
       {
         Assignment_ID: "A003",
@@ -91,7 +91,7 @@ function loadData() {
         Subject_ID: "S001",
         Due_Date: "2026-06-30",
         Max_Score: 15,
-        QR_Link: "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=A003"
+        QR_Link: "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=A003"
       }
     ];
     saveAssignments();
@@ -367,9 +367,9 @@ async function syncDrive() {
       saveSubjects();
       saveAttendance();
       
-      await pushToDrive();
+      await forcePushToDrive();
     } else {
-      await pushToDrive();
+      await forcePushToDrive();
     }
   } catch (err) {
     console.error('Error in syncDrive background sync:', err.message);
@@ -378,7 +378,13 @@ async function syncDrive() {
   }
 }
 
-async function pushToDrive() {
+let dbDirty = false;
+
+function pushToDrive() {
+  dbDirty = true;
+}
+
+async function forcePushToDrive() {
   if (!config.scriptUrl || !config.folderId) return;
   
   try {
@@ -409,8 +415,14 @@ async function pushToDrive() {
 loadData();
 syncDrive(); // Trigger sync immediately on startup
 
-// Start background sync loop (every 30 seconds)
-setInterval(syncDrive, 30000);
+// Start background sync loop checking for modifications every 10 seconds
+setInterval(async () => {
+  if (dbDirty && !isSyncing) {
+    console.log('Background Sync: local modifications detected, syncing with Google Drive...');
+    dbDirty = false;
+    await syncDrive();
+  }
+}, 10000);
 
 module.exports = {
   // Config helpers
@@ -444,6 +456,49 @@ module.exports = {
     }
     return null;
   },
+  bulkPromoteStudents: (studentIds) => {
+    let count = 0;
+    students.forEach(s => {
+      if (studentIds.includes(s.Student_ID) || studentIds.includes(String(s.Student_ID))) {
+        // Promote class: e.g. ม.3/1 -> ม.4/1, ป.5/3 -> ป.6/3
+        const match = s.Class.match(/^([ก-๙]+\.)(\d+)(\/.*)?$/);
+        if (match) {
+          const prefix = match[1];
+          const grade = parseInt(match[2], 10);
+          const suffix = match[3] || '';
+          s.Class = `${prefix}${grade + 1}${suffix}`;
+          count++;
+        } else {
+          const digitMatch = s.Class.match(/\d+/);
+          if (digitMatch) {
+            const num = parseInt(digitMatch[0], 10);
+            s.Class = s.Class.replace(String(num), String(num + 1));
+            count++;
+          }
+        }
+      }
+    });
+    if (count > 0) {
+      saveStudents();
+      pushToDrive();
+    }
+    return count;
+  },
+  bulkDeleteStudents: (studentIds) => {
+    const originalCount = students.length;
+    students = students.filter(s => !studentIds.includes(s.Student_ID) && !studentIds.includes(String(s.Student_ID)));
+    const deletedCount = originalCount - students.length;
+    if (deletedCount > 0) {
+      saveStudents();
+      submissions = submissions.filter(sub => !studentIds.includes(sub.Student_ID) && !studentIds.includes(String(sub.Student_ID)));
+      attendance = attendance.filter(att => !studentIds.includes(att.Student_ID) && !studentIds.includes(String(att.Student_ID)));
+      saveSubmissions();
+      saveAttendance();
+      pushToDrive();
+    }
+    return deletedCount;
+  },
+
   
   // Assignment helpers
   getAssignments: () => assignments,
@@ -496,11 +551,14 @@ module.exports = {
     pushToDrive();
     return submission;
   },
-  updateSubmissionScore: (submissionId, score, status) => {
+  updateSubmissionScore: (submissionId, score, status, feedback) => {
     const sub = submissions.find(s => s.Submission_ID === submissionId);
     if (sub) {
       sub.Score = Number(score);
       sub.Status = status || 'Graded';
+      if (feedback !== undefined) {
+        sub.Feedback = feedback;
+      }
       sub.Timestamp = new Date().toISOString();
       saveSubmissions();
       pushToDrive();
@@ -531,6 +589,19 @@ module.exports = {
     saveTeachers();
     pushToDrive();
     return teacherData;
+  },
+  updateTeacher: (username, updatedData) => {
+    const idx = teachers.findIndex(t => t.username.toLowerCase() === username.toLowerCase());
+    if (idx !== -1) {
+      teachers[idx] = {
+        ...teachers[idx],
+        ...updatedData
+      };
+      saveTeachers();
+      pushToDrive();
+      return teachers[idx];
+    }
+    return null;
   },
   deleteTeacher: (username) => {
     if (username.toLowerCase() === 'admin') return null;
@@ -568,6 +639,19 @@ module.exports = {
     saveSubjects();
     pushToDrive();
     return subjectData;
+  },
+  updateSubject: (subjectId, updatedData) => {
+    const idx = subjects.findIndex(s => s.Subject_ID.toLowerCase() === subjectId.toLowerCase());
+    if (idx !== -1) {
+      subjects[idx] = {
+        ...subjects[idx],
+        ...updatedData
+      };
+      saveSubjects();
+      pushToDrive();
+      return subjects[idx];
+    }
+    return null;
   },
   deleteSubject: (subjectId) => {
     const idx = subjects.findIndex(s => s.Subject_ID.toLowerCase() === subjectId.toLowerCase());

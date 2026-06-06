@@ -5,7 +5,7 @@ const API = {
   getStudentInfo: (id) => fetch(`/api/student/${id}`).then(r => r.json()),
   getAssignments: () => fetch('/api/assignments').then(r => r.json()),
   getSubmissions: () => fetch('/api/submissions').then(r => r.json()),
-  getStudentsList: () => fetch('/api/students').then(r => r.json()),
+  getStudentsList: (username, role) => fetch(`/api/students?username=${encodeURIComponent(username || '')}&role=${encodeURIComponent(role || '')}`).then(r => r.json()),
   
   createAssignment: (data) => fetch('/api/assignments', {
     method: 'POST',
@@ -39,6 +39,16 @@ const API = {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
+  }).then(r => r.json()),
+  bulkPromote: (data) => fetch('/api/student/bulk-promote', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  }).then(r => r.json()),
+  bulkDelete: (data) => fetch('/api/student/bulk-delete', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
   }).then(r => r.json())
 };
 
@@ -56,7 +66,8 @@ let state = {
   directoryPage: 1, // Student directory pagination page
   directoryLimit: 50, // Student directory pagination limit
   selectedFile: null,
-  autoRouteAssignmentId: null // From URL query ?assign=AXXX
+  autoRouteAssignmentId: null, // From URL query ?assign=AXXX
+  selectedStudentIds: new Set() // Selected student IDs for bulk actions (NEW)
 };
 
 // HTML5-QR Code Scanner variables
@@ -95,6 +106,8 @@ const submissionsTableBody = document.getElementById('submissions-table-body');
 const teacherSearch = document.getElementById('teacher-search');
 const filterClass = document.getElementById('filter-class');
 const filterAssignment = document.getElementById('filter-assignment');
+const filterSubject = document.getElementById('filter-subject'); // NEW
+const filterStatus = document.getElementById('filter-status'); // NEW
 const createAssignmentForm = document.getElementById('create-assignment-form');
 const btnImportExcel = document.getElementById('btn-import-excel');
 const btnExportExcel = document.getElementById('btn-export-excel');
@@ -331,7 +344,7 @@ async function loginStudent(studentId) {
       // Update Student Personal QR Code (NEW)
       const studentQrCodeImg = document.getElementById('student-qr-code-img');
       if (studentQrCodeImg) {
-        studentQrCodeImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${res.student.Student_ID}&ecc=M`;
+        studentQrCodeImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${res.student.Student_ID}&ecc=M`;
       }
       
       // Switch layouts
@@ -377,6 +390,8 @@ btnStudentLogout.addEventListener('click', () => {
   state.studentData = null;
   state.studentSubmissions = [];
   studentIdInput.value = '';
+  state.selectedStudentIds.clear();
+  updateBulkToolbar();
   
   studentAuthCard.classList.remove('hidden');
   studentDashboard.classList.add('hidden');
@@ -403,10 +418,15 @@ function renderStudentAssignments() {
   
   const studentClass = state.studentData ? state.studentData.Class : '';
   const filtered = state.assignments.filter(assign => {
-    return !assign.Class || 
-           assign.Class === 'all' || 
+    if (!assign.Class) return true;
+    if (Array.isArray(assign.Class)) {
+      return assign.Class.includes('all') || 
+             assign.Class.includes('ทุกชั้นเรียน') || 
+             assign.Class.some(c => String(c).toLowerCase() === studentClass.toLowerCase());
+    }
+    return assign.Class === 'all' || 
            assign.Class === 'ทุกชั้นเรียน' || 
-           assign.Class.toLowerCase() === studentClass.toLowerCase();
+           String(assign.Class).toLowerCase() === studentClass.toLowerCase();
   });
   
   filtered.forEach(assign => {
@@ -443,9 +463,28 @@ function renderStudentAssignments() {
       year: '2-digit'
     });
 
-    const classBadgeHtml = assign.Class && assign.Class !== 'all' && assign.Class !== 'ทุกชั้นเรียน'
-      ? `<span class="badge" style="background: rgba(139,92,246,0.15); color: #c084fc; border: 1px solid rgba(139,92,246,0.3); font-size: 0.7rem; margin-top: 4px; display: inline-block;">เฉพาะห้อง: ${assign.Class}</span>`
+    let classLabel = '';
+    if (assign.Class) {
+      if (Array.isArray(assign.Class)) {
+        if (!assign.Class.includes('all') && !assign.Class.includes('ทุกชั้นเรียน')) {
+          classLabel = assign.Class.join(', ');
+        }
+      } else if (assign.Class !== 'all' && assign.Class !== 'ทุกชั้นเรียน') {
+        classLabel = assign.Class;
+      }
+    }
+    const classBadgeHtml = classLabel
+      ? `<span class="badge" style="background: rgba(139,92,246,0.15); color: #c084fc; border: 1px solid rgba(139,92,246,0.3); font-size: 0.7rem; margin-top: 4px; display: inline-block;">เฉพาะห้อง: ${classLabel}</span>`
       : '';
+
+    const btnPreviewHtml = submission ? `
+      <button class="btn btn-purple btn-block btn-view-submission-trigger" 
+              style="margin-bottom: 6px; font-size: 0.8rem; padding: 6px 12px; height: auto;"
+              data-id="${assign.Assignment_ID}" 
+              data-name="${assign.Assignment_Name}">
+        <i class="fa-solid fa-eye"></i> ดูรายละเอียดงานที่ส่ง
+      </button>
+    ` : '';
 
     card.innerHTML = `
       <div class="card-top">
@@ -466,6 +505,7 @@ function renderStudentAssignments() {
           </span>
           ${scoreDisplay}
         </div>
+        ${btnPreviewHtml}
         <button class="btn ${submission ? 'btn-secondary' : 'btn-primary'} btn-block btn-submit-trigger" 
                 data-id="${assign.Assignment_ID}" 
                 data-name="${assign.Assignment_Name}"
@@ -498,6 +538,68 @@ function renderStudentAssignments() {
       openModal(submitModal);
     });
   });
+
+  // Attach view submission details events (NEW)
+  document.querySelectorAll('.btn-view-submission-trigger').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const assignId = e.currentTarget.dataset.id;
+      const assignName = e.currentTarget.dataset.name;
+      
+      const submission = state.studentSubmissions.find(s => s.Assignment_ID === assignId);
+      if (!submission) return;
+      
+      document.getElementById('preview-assign-title').textContent = assignName;
+      document.getElementById('preview-assign-id').textContent = assignId;
+      
+      const fileContainer = document.getElementById('preview-file-container');
+      if (submission.File_Link) {
+        fileContainer.innerHTML = `
+          <a href="${submission.File_Link}" target="_blank" class="btn btn-blue btn-icon-left" style="font-size: 0.85rem; padding: 6px 12px; display: inline-flex;">
+            <i class="fa-solid fa-file-arrow-down"></i> คลิกเพื่อเปิดดูงาน / ดาวน์โหลดไฟล์
+          </a>
+        `;
+      } else {
+        fileContainer.innerHTML = '<span style="color: var(--text-muted); font-size: 0.85rem; font-style: italic;">ไม่มีไฟล์แนบ (เช่น ส่งลิงก์ข้อความอย่างเดียว)</span>';
+      }
+      
+      document.getElementById('preview-student-notes').textContent = submission.Notes || 'ไม่มีข้อความเพิ่มเติม';
+      
+      const dateStr = new Date(submission.Timestamp).toLocaleString('th-TH', {
+        day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+      });
+      document.getElementById('preview-sub-date').textContent = dateStr;
+      
+      const scoreEl = document.getElementById('preview-sub-score');
+      if (submission.Status === 'Graded') {
+        const assign = state.assignments.find(a => a.Assignment_ID === assignId);
+        const maxScore = assign ? assign.Max_Score : 10;
+        scoreEl.innerHTML = `${submission.Score} <span style="font-weight: normal; font-size: 0.85rem; color: var(--text-muted);">/ ${maxScore} คะแนน (ผ่านการตรวจแล้ว)</span>`;
+        scoreEl.style.color = 'var(--success)';
+      } else if (submission.Status === 'Need_Correction') {
+        scoreEl.innerHTML = `<span style="color: var(--error);"><i class="fa-solid fa-circle-exclamation"></i> ต้องการให้แก้ไขใหม่ (ยังไม่มีคะแนน)</span>`;
+      } else {
+        scoreEl.textContent = 'รอการตรวจและลงคะแนนจากคุณครู';
+        scoreEl.style.color = 'var(--text-muted)';
+      }
+      
+      document.getElementById('preview-teacher-feedback').textContent = submission.Feedback || 'ไม่มีข้อเสนอแนะ';
+      
+      openModal(document.getElementById('student-submission-preview-modal'));
+    });
+  });
+}
+
+// Bind subPreviewModal close controls (NEW)
+const subPreviewModal = document.getElementById('student-submission-preview-modal');
+if (subPreviewModal) {
+  const btnClosePreview = document.getElementById('btn-close-sub-preview-modal');
+  if (btnClosePreview) {
+    btnClosePreview.addEventListener('click', () => closeModal(subPreviewModal));
+  }
+  const btnClosePreviewBtn = document.querySelector('.btn-close-sub-preview-btn');
+  if (btnClosePreviewBtn) {
+    btnClosePreviewBtn.addEventListener('click', () => closeModal(subPreviewModal));
+  }
 }
 
 // Student Submission Method and Webcam Setup
@@ -862,6 +964,7 @@ function hasSubjectAccess(subjectId) {
 function applyRolePrivileges() {
   const tabTeachers = document.getElementById('tab-teachers');
   const tabSubjects = document.getElementById('tab-subjects');
+  const tabAnalytics = document.getElementById('tab-analytics');
   const isAdmin = state.teacherData && state.teacherData.role === 'Admin';
   
   if (tabTeachers) {
@@ -877,15 +980,31 @@ function applyRolePrivileges() {
   }
 
   if (tabSubjects) {
+    // Both admin and regular teachers can manage/view subjects
+    tabSubjects.classList.remove('hidden');
+  }
+
+  if (tabAnalytics) {
     if (isAdmin) {
-      tabSubjects.classList.remove('hidden');
+      tabAnalytics.classList.remove('hidden');
     } else {
-      tabSubjects.classList.add('hidden');
-      if (tabSubjects.classList.contains('active')) {
+      tabAnalytics.classList.add('hidden');
+      if (tabAnalytics.classList.contains('active')) {
         const tabSubmissions = document.getElementById('tab-submissions');
         if (tabSubmissions) tabSubmissions.click();
       }
     }
+  }
+
+  // Toggle display for student directory checkboxes and bulk toolbar
+  const adminCells = document.querySelectorAll('.admin-only-cell');
+  adminCells.forEach(cell => {
+    cell.style.display = isAdmin ? '' : 'none';
+  });
+
+  const toolbar = document.getElementById('admin-bulk-toolbar');
+  if (toolbar && !isAdmin) {
+    toolbar.style.display = 'none';
   }
 
   // Hide local desktop excel sync and export cards for non-admins to prevent unauthorized modifications
@@ -904,7 +1023,9 @@ async function loadTeacherDashboard() {
   try {
     const assignments = await API.getAssignments();
     const submissions = await API.getSubmissions();
-    const students = await API.getStudentsList();
+    const uName = state.teacherData ? state.teacherData.username : '';
+    const uRole = state.teacherData ? state.teacherData.role : '';
+    const students = await API.getStudentsList(uName, uRole);
     const subjects = await API.getSubjects();
     const attendance = await API.getAttendance();
     
@@ -939,7 +1060,7 @@ async function loadTeacherDashboard() {
     populateDirectoryFilters(students);
     populateSubjectsDropdowns(subjects);
     populateReportsFilters();
-    populateAssignClassesDropdown();
+    populateAssignClassesCheckboxes();
     
     renderSubmissionsTable();
     renderStudentsDirectoryTable();
@@ -954,6 +1075,46 @@ async function loadTeacherDashboard() {
   } catch (err) {
     console.error(err);
     showToast('ไม่สามารถโหลดข้อมูลหลังบ้านได้', 'error');
+  }
+}
+
+// Suggest sequential Assignment ID based on Subject (NEW)
+function suggestAssignmentId(subjectId) {
+  if (!subjectId) return '';
+  let maxSeq = 0;
+  
+  const escapeRegExp = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const regex = new RegExp(`^${escapeRegExp(subjectId)}-A(\\d+)$`, 'i');
+  
+  const assignmentsList = Array.isArray(state.assignments) ? state.assignments : [];
+  assignmentsList.forEach(a => {
+    if (a && a.Subject_ID === subjectId) {
+      const match = a.Assignment_ID.match(regex);
+      if (match) {
+        const seq = parseInt(match[1], 10);
+        if (seq > maxSeq) maxSeq = seq;
+      } else {
+        const digitMatch = a.Assignment_ID.match(/-A?(\d+)$/i);
+        if (digitMatch) {
+          const seq = parseInt(digitMatch[1], 10);
+          if (seq > maxSeq) maxSeq = seq;
+        }
+      }
+    }
+  });
+  
+  const nextSeq = maxSeq + 1;
+  return `${subjectId}-A${String(nextSeq).padStart(2, '0')}`;
+}
+
+function updateSuggestedAssignmentId() {
+  const newAssignSub = document.getElementById('new-assign-subject');
+  const newAssignId = document.getElementById('new-assign-id');
+  if (newAssignSub && newAssignId) {
+    const subjectId = newAssignSub.value;
+    if (subjectId) {
+      newAssignId.value = suggestAssignmentId(subjectId);
+    }
   }
 }
 
@@ -972,6 +1133,8 @@ function populateSubjectsDropdowns(subjects) {
       opt.textContent = `${s.Subject_ID} - ${s.Subject_Name}`;
       newAssignSub.appendChild(opt);
     });
+    newAssignSub.onchange = updateSuggestedAssignmentId;
+    updateSuggestedAssignmentId();
   }
   
   if (scanSub) {
@@ -1003,53 +1166,158 @@ function populateSubjectsDropdowns(subjects) {
   }
 }
 
-// Populate classes option in new assignment creation form (NEW)
-function populateAssignClassesDropdown() {
-  const selectClass = document.getElementById('new-assign-class');
-  if (!selectClass) return;
-  
+// Populate classes option in forms as checkboxes (NEW)
+function populateAssignClassesCheckboxes() {
   const classes = [...new Set(state.students.map(s => s.Class).filter(Boolean))].sort();
-  selectClass.innerHTML = '<option value="all">ทุกชั้นเรียน (All Classes)</option>';
-  classes.forEach(c => {
-    const opt = document.createElement('option');
-    opt.value = c;
-    opt.textContent = `เฉพาะห้อง: ${c}`;
-    selectClass.appendChild(opt);
-  });
+  
+  const setupCheckboxes = (containerId, prefix) => {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    
+    container.innerHTML = `
+      <label class="class-checkbox-item">
+        <input type="checkbox" id="${prefix}-class-all" value="all" checked>
+        <span>ทุกชั้นเรียน (All Classes)</span>
+      </label>
+      ${classes.map(c => `
+        <label class="class-checkbox-item">
+          <input type="checkbox" class="${prefix}-class-checkbox" value="${c}">
+          <span>เฉพาะห้อง: ${c}</span>
+        </label>
+      `).join('')}
+    `;
+    
+    const allCheckbox = document.getElementById(`${prefix}-class-all`);
+    const specificCheckboxes = container.querySelectorAll(`.${prefix}-class-checkbox`);
+    specificCheckboxes.forEach(cb => cb.disabled = true);
+    
+    if (allCheckbox) {
+      allCheckbox.addEventListener('change', (e) => {
+        specificCheckboxes.forEach(cb => {
+          if (e.target.checked) {
+            cb.checked = false;
+            cb.disabled = true;
+          } else {
+            cb.disabled = false;
+          }
+        });
+      });
+    }
+  };
+  
+  setupCheckboxes('new-assign-class-checkboxes', 'new');
+  setupCheckboxes('edit-assign-class-checkboxes', 'edit');
+  setupCheckboxes('new-subject-classes-checkboxes', 'new-subject');
+  setupCheckboxes('edit-subject-classes-checkboxes', 'edit-subject');
 }
 
-// Populate filters dropdowns
+// Populate filters dropdowns (Hierarchical cascading)
 function populateFilters(submissions, assignments) {
-  const permittedAssignments = assignments.filter(a => hasSubjectAccess(a.Subject_ID));
-  const permittedSubmissions = submissions.filter(sub => {
-    const a = assignments.find(assign => assign.Assignment_ID === sub.Assignment_ID);
-    return a && hasSubjectAccess(a.Subject_ID);
-  });
+  const filterSubject = document.getElementById('filter-subject');
+  if (!filterSubject) return;
 
-  const classes = new Set();
-  permittedSubmissions.forEach(s => {
-    if (s.Class) classes.add(s.Class);
+  const currentSubjectVal = filterSubject.value;
+  filterSubject.innerHTML = '<option value="">รายวิชาทั้งหมด</option>';
+  
+  const permittedSubjects = state.subjects.filter(s => hasSubjectAccess(s.Subject_ID));
+  permittedSubjects.forEach(s => {
+    const opt = document.createElement('option');
+    opt.value = s.Subject_ID;
+    opt.textContent = `${s.Subject_ID} - ${s.Subject_Name}`;
+    filterSubject.appendChild(opt);
   });
   
-  const currentVal = filterClass.value;
-  filterClass.innerHTML = '<option value="">ชั้นเรียนทั้งหมด</option>';
-  Array.from(classes).sort().forEach(cls => {
-    const opt = document.createElement('option');
-    opt.value = cls;
-    opt.textContent = cls;
-    filterClass.appendChild(opt);
-  });
-  filterClass.value = currentVal;
+  if (currentSubjectVal && Array.from(filterSubject.options).some(o => o.value === currentSubjectVal)) {
+    filterSubject.value = currentSubjectVal;
+  }
 
+  updateFilterAssignments();
+}
+
+function updateFilterAssignments() {
+  const filterSubject = document.getElementById('filter-subject');
+  const filterAssignment = document.getElementById('filter-assignment');
+  if (!filterSubject || !filterAssignment) return;
+
+  const selectedSubject = filterSubject.value;
   const currentAssignVal = filterAssignment.value;
   filterAssignment.innerHTML = '<option value="">การบ้านทั้งหมด</option>';
-  permittedAssignments.forEach(a => {
+
+  const filteredAssignments = state.assignments.filter(a => {
+    const matchAccess = hasSubjectAccess(a.Subject_ID);
+    const matchSubject = !selectedSubject || a.Subject_ID === selectedSubject;
+    return matchAccess && matchSubject;
+  });
+
+  filteredAssignments.forEach(a => {
     const opt = document.createElement('option');
     opt.value = a.Assignment_ID;
     opt.textContent = `${a.Assignment_ID} - ${a.Assignment_Name.split(' ')[0]}`;
     filterAssignment.appendChild(opt);
   });
-  filterAssignment.value = currentAssignVal;
+
+  if (currentAssignVal && Array.from(filterAssignment.options).some(o => o.value === currentAssignVal)) {
+    filterAssignment.value = currentAssignVal;
+  } else {
+    filterAssignment.value = "";
+  }
+
+  updateFilterClasses();
+}
+
+function updateFilterClasses() {
+  const filterSubject = document.getElementById('filter-subject');
+  const filterAssignment = document.getElementById('filter-assignment');
+  const filterClass = document.getElementById('filter-class');
+  if (!filterSubject || !filterAssignment || !filterClass) return;
+
+  const selectedSubject = filterSubject.value;
+  const selectedAssign = filterAssignment.value;
+  const currentClassVal = filterClass.value;
+  filterClass.innerHTML = '<option value="">ชั้นเรียนทั้งหมด</option>';
+
+  const classes = new Set();
+  
+  if (selectedAssign) {
+    const assign = state.assignments.find(a => a.Assignment_ID === selectedAssign);
+    if (assign && assign.Class) {
+      if (Array.isArray(assign.Class)) {
+        assign.Class.forEach(c => classes.add(c));
+      } else {
+        classes.add(assign.Class);
+      }
+    }
+  } else {
+    const activeAssignments = state.assignments.filter(a => {
+      const matchAccess = hasSubjectAccess(a.Subject_ID);
+      const matchSubject = !selectedSubject || a.Subject_ID === selectedSubject;
+      return matchAccess && matchSubject;
+    });
+
+    activeAssignments.forEach(a => {
+      if (a.Class) {
+        if (Array.isArray(a.Class)) {
+          a.Class.forEach(c => classes.add(c));
+        } else {
+          classes.add(a.Class);
+        }
+      }
+    });
+  }
+
+  Array.from(classes).sort().forEach(cls => {
+    if (cls === 'ทุกชั้นเรียน' || cls === 'all') return;
+    const opt = document.createElement('option');
+    opt.value = cls;
+    opt.textContent = cls;
+    filterClass.appendChild(opt);
+  });
+
+  if (currentClassVal && Array.from(filterClass.options).some(o => o.value === currentClassVal)) {
+    filterClass.value = currentClassVal;
+  } else {
+    filterClass.value = "";
+  }
 }
 
 // Populate Quick Scan Assignments selector
@@ -1083,16 +1351,38 @@ function populateTeacherScannerAssignments(assignments) {
 
 // Filter triggers
 teacherSearch.addEventListener('input', renderSubmissionsTable);
-filterClass.addEventListener('change', renderSubmissionsTable);
-filterAssignment.addEventListener('change', renderSubmissionsTable);
+
+if (filterSubject) {
+  filterSubject.addEventListener('change', () => {
+    updateFilterAssignments();
+    renderSubmissionsTable();
+  });
+}
+
+if (filterAssignment) {
+  filterAssignment.addEventListener('change', () => {
+    updateFilterClasses();
+    renderSubmissionsTable();
+  });
+}
+
+if (filterClass) {
+  filterClass.addEventListener('change', renderSubmissionsTable);
+}
+
+if (filterStatus) {
+  filterStatus.addEventListener('change', renderSubmissionsTable);
+}
 
 // Render Submissions Table
 function renderSubmissionsTable() {
   submissionsTableBody.innerHTML = '';
   
   const query = teacherSearch.value.toLowerCase().trim();
+  const selectedSubject = filterSubject ? filterSubject.value : '';
   const selectedClass = filterClass.value;
   const selectedAssign = filterAssignment.value;
+  const selectedStatus = filterStatus ? filterStatus.value : '';
 
   const submissionsList = Array.isArray(state.submissions) ? state.submissions : [];
   const assignmentsList = Array.isArray(state.assignments) ? state.assignments : [];
@@ -1116,8 +1406,10 @@ function renderSubmissionsTable() {
                        
     const matchClass = !selectedClass || subClass === selectedClass;
     const matchAssign = !selectedAssign || sub.Assignment_ID === selectedAssign;
+    const matchSubject = !selectedSubject || assign.Subject_ID === selectedSubject;
+    const matchStatus = !selectedStatus || sub.Status === selectedStatus;
 
-    return matchQuery && matchClass && matchAssign;
+    return matchQuery && matchClass && matchAssign && matchSubject && matchStatus;
   });
 
   if (filtered.length === 0) {
@@ -1205,6 +1497,12 @@ function renderSubmissionsTable() {
       document.getElementById('grade-score-input').value = data.score;
       document.getElementById('grade-status-select').value = data.status === 'Need_Correction' ? 'Need_Correction' : 'Graded';
 
+      const submissionObj = state.submissions.find(s => s.Submission_ID === data.subid);
+      const feedbackInput = document.getElementById('grade-feedback-input');
+      if (feedbackInput) {
+        feedbackInput.value = (submissionObj && submissionObj.Feedback) ? submissionObj.Feedback : '';
+      }
+
       openModal(gradeModal);
     });
   });
@@ -1216,12 +1514,14 @@ document.getElementById('grade-form').addEventListener('submit', async (e) => {
   const subId = document.getElementById('grade-sub-id').value;
   const score = document.getElementById('grade-score-input').value;
   const status = document.getElementById('grade-status-select').value;
+  const feedback = document.getElementById('grade-feedback-input') ? document.getElementById('grade-feedback-input').value.trim() : '';
 
   try {
     const res = await API.gradeSubmission({
       Submission_ID: subId,
       Score: Number(score),
       Status: status,
+      Feedback: feedback,
       Teacher_Username: state.teacherData ? state.teacherData.username : 'admin',
       Teacher_Role: state.teacherData ? state.teacherData.role : 'Admin'
     });
@@ -1472,13 +1772,49 @@ simIdInput.addEventListener('keypress', (e) => {
   }
 });
 
+// Manual ID Keyboard Entry Submit handler (NEW)
+const manualScanStudentId = document.getElementById('manual-scan-student-id');
+const btnManualScanSubmit = document.getElementById('btn-manual-scan-submit');
+
+if (btnManualScanSubmit && manualScanStudentId) {
+  const handleManualSubmit = () => {
+    const studentId = manualScanStudentId.value.trim();
+    if (!studentId) {
+      showToast("กรุณากรอกรหัสประจำตัวนักเรียน", "error");
+      return;
+    }
+    // Temporarily bypass cooldown to allow immediate manual input processing
+    scannerCooldown = false;
+    processQuickGradeScan(studentId);
+    manualScanStudentId.value = '';
+    manualScanStudentId.focus();
+  };
+
+  btnManualScanSubmit.addEventListener('click', handleManualSubmit);
+  manualScanStudentId.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      handleManualSubmit();
+    }
+  });
+}
+
+
 // Create New Assignment
 createAssignmentForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const id = document.getElementById('new-assign-id').value.trim();
   const name = document.getElementById('new-assign-name').value.trim();
   const subjectId = document.getElementById('new-assign-subject').value;
-  const assignClass = document.getElementById('new-assign-class').value;
+  
+  let assignClass = 'ทุกชั้นเรียน';
+  const allCheckbox = document.getElementById('new-class-all');
+  if (allCheckbox && !allCheckbox.checked) {
+    const checkedBoxes = document.querySelectorAll('.new-class-checkbox:checked');
+    if (checkedBoxes.length > 0) {
+      assignClass = Array.from(checkedBoxes).map(cb => cb.value);
+    }
+  }
+
   const due = document.getElementById('new-assign-due').value;
   const score = document.getElementById('new-assign-score').value;
 
@@ -1786,7 +2122,7 @@ if (btnSyncSheets) {
 }
 
 // Tab Switching in Teacher Dashboard (Updated to support Accounts, Subjects, Assignments & Reports Tabs)
-const tabs = ['submissions', 'students', 'assignments', 'subjects', 'teachers', 'reports'];
+const tabs = ['submissions', 'students', 'assignments', 'subjects', 'teachers', 'reports', 'analytics'];
 tabs.forEach(t => {
   const tabEl = document.getElementById(`tab-${t}`);
   if (tabEl) {
@@ -1818,10 +2154,68 @@ tabs.forEach(t => {
         loadAssignmentsTable();
       } else if (t === 'reports') {
         populateReportsFilters();
+      } else if (t === 'analytics') {
+        loadSystemLogs();
       }
     });
   }
 });
+
+// Bind click listener to the refresh button for analytics (NEW)
+const btnRefreshAnalytics = document.getElementById('btn-refresh-analytics');
+if (btnRefreshAnalytics) {
+  btnRefreshAnalytics.addEventListener('click', loadSystemLogs);
+}
+
+// Bind click handlers on stats summary cards (NEW)
+const cardStatStudents = document.getElementById('card-stat-students');
+const cardStatAssignments = document.getElementById('card-stat-assignments');
+const cardStatSubmissions = document.getElementById('card-stat-submissions');
+const cardStatGraded = document.getElementById('card-stat-graded');
+
+if (cardStatStudents) {
+  cardStatStudents.addEventListener('click', () => {
+    const tab = document.getElementById('tab-students');
+    if (tab) tab.click();
+  });
+}
+if (cardStatAssignments) {
+  cardStatAssignments.addEventListener('click', () => {
+    const tab = document.getElementById('tab-assignments');
+    if (tab) tab.click();
+  });
+}
+if (cardStatSubmissions) {
+  cardStatSubmissions.addEventListener('click', () => {
+    const tab = document.getElementById('tab-submissions');
+    if (tab) {
+      if (filterSubject) filterSubject.value = '';
+      updateFilterAssignments();
+      if (filterAssignment) filterAssignment.value = '';
+      updateFilterClasses();
+      if (filterClass) filterClass.value = '';
+      if (filterStatus) filterStatus.value = '';
+      renderSubmissionsTable();
+      tab.click();
+    }
+  });
+}
+if (cardStatGraded) {
+  cardStatGraded.addEventListener('click', () => {
+    const tab = document.getElementById('tab-submissions');
+    if (tab) {
+      if (filterSubject) filterSubject.value = '';
+      updateFilterAssignments();
+      if (filterAssignment) filterAssignment.value = '';
+      updateFilterClasses();
+      if (filterClass) filterClass.value = '';
+      if (filterStatus) filterStatus.value = 'Graded';
+      renderSubmissionsTable();
+      tab.click();
+    }
+  });
+}
+
 
 // Populate directory class filters dropdown
 function populateDirectoryFilters(students) {
@@ -1877,13 +2271,16 @@ function renderStudentsDirectoryTable() {
   }
   
   if (filtered.length === 0) {
-    studentsDirTableBody.innerHTML = '<tr><td colspan="7" class="text-center">ไม่พบรายชื่อนักเรียน</td></tr>';
+    const isAdmin = state.teacherData && state.teacherData.role === 'Admin';
+    const cols = isAdmin ? 8 : 7;
+    studentsDirTableBody.innerHTML = `<tr><td colspan="${cols}" class="text-center">ไม่พบรายชื่อนักเรียน</td></tr>`;
     const pageInfo = document.getElementById('student-dir-page-info');
     if (pageInfo) pageInfo.textContent = 'หน้า 1 จาก 1';
     const btnPrev = document.getElementById('btn-student-dir-prev');
     if (btnPrev) btnPrev.disabled = true;
     const btnNext = document.getElementById('btn-student-dir-next');
     if (btnNext) btnNext.disabled = true;
+    updateBulkToolbar();
     return;
   }
   
@@ -1907,6 +2304,8 @@ function renderStudentsDirectoryTable() {
   const attendanceList = Array.isArray(state.attendance) ? state.attendance : [];
   const submissionsList = Array.isArray(state.submissions) ? state.submissions : [];
   const assignmentsList = Array.isArray(state.assignments) ? state.assignments : [];
+  
+  const isAdmin = state.teacherData && state.teacherData.role === 'Admin';
 
   paginated.forEach(s => {
     if (!s) return;
@@ -1943,7 +2342,6 @@ function renderStudentsDirectoryTable() {
         taskBadge = `<span class="status-badge pending" style="padding: 2px 6px; font-size: 0.65rem; display: inline-flex;">ไม่มีการบ้าน</span>`;
       }
 
-      const isAdmin = state.teacherData && state.teacherData.role === 'Admin';
       const editBtnHtml = isAdmin ? `
         <button class="btn btn-purple btn-edit-student-trigger" style="padding: 4px 10px; font-size: 0.8rem;"
                 data-id="${s.Student_ID}"
@@ -1955,8 +2353,16 @@ function renderStudentsDirectoryTable() {
         </button>
       ` : '';
 
+      const isChecked = state.selectedStudentIds.has(String(s.Student_ID)) ? 'checked' : '';
+      const checkboxTdHtml = isAdmin ? `
+        <td class="admin-only-cell" style="width: 40px; text-align: center;">
+          <input type="checkbox" class="student-select-check" data-id="${s.Student_ID}" ${isChecked}>
+        </td>
+      ` : '';
+
       const row = document.createElement('tr');
       row.innerHTML = `
+        ${checkboxTdHtml}
         <td><img src="${avatarSrc}" alt="Avatar" class="student-table-avatar" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; background: var(--bg-secondary); border: 1px solid var(--glass-border);"></td>
         <td><strong>${s.Student_ID}</strong></td>
         <td>${s.FullName}</td>
@@ -1981,6 +2387,8 @@ function renderStudentsDirectoryTable() {
       `;
       studentsDirTableBody.appendChild(row);
     });
+
+  updateBulkToolbar();
   
   // Update Pagination Controls
   document.getElementById('student-dir-page-info').textContent = `หน้า ${state.directoryPage} จาก ${totalPages}`;
@@ -2051,6 +2459,131 @@ document.getElementById('btn-student-dir-next').addEventListener('click', () => 
   }
 });
 
+// Admin Bulk Actions Controllers (NEW)
+function updateBulkToolbar() {
+  const toolbar = document.getElementById('admin-bulk-toolbar');
+  const countSpan = document.getElementById('bulk-selected-count');
+  const checkAll = document.getElementById('check-all-students');
+  
+  if (!toolbar || !countSpan) return;
+  
+  const selectedCount = state.selectedStudentIds ? state.selectedStudentIds.size : 0;
+  const isAdmin = state.teacherData && state.teacherData.role === 'Admin';
+  
+  if (isAdmin && selectedCount > 0) {
+    toolbar.style.display = 'flex';
+    countSpan.textContent = `เลือกแล้ว ${selectedCount} คน`;
+  } else {
+    toolbar.style.display = 'none';
+  }
+  
+  if (checkAll) {
+    const visibleChecks = document.querySelectorAll('.student-select-check');
+    if (visibleChecks.length > 0) {
+      checkAll.checked = Array.from(visibleChecks).every(cb => cb.checked);
+    } else {
+      checkAll.checked = false;
+    }
+  }
+}
+
+// Bind Checkbox events
+const checkAllStudents = document.getElementById('check-all-students');
+if (checkAllStudents) {
+  checkAllStudents.addEventListener('change', (e) => {
+    const visibleChecks = document.querySelectorAll('.student-select-check');
+    const isChecked = e.target.checked;
+    visibleChecks.forEach(cb => {
+      cb.checked = isChecked;
+      const studentId = String(cb.dataset.id);
+      if (isChecked) {
+        state.selectedStudentIds.add(studentId);
+      } else {
+        state.selectedStudentIds.delete(studentId);
+      }
+    });
+    updateBulkToolbar();
+  });
+}
+
+document.getElementById('students-dir-table-body').addEventListener('change', (e) => {
+  if (e.target.classList.contains('student-select-check')) {
+    const studentId = String(e.target.dataset.id);
+    if (e.target.checked) {
+      state.selectedStudentIds.add(studentId);
+    } else {
+      state.selectedStudentIds.delete(studentId);
+    }
+    updateBulkToolbar();
+  }
+});
+
+// Bulk Promote Button Click
+document.getElementById('btn-bulk-promote').addEventListener('click', async () => {
+  if (state.selectedStudentIds.size === 0) return;
+  
+  if (!confirm(`คุณต้องการเลื่อนชั้นเรียนของนักเรียนที่เลือกทั้งหมด ${state.selectedStudentIds.size} คน ใช่หรือไม่?`)) {
+    return;
+  }
+  
+  try {
+    const res = await API.bulkPromote({
+      Student_IDs: Array.from(state.selectedStudentIds),
+      Requester_Username: state.teacherData ? state.teacherData.username : '',
+      Requester_Role: state.teacherData ? state.teacherData.role : ''
+    });
+    
+    if (res.success) {
+      showToast(res.message, 'success');
+      state.selectedStudentIds.clear();
+      // Reload students directory
+      const uName = state.teacherData ? state.teacherData.username : '';
+      const uRole = state.teacherData ? state.teacherData.role : '';
+      state.students = await API.getStudentsList(uName, uRole);
+      renderStudentsDirectoryTable();
+      logAgentEvent('bulk_promote_students', 'Admin', { count: res.message });
+    } else {
+      showToast(res.message || 'เกิดข้อผิดพลาดในการเลื่อนชั้นเรียน', 'error');
+    }
+  } catch (err) {
+    console.error(err);
+    showToast('การเชื่อมต่อล้มเหลว', 'error');
+  }
+});
+
+// Bulk Delete Button Click
+document.getElementById('btn-bulk-delete').addEventListener('click', async () => {
+  if (state.selectedStudentIds.size === 0) return;
+  
+  if (!confirm(`คำเตือน: คุณต้องการลบรายชื่อนักเรียนที่เลือกทั้งหมด ${state.selectedStudentIds.size} คนรวมถึงข้อมูลการส่งงานและเข้าเรียนทั้งหมด ใช่หรือไม่? การดำเนินการนี้ไม่สามารถย้อนกลับได้!`)) {
+    return;
+  }
+  
+  try {
+    const res = await API.bulkDelete({
+      Student_IDs: Array.from(state.selectedStudentIds),
+      Requester_Username: state.teacherData ? state.teacherData.username : '',
+      Requester_Role: state.teacherData ? state.teacherData.role : ''
+    });
+    
+    if (res.success) {
+      showToast(res.message, 'success');
+      state.selectedStudentIds.clear();
+      // Reload students directory
+      const uName = state.teacherData ? state.teacherData.username : '';
+      const uRole = state.teacherData ? state.teacherData.role : '';
+      state.students = await API.getStudentsList(uName, uRole);
+      renderStudentsDirectoryTable();
+      logAgentEvent('bulk_delete_students', 'Admin', { count: res.message });
+    } else {
+      showToast(res.message || 'เกิดข้อผิดพลาดในการลบรายชื่อนักเรียน', 'error');
+    }
+  } catch (err) {
+    console.error(err);
+    showToast('การเชื่อมต่อล้มเหลว', 'error');
+  }
+});
+
 // Event delegation for single student card printing
 document.getElementById('students-dir-table-body').addEventListener('click', (e) => {
   const printBtn = e.target.closest('.btn-print-student-trigger');
@@ -2094,7 +2627,7 @@ function printStudentCards(studentList) {
   
   studentList.forEach(s => {
     const avatarSrc = s.Photo ? s.Photo : `https://api.dicebear.com/7.x/adventurer/svg?seed=${s.Student_ID}`;
-    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${s.Student_ID}&ecc=M`;
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${s.Student_ID}&ecc=M`;
     
     const card = document.createElement('div');
     card.className = `printable-student-card ${selectedStyle}`;
@@ -2151,7 +2684,10 @@ async function loadTeachersTable() {
         <td>${fullName}</td>
         <td><span class="badge-class" style="background: ${role === 'Admin' ? 'var(--purple)' : 'var(--blue)'}; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem;">${role}</span></td>
         <td>
-          ${username.toLowerCase() === 'admin' ? '<small class="text-muted">บัญชีหลักไม่สามารถลบได้</small>' : `
+          ${username.toLowerCase() === 'admin' ? '<small class="text-muted">บัญชีหลักไม่สามารถแก้ไข/ลบได้</small>' : `
+            <button class="btn btn-secondary btn-edit-teacher-trigger" data-username="${username}" data-fullname="${fullName}" data-role="${role}" style="padding: 4px 10px; font-size: 0.8rem; margin-right: 5px;">
+              <i class="fa-solid fa-pen-to-square"></i> แก้ไข
+            </button>
             <button class="btn btn-red btn-delete-teacher-trigger" data-username="${username}" style="padding: 4px 10px; font-size: 0.8rem;">
               <i class="fa-solid fa-trash-can"></i> ลบ
             </button>
@@ -2226,8 +2762,9 @@ if (addTeacherForm) {
   });
 }
 
-// Delete teacher click delegation handler
+// Teacher click delegation handler (Edit & Delete)
 document.getElementById('teachers-table-body').addEventListener('click', async (e) => {
+  // 1. Delete Teacher
   const delBtn = e.target.closest('.btn-delete-teacher-trigger');
   if (delBtn) {
     const username = delBtn.dataset.username;
@@ -2252,11 +2789,75 @@ document.getElementById('teachers-table-body').addEventListener('click', async (
         }
       } catch (err) {
         console.error(err);
-        showToast('เกิดข้อผิดพลาดในการลบบัญชีผู้ใช้', 'error');
+        showToast('เกิดข้อผิดพลาดในการลบบัญชีผู้ใช้งาน', 'error');
       }
     }
   }
+
+  // 2. Edit Teacher
+  const editBtn = e.target.closest('.btn-edit-teacher-trigger');
+  if (editBtn) {
+    const username = editBtn.dataset.username;
+    const fullname = editBtn.dataset.fullname;
+    const role = editBtn.dataset.role;
+    
+    document.getElementById('edit-teacher-username').value = username;
+    document.getElementById('edit-teacher-username-display').value = username;
+    document.getElementById('edit-teacher-fullname').value = fullname;
+    document.getElementById('edit-teacher-role').value = role;
+    document.getElementById('edit-teacher-password').value = '';
+    
+    openModal(document.getElementById('teacher-edit-modal'));
+  }
 });
+
+// Teacher Edit Form submit handler
+const teacherEditForm = document.getElementById('teacher-edit-form');
+const teacherEditModal = document.getElementById('teacher-edit-modal');
+if (teacherEditForm) {
+  teacherEditForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const username = document.getElementById('edit-teacher-username').value;
+    const fullName = document.getElementById('edit-teacher-fullname').value.trim();
+    const role = document.getElementById('edit-teacher-role').value;
+    const password = document.getElementById('edit-teacher-password').value;
+    
+    const btnSubmit = teacherEditForm.querySelector('button[type="submit"]');
+    const btnOriginalText = btnSubmit.innerHTML;
+    btnSubmit.disabled = true;
+    btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังบันทึก...';
+    
+    try {
+      const res = await fetch('/api/teacher/update-account', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username,
+          fullName,
+          role,
+          password,
+          Requester_Username: state.teacherData ? state.teacherData.username : '',
+          Requester_Role: state.teacherData ? state.teacherData.role : ''
+        })
+      }).then(r => r.json());
+      
+      if (res.success) {
+        showToast(res.message, 'success');
+        closeModal(teacherEditModal);
+        loadTeachersTable();
+      } else {
+        showToast(res.message, 'error');
+      }
+    } catch (err) {
+      console.error(err);
+      showToast('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์', 'error');
+    } finally {
+      btnSubmit.disabled = false;
+      btnSubmit.innerHTML = btnOriginalText;
+    }
+  });
+}
+
 
 // Teacher Logout Button Handler (NEW)
 const btnTeacherLogout = document.getElementById('btn-teacher-logout');
@@ -2275,6 +2876,8 @@ if (btnTeacherLogout) {
     }
     
     switchView('student');
+    state.selectedStudentIds.clear();
+    updateBulkToolbar();
     showToast('ออกจากระบบคุณครูเรียบร้อยแล้ว', 'success');
   });
 }
@@ -2292,27 +2895,131 @@ async function logAgentEvent(action, role, details = {}) {
   }
 }
 
+// Helper to get color code for different system activities (NEW)
+function getLogColor(action) {
+  const act = (action || '').toLowerCase();
+  if (act.includes('login')) return '#34d399'; // Green
+  if (act.includes('logout')) return '#94a3b8'; // Gray
+  if (act.includes('create') || act.includes('import')) return '#22d3ee'; // Cyan
+  if (act.includes('delete') || act.includes('remove')) return '#f87171'; // Red
+  if (act.includes('edit') || act.includes('update') || act.includes('grade') || act.includes('save') || act.includes('promote')) return '#fbbf24'; // Yellow
+  if (act.includes('sync')) return '#d946ef'; // Magenta
+  return '#cbd5e1'; // Default slate-300
+}
+
 // Agent AI Activity Logs Terminal Loader (NEW)
 async function loadSystemLogs() {
   const logsTerminal = document.getElementById('ai-logs-terminal');
   if (!logsTerminal) return;
   try {
     const logs = await fetch('/api/logs').then(r => r.json());
+    
+    // Parse metrics
+    let adminLogins = 0;
+    let teacherLogins = 0;
+    let studentLogins = 0;
+    let actionCount = logs.length;
+    
+    const hourCounts = {};
+    const userCounts = {};
+    
+    logs.forEach(log => {
+      // Login counts
+      if (log.action === 'teacher_login') {
+        if (log.details && log.details.username === 'admin') {
+          adminLogins++;
+        } else {
+          teacherLogins++;
+        }
+      } else if (log.action === 'student_login') {
+        studentLogins++;
+      }
+      
+      // Hour count (local time)
+      if (log.timestamp) {
+        const date = new Date(log.timestamp);
+        const hour = date.getHours();
+        hourCounts[hour] = (hourCounts[hour] || 0) + 1;
+      }
+      
+      // User count
+      let user = null;
+      if (log.details && log.details.username) {
+        user = log.details.username;
+      } else if (log.details && log.details.studentId) {
+        user = log.details.studentId;
+      } else if (log.role === 'Admin') {
+        user = 'admin';
+      }
+      if (user) {
+        userCounts[user] = (userCounts[user] || 0) + 1;
+      }
+    });
+    
+    // Update metric DOMs
+    const metricLogins = document.getElementById('metric-logins');
+    if (metricLogins) {
+      metricLogins.textContent = `A: ${adminLogins} | T: ${teacherLogins} | S: ${studentLogins}`;
+    }
+    
+    const metricActions = document.getElementById('metric-actions');
+    if (metricActions) {
+      metricActions.textContent = `${actionCount} ครั้ง`;
+    }
+    
+    const metricPeakHour = document.getElementById('metric-peak-hour');
+    if (metricPeakHour) {
+      let maxHour = -1;
+      let maxHourCount = 0;
+      for (const hr in hourCounts) {
+        if (hourCounts[hr] > maxHourCount) {
+          maxHourCount = hourCounts[hr];
+          maxHour = parseInt(hr);
+        }
+      }
+      if (maxHour !== -1) {
+        const nextHour = (maxHour + 1) % 24;
+        const formatHour = (h) => String(h).padStart(2, '0');
+        metricPeakHour.textContent = `${formatHour(maxHour)}:00 - ${formatHour(nextHour)}:00 น.`;
+      } else {
+        metricPeakHour.textContent = '-';
+      }
+    }
+    
+    const metricTopUser = document.getElementById('metric-top-user');
+    if (metricTopUser) {
+      let topUser = '-';
+      let maxUserCount = 0;
+      for (const usr in userCounts) {
+        if (userCounts[usr] > maxUserCount) {
+          maxUserCount = userCounts[usr];
+          topUser = usr;
+        }
+      }
+      metricTopUser.textContent = topUser !== '-' ? `${topUser} (${maxUserCount} ครั้ง)` : '-';
+    }
+    
+    // Render terminal log items
     logsTerminal.innerHTML = '';
     if (logs.length === 0) {
-      logsTerminal.innerHTML = '<div>[System Alert] No activity logs recorded yet.</div>';
+      logsTerminal.innerHTML = '<div style="color: #cbd5e1;">[System Alert] No activity logs recorded yet.</div>';
       return;
     }
+    
     logs.forEach(log => {
       const timeStr = new Date(log.timestamp).toLocaleTimeString();
       const detailsStr = JSON.stringify(log.details);
       const div = document.createElement('div');
       div.style.marginBottom = '4px';
-      div.innerHTML = `<span style="color: #6ee7b7;">[${timeStr}]</span> <span style="color: #60a5fa;">[${log.role}]</span> <span style="color: #f472b6;">${log.action}</span> - ${detailsStr}`;
+      
+      const actionColor = getLogColor(log.action);
+      
+      div.innerHTML = `<span style="color: #94a3b8;">[${timeStr}]</span> <span style="color: #60a5fa; font-weight: bold;">[${log.role}]</span> <span style="color: ${actionColor}; font-weight: bold;">${log.action}</span> - <span style="color: #cbd5e1;">${detailsStr}</span>`;
       logsTerminal.appendChild(div);
     });
   } catch (err) {
-    logsTerminal.innerHTML = '<div>[System Error] Failed to load activity logs from server.</div>';
+    console.error(err);
+    logsTerminal.innerHTML = '<div style="color: #f87171;">[System Error] Failed to load activity logs from server.</div>';
   }
 }
 
@@ -3193,7 +3900,7 @@ function generateClassReport(selectedClass, subjectId, period, resultsPanel, pri
 async function loadSubjectsTable() {
   const subjectsTableBody = document.getElementById('subjects-table-body');
   if (!subjectsTableBody) return;
-  subjectsTableBody.innerHTML = '<tr><td colspan="4" class="text-center"><i class="fa-solid fa-spinner fa-spin"></i> กำลังโหลดข้อมูล...</td></tr>';
+  subjectsTableBody.innerHTML = '<tr><td colspan="5" class="text-center"><i class="fa-solid fa-spinner fa-spin"></i> กำลังโหลดข้อมูล...</td></tr>';
   
   try {
     const list = await fetch('/api/subjects').then(r => r.json());
@@ -3202,38 +3909,117 @@ async function loadSubjectsTable() {
     subjectsTableBody.innerHTML = '';
     
     if (!Array.isArray(list) || list.length === 0) {
-      subjectsTableBody.innerHTML = '<tr><td colspan="4" class="text-center">ไม่พบรายการวิชาเรียน</td></tr>';
+      subjectsTableBody.innerHTML = '<tr><td colspan="5" class="text-center">ไม่พบรายการวิชาเรียน</td></tr>';
       return;
     }
     
     const tList = Array.isArray(teachersList) ? teachersList : [];
     
+    // Group subjects by department
+    const groups = {
+      "วิทยาศาสตร์และเทคโนโลยี": [],
+      "คณิตศาสตร์": [],
+      "ภาษาไทย": [],
+      "สังคมศึกษา ศาสนา และวัฒนธรรม": [],
+      "ภาษาต่างประเทศ": [],
+      "สุขศึกษาและพลศึกษา": [],
+      "ศิลปะ": [],
+      "การงานอาชีพ": [],
+      "กิจกรรมพัฒนาผู้เรียน": [],
+      "อื่นๆ / ไม่ระบุ": []
+    };
+    
     list.forEach(s => {
       if (!s || !s.Subject_ID) return;
-      let teacherName = 'ครูทุกคน (วิชากิจกรรม)';
-      const tUsername = s.Teacher_Username || '';
-      
-      if (tUsername && tUsername !== 'any') {
-        const t = tList.find(x => x && x.username && x.username.toLowerCase() === tUsername.toLowerCase());
-        teacherName = t ? `${t.fullName || '-'} (${tUsername})` : tUsername;
+      const dept = s.Department || "อื่นๆ / ไม่ระบุ";
+      if (groups[dept]) {
+        groups[dept].push(s);
+      } else {
+        groups["อื่นๆ / ไม่ระบุ"].push(s);
       }
+    });
+    
+    Object.keys(groups).forEach(deptName => {
+      const deptSubjects = groups[deptName];
+      if (deptSubjects.length === 0) return;
       
-      const row = document.createElement('tr');
-      row.innerHTML = `
-        <td><strong>${s.Subject_ID}</strong></td>
-        <td>${s.Subject_Name || '-'}</td>
-        <td><span class="badge-class" style="background: rgba(139,92,246,0.15); color: #c084fc; border: 1px solid rgba(139,92,246,0.3); font-size: 0.75rem;">${teacherName}</span></td>
-        <td>
-          <button class="btn btn-red btn-delete-subject-trigger" data-id="${s.Subject_ID}" style="padding: 4px 10px; font-size: 0.8rem;">
-            <i class="fa-solid fa-trash-can"></i> ลบ
-          </button>
+      // Render department divider row
+      const divRow = document.createElement('tr');
+      divRow.style.background = 'rgba(139, 92, 246, 0.08)';
+      divRow.style.fontWeight = 'bold';
+      divRow.innerHTML = `
+        <td colspan="5" style="color: #c084fc; padding: 10px 16px;">
+          <i class="fa-solid fa-folder-open" style="margin-right: 6px;"></i> กลุ่มสาระฯ: ${deptName}
         </td>
       `;
-      subjectsTableBody.appendChild(row);
+      subjectsTableBody.appendChild(divRow);
+      
+      deptSubjects.forEach(s => {
+        let teacherName = 'ครูทุกคน (วิชากิจกรรม)';
+        const tUsername = s.Teacher_Username || '';
+        
+        if (tUsername && tUsername !== 'any') {
+          const t = tList.find(x => x && x.username && x.username.toLowerCase() === tUsername.toLowerCase());
+          teacherName = t ? `${t.fullName || '-'} (${tUsername})` : tUsername;
+        }
+        
+        let classDisplay = 'ทุกชั้นเรียน';
+        let classDataAttr = 'all';
+        if (s.Classes) {
+          if (Array.isArray(s.Classes)) {
+            if (!s.Classes.includes('all') && !s.Classes.includes('ทุกชั้นเรียน')) {
+              classDisplay = s.Classes.join(', ');
+              classDataAttr = s.Classes.join(',');
+            }
+          } else if (s.Classes !== 'all' && s.Classes !== 'ทุกชั้นเรียน') {
+            classDisplay = s.Classes;
+            classDataAttr = s.Classes;
+          }
+        }
+        
+        const isOwner = state.teacherData && (state.teacherData.username.toLowerCase() === tUsername.toLowerCase() || tUsername === 'any');
+        const isAdmin = state.teacherData && state.teacherData.role === 'Admin';
+        
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td style="padding-left: 25px;"><small class="text-muted">${deptName}</small></td>
+          <td><strong>${s.Subject_ID}</strong></td>
+          <td>${s.Subject_Name || '-'}</td>
+          <td>
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+              <span class="badge-class" style="background: rgba(139,92,246,0.15); color: #c084fc; border: 1px solid rgba(139,92,246,0.3); font-size: 0.75rem; width: fit-content;">${teacherName}</span>
+              <span style="font-size: 0.75rem; color: var(--text-muted);">ห้องเรียน: ${classDisplay}</span>
+            </div>
+          </td>
+          <td>
+            <div style="display: flex; gap: 6px;">
+              ${(isAdmin || isOwner) ? `
+                <button class="btn btn-secondary btn-icon-only btn-edit-subject-trigger" 
+                        data-id="${s.Subject_ID}" 
+                        data-name="${s.Subject_Name || ''}" 
+                        data-teacher="${tUsername}" 
+                        data-department="${s.Department || ''}" 
+                        data-classes="${classDataAttr}" 
+                        style="padding: 4px 8px; font-size: 0.8rem;" 
+                        title="แก้ไขรายวิชา">
+                  <i class="fa-solid fa-pen"></i>
+                </button>
+                <button class="btn btn-red btn-icon-only btn-delete-subject-trigger" 
+                        data-id="${s.Subject_ID}" 
+                        style="padding: 4px 8px; font-size: 0.8rem;" 
+                        title="ลบรายวิชา">
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              ` : `<small class="text-muted">ไม่มีสิทธิ์จัดการ</small>`}
+            </div>
+          </td>
+        `;
+        subjectsTableBody.appendChild(row);
+      });
     });
   } catch (err) {
     console.error('Error in loadSubjectsTable:', err);
-    subjectsTableBody.innerHTML = '<tr><td colspan="4" class="text-center text-red">เกิดข้อผิดพลาดในการโหลดวิชาเรียน</td></tr>';
+    subjectsTableBody.innerHTML = '<tr><td colspan="5" class="text-center text-red">เกิดข้อผิดพลาดในการโหลดวิชาเรียน</td></tr>';
   }
 }
 
@@ -3244,6 +4030,25 @@ const addSubjectForm = document.getElementById('add-subject-form');
 if (btnAddSubjectTrigger && addSubjectModal) {
   btnAddSubjectTrigger.addEventListener('click', async () => {
     addSubjectForm.reset();
+    
+    // Auto generate sequential Subject ID (e.g. S005)
+    let nextNum = 1;
+    if (state.subjects && state.subjects.length > 0) {
+      const sIds = state.subjects
+        .map(s => {
+          const match = s.Subject_ID.match(/^S(\d+)$/i);
+          return match ? parseInt(match[1], 10) : null;
+        })
+        .filter(n => n !== null);
+      if (sIds.length > 0) {
+        nextNum = Math.max(...sIds) + 1;
+      }
+    }
+    const generatedId = `S${String(nextNum).padStart(3, '0')}`;
+    const newSubjectIdInput = document.getElementById('new-subject-id');
+    if (newSubjectIdInput) {
+      newSubjectIdInput.value = generatedId;
+    }
     
     const selectTeacher = document.getElementById('new-subject-teacher');
     if (selectTeacher) {
@@ -3271,6 +4076,16 @@ if (addSubjectForm) {
     const id = document.getElementById('new-subject-id').value.trim();
     const name = document.getElementById('new-subject-name').value.trim();
     const teacher = document.getElementById('new-subject-teacher').value;
+    const department = document.getElementById('new-subject-department').value;
+    
+    let subjectClasses = 'ทุกชั้นเรียน';
+    const allCheckbox = document.getElementById('new-subject-class-all');
+    if (allCheckbox && !allCheckbox.checked) {
+      const checkedBoxes = document.querySelectorAll('.new-subject-class-checkbox:checked');
+      if (checkedBoxes.length > 0) {
+        subjectClasses = Array.from(checkedBoxes).map(cb => cb.value);
+      }
+    }
     
     const btnSubmit = addSubjectForm.querySelector('button[type="submit"]');
     const btnOriginalText = btnSubmit.innerHTML;
@@ -3285,6 +4100,8 @@ if (addSubjectForm) {
           Subject_ID: id,
           Subject_Name: name,
           Teacher_Username: teacher,
+          Department: department,
+          Classes: subjectClasses,
           Requester_Username: state.teacherData ? state.teacherData.username : '',
           Requester_Role: state.teacherData ? state.teacherData.role : ''
         })
@@ -3310,7 +4127,31 @@ if (addSubjectForm) {
   });
 }
 
+async function populateEditSubjectTeacherDropdown(selectedUsername) {
+  const selectTeacher = document.getElementById('edit-subject-teacher');
+  if (!selectTeacher) return;
+  
+  selectTeacher.innerHTML = '<option value="any">ครูทุกคน (วิชากิจกรรม เช่น ลูกเสือ/ชุมนุม)</option>';
+  try {
+    const teachersList = await fetch('/api/teachers').then(r => r.json());
+    teachersList.forEach(t => {
+      const opt = document.createElement('option');
+      opt.value = t.username;
+      opt.textContent = `${t.fullName} (${t.username})`;
+      selectTeacher.appendChild(opt);
+    });
+    
+    selectTeacher.value = selectedUsername || 'any';
+    
+    const isAdmin = state.teacherData && state.teacherData.role === 'Admin';
+    selectTeacher.disabled = !isAdmin;
+  } catch (e) {
+    console.error('Failed to load teachers for subject edit reassignment:', e);
+  }
+}
+
 document.getElementById('panel-subjects-view').addEventListener('click', async (e) => {
+  // 1. Delete Subject
   const delBtn = e.target.closest('.btn-delete-subject-trigger');
   if (delBtn) {
     const subjectId = delBtn.dataset.id;
@@ -3340,7 +4181,107 @@ document.getElementById('panel-subjects-view').addEventListener('click', async (
       }
     }
   }
+  
+  // 2. Edit Subject
+  const editBtn = e.target.closest('.btn-edit-subject-trigger');
+  if (editBtn) {
+    const subjectId = editBtn.dataset.id;
+    const name = editBtn.dataset.name;
+    const teacher = editBtn.dataset.teacher;
+    const department = editBtn.dataset.department;
+    const classes = editBtn.dataset.classes;
+    
+    document.getElementById('edit-subject-id').value = subjectId;
+    document.getElementById('edit-subject-id-display').value = subjectId;
+    document.getElementById('edit-subject-name').value = name;
+    document.getElementById('edit-subject-department').value = department || 'วิทยาศาสตร์และเทคโนโลยี';
+    
+    await populateEditSubjectTeacherDropdown(teacher);
+    
+    // Set classes checkboxes
+    const classesList = (classes || 'all').split(',');
+    const isAll = classesList.includes('all') || classesList.includes('ทุกชั้นเรียน') || classesList.includes('');
+    const allCheckbox = document.getElementById('edit-subject-class-all');
+    const specificCheckboxes = document.querySelectorAll('.edit-subject-class-checkbox');
+    
+    if (allCheckbox) {
+      if (isAll) {
+        allCheckbox.checked = true;
+        specificCheckboxes.forEach(cb => {
+          cb.checked = false;
+          cb.disabled = true;
+        });
+      } else {
+        allCheckbox.checked = false;
+        specificCheckboxes.forEach(cb => {
+          cb.disabled = false;
+          cb.checked = classesList.includes(cb.value);
+        });
+      }
+    }
+    
+    openModal(document.getElementById('subject-edit-modal'));
+  }
 });
+
+// Subject Edit Form submit handler
+const subjectEditForm = document.getElementById('subject-edit-form');
+const subjectEditModal = document.getElementById('subject-edit-modal');
+if (subjectEditForm) {
+  subjectEditForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('edit-subject-id').value;
+    const name = document.getElementById('edit-subject-name').value.trim();
+    const teacher = document.getElementById('edit-subject-teacher').value;
+    const department = document.getElementById('edit-subject-department').value;
+    
+    let subjectClasses = 'ทุกชั้นเรียน';
+    const allCheckbox = document.getElementById('edit-subject-class-all');
+    if (allCheckbox && !allCheckbox.checked) {
+      const checkedBoxes = document.querySelectorAll('.edit-subject-class-checkbox:checked');
+      if (checkedBoxes.length > 0) {
+        subjectClasses = Array.from(checkedBoxes).map(cb => cb.value);
+      }
+    }
+    
+    const btnSubmit = subjectEditForm.querySelector('button[type="submit"]');
+    const btnOriginalText = btnSubmit.innerHTML;
+    btnSubmit.disabled = true;
+    btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังบันทึก...';
+    
+    try {
+      const res = await fetch('/api/subjects/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          Subject_ID: id,
+          Subject_Name: name,
+          Teacher_Username: teacher,
+          Department: department,
+          Classes: subjectClasses,
+          Requester_Username: state.teacherData ? state.teacherData.username : '',
+          Requester_Role: state.teacherData ? state.teacherData.role : ''
+        })
+      }).then(r => r.json());
+      
+      if (res.success) {
+        showToast(res.message, 'success');
+        logAgentEvent('edit_subject', 'Teacher', { subjectId: id });
+        closeModal(subjectEditModal);
+        await loadTeacherDashboard();
+        await loadSubjectsTable();
+      } else {
+        showToast(res.message, 'error');
+      }
+    } catch (err) {
+      console.error(err);
+      showToast('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์', 'error');
+    } finally {
+      btnSubmit.disabled = false;
+      btnSubmit.innerHTML = btnOriginalText;
+    }
+  });
+}
 
 // Render Assignments Table in Teacher Dashboard (NEW)
 async function loadAssignmentsTable() {
@@ -3390,14 +4331,27 @@ async function loadAssignmentsTable() {
       }
 
       const maxScore = assign.Max_Score !== undefined ? assign.Max_Score : '-';
-      const assignClass = assign.Class || 'all';
+      
+      let classDisplay = 'ทุกชั้นเรียน';
+      let classDataAttr = 'all';
+      if (assign.Class) {
+        if (Array.isArray(assign.Class)) {
+          if (!assign.Class.includes('all') && !assign.Class.includes('ทุกชั้นเรียน')) {
+            classDisplay = assign.Class.join(', ');
+            classDataAttr = assign.Class.join(',');
+          }
+        } else if (assign.Class !== 'all' && assign.Class !== 'ทุกชั้นเรียน') {
+          classDisplay = assign.Class;
+          classDataAttr = assign.Class;
+        }
+      }
 
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td><strong>${assign.Assignment_ID}</strong></td>
         <td>${assign.Assignment_Name || '-'}</td>
         <td>${subjectName}</td>
-        <td><span class="badge" style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);">${assignClass === 'all' || assignClass === 'ทุกชั้นเรียน' ? 'ทุกชั้นเรียน' : assignClass}</span></td>
+        <td><span class="badge" style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);">${classDisplay}</span></td>
         <td>${formattedDate}</td>
         <td><strong>${maxScore}</strong></td>
         <td>
@@ -3406,7 +4360,7 @@ async function loadAssignmentsTable() {
                     data-id="${assign.Assignment_ID}"
                     data-name="${assign.Assignment_Name || ''}"
                     data-subject="${assign.Subject_ID || ''}"
-                    data-class="${assignClass}"
+                    data-class="${classDataAttr}"
                     data-due="${assign.Due_Date || ''}"
                     data-score="${maxScore}"
                     style="padding: 4px 8px; font-size: 0.8rem;"
@@ -3447,31 +4401,11 @@ if (assignmentEditForm) {
     }
   };
 
-  // Populate class options in edit modal
-  const populateEditClassDropdown = () => {
-    const editAssignClass = document.getElementById('edit-assign-class');
-    if (editAssignClass && state.students) {
-      // Keep only 'all' option initially
-      editAssignClass.innerHTML = '<option value="all">ทุกชั้นเรียน (All Classes)</option>';
-      const classes = new Set();
-      state.students.forEach(s => {
-        if (s.Class) classes.add(s.Class);
-      });
-      Array.from(classes).sort().forEach(cls => {
-        const opt = document.createElement('option');
-        opt.value = cls;
-        opt.textContent = cls;
-        editAssignClass.appendChild(opt);
-      });
-    }
-  };
-
   // Listen to Edit Button Clicks
   document.getElementById('panel-assignments-view').addEventListener('click', (e) => {
     const editBtn = e.target.closest('.btn-edit-assign-trigger');
     if (editBtn) {
       populateEditSubjectDropdown();
-      populateEditClassDropdown();
 
       const assignId = editBtn.dataset.id;
       const assignName = editBtn.dataset.name;
@@ -3484,7 +4418,29 @@ if (assignmentEditForm) {
       document.getElementById('edit-assign-id').value = assignId;
       document.getElementById('edit-assign-name').value = assignName;
       document.getElementById('edit-assign-subject').value = subjectId;
-      document.getElementById('edit-assign-class').value = assignClass || 'all';
+      
+      // Handle setting checkboxes in edit modal
+      const classesList = (assignClass || 'all').split(',');
+      const isAll = classesList.includes('all') || classesList.includes('ทุกชั้นเรียน') || classesList.includes('');
+      const allCheckbox = document.getElementById('edit-class-all');
+      const specificCheckboxes = document.querySelectorAll('.edit-class-checkbox');
+      
+      if (allCheckbox) {
+        if (isAll) {
+          allCheckbox.checked = true;
+          specificCheckboxes.forEach(cb => {
+            cb.checked = false;
+            cb.disabled = true;
+          });
+        } else {
+          allCheckbox.checked = false;
+          specificCheckboxes.forEach(cb => {
+            cb.disabled = false;
+            cb.checked = classesList.includes(cb.value);
+          });
+        }
+      }
+      
       document.getElementById('edit-assign-due').value = due;
       document.getElementById('edit-assign-score').value = score;
 
@@ -3500,11 +4456,20 @@ if (assignmentEditForm) {
     btnSubmit.disabled = true;
     btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังบันทึก...';
 
+    let assignClass = 'ทุกชั้นเรียน';
+    const allCheckbox = document.getElementById('edit-class-all');
+    if (allCheckbox && !allCheckbox.checked) {
+      const checkedBoxes = document.querySelectorAll('.edit-class-checkbox:checked');
+      if (checkedBoxes.length > 0) {
+        assignClass = Array.from(checkedBoxes).map(cb => cb.value);
+      }
+    }
+
     const formData = {
       Assignment_ID: document.getElementById('edit-assign-id').value,
       Assignment_Name: document.getElementById('edit-assign-name').value.trim(),
       Subject_ID: document.getElementById('edit-assign-subject').value,
-      Class: document.getElementById('edit-assign-class').value,
+      Class: assignClass,
       Due_Date: document.getElementById('edit-assign-due').value,
       Max_Score: Number(document.getElementById('edit-assign-score').value),
       Requester_Username: state.teacherData ? state.teacherData.username : '',
@@ -3568,4 +4533,45 @@ document.getElementById('panel-assignments-view').addEventListener('click', asyn
     }
   }
 });
+
+// 10-Minute Inactivity Auto-Logout System
+let lastActivityTime = Date.now();
+const INACTIVITY_TIMEOUT = 10 * 60 * 1000; // 10 minutes
+
+function resetInactivityTimer() {
+  lastActivityTime = Date.now();
+}
+
+window.addEventListener('mousemove', resetInactivityTimer);
+window.addEventListener('click', resetInactivityTimer);
+window.addEventListener('keydown', resetInactivityTimer);
+window.addEventListener('scroll', resetInactivityTimer);
+
+setInterval(() => {
+  const loggedInStudent = state.studentData || localStorage.getItem('auth_student_id');
+  const loggedInTeacher = state.teacherData || localStorage.getItem('auth_teacher');
+  
+  if (!loggedInStudent && !loggedInTeacher) {
+    return;
+  }
+  
+  if (Date.now() - lastActivityTime > INACTIVITY_TIMEOUT) {
+    console.log('Inactivity timeout reached (10 minutes). Automatic logout...');
+    resetInactivityTimer();
+    
+    if (loggedInTeacher) {
+      const btnLogout = document.getElementById('btn-teacher-logout');
+      if (btnLogout) {
+        btnLogout.click();
+      }
+      showToast('คุณถูกออกจากระบบโดยอัตโนมัติเนื่องจากไม่มีการเคลื่อนไหวเกิน 10 นาที', 'warning');
+    } else if (loggedInStudent) {
+      const btnLogout = document.getElementById('btn-student-logout');
+      if (btnLogout) {
+        btnLogout.click();
+      }
+      showToast('ออกจากระบบโดยอัตโนมัติเนื่องจากไม่มีการเคลื่อนไหวเกิน 10 นาที', 'warning');
+    }
+  }
+}, 5000); // Check every 5 seconds
 

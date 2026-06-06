@@ -263,7 +263,7 @@ app.post('/api/assignments', (req, res) => {
     Due_Date,
     Max_Score: Number(Max_Score),
     Class: Class || "ทุกชั้นเรียน",
-    QR_Link: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${Assignment_ID}`
+    QR_Link: `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${Assignment_ID}`
   });
 
   res.status(201).json({ success: true, assignment: newAssignment });
@@ -407,7 +407,7 @@ function hasGradingPermission(teacherUsername, teacherRole, assignmentId) {
 
 // 6. Grade submission (Teacher)
 app.post('/api/grade', (req, res) => {
-  const { Submission_ID, Score, Status, Teacher_Username, Teacher_Role } = req.body;
+  const { Submission_ID, Score, Status, Feedback, Teacher_Username, Teacher_Role } = req.body;
 
   if (!Submission_ID || Score === undefined) {
     return res.status(400).json({ success: false, message: 'ข้อมูลไม่ครบถ้วน' });
@@ -423,7 +423,7 @@ app.post('/api/grade', (req, res) => {
     return res.status(403).json({ success: false, message: 'คุณไม่มีสิทธิ์ตรวจคะแนนในวิชานี้ (สิทธิ์เฉพาะครูประจำวิชา หรือผู้ดูแลระบบเท่านั้น)' });
   }
 
-  const updated = db.updateSubmissionScore(Submission_ID, Score, Status || 'Graded');
+  const updated = db.updateSubmissionScore(Submission_ID, Score, Status || 'Graded', Feedback);
 
   if (!updated) {
     return res.status(404).json({ success: false, message: 'ไม่พบข้อมูลการส่งงานที่ระบุ' });
@@ -835,9 +835,91 @@ app.post('/api/student/update', uploadPhoto.single('photo'), verifyAdmin, (req, 
   });
 });
 
+// 11.1 Bulk Promote Students (NEW)
+app.post('/api/student/bulk-promote', verifyAdmin, (req, res) => {
+  const { Student_IDs } = req.body;
+  if (!Student_IDs || !Array.isArray(Student_IDs) || Student_IDs.length === 0) {
+    return res.status(400).json({ success: false, message: 'กรุณาระบุรหัสนักเรียนที่ต้องการเลื่อนชั้นเรียน' });
+  }
+
+  const promotedCount = db.bulkPromoteStudents(Student_IDs);
+  res.json({
+    success: true,
+    message: `เลื่อนชั้นเรียนสำเร็จจำนวน ${promotedCount} คน`
+  });
+});
+
+// 11.2 Bulk Delete Students (NEW)
+app.post('/api/student/bulk-delete', verifyAdmin, (req, res) => {
+  const { Student_IDs } = req.body;
+  if (!Student_IDs || !Array.isArray(Student_IDs) || Student_IDs.length === 0) {
+    return res.status(400).json({ success: false, message: 'กรุณาระบุรหัสนักเรียนที่ต้องการลบ' });
+  }
+
+  const deletedCount = db.bulkDeleteStudents(Student_IDs);
+  res.json({
+    success: true,
+    message: `ลบรายชื่อนักเรียนสำเร็จจำนวน ${deletedCount} คน`
+  });
+});
+
+
 // 12. Get all students directory (Teacher/Web UI) (NEW)
 app.get('/api/students', (req, res) => {
-  res.json(db.getStudents());
+  const { username, role } = req.query;
+  const allStudents = db.getStudents();
+  
+  if (role === 'Teacher' && username) {
+    // Filter students: only show students in classes taught by this teacher
+    const mySubjects = db.getSubjects().filter(s => 
+      (s.Teacher_Username || '').toLowerCase() === username.toLowerCase() || 
+      s.Teacher_Username === 'any'
+    );
+    
+    // Gather all classes from subjects
+    const myClasses = new Set();
+    mySubjects.forEach(s => {
+      if (s.Classes) {
+        if (Array.isArray(s.Classes)) {
+          s.Classes.forEach(c => myClasses.add(c));
+        } else {
+          myClasses.add(s.Classes);
+        }
+      }
+    });
+    
+    // Fallback: if subject has no classes field, check assignments of those subjects
+    if (myClasses.size === 0) {
+      const mySubjectIds = mySubjects.map(s => s.Subject_ID);
+      const myAssignments = db.getAssignments().filter(a => mySubjectIds.includes(a.Subject_ID));
+      myAssignments.forEach(a => {
+        if (a.Class) {
+          if (Array.isArray(a.Class)) {
+            a.Class.forEach(c => myClasses.add(c));
+          } else {
+            myClasses.add(a.Class);
+          }
+        }
+      });
+    }
+    
+    // If no classes are found, return empty array to prevent viewing students they shouldn't see
+    if (myClasses.size === 0) {
+      return res.json([]);
+    }
+    
+    // If "all" is one of the classes, they can see all students
+    if (myClasses.has('all') || myClasses.has('ทุกชั้นเรียน')) {
+      return res.json(allStudents);
+    }
+    
+    // Otherwise, filter students whose Class is in myClasses
+    const filtered = allStudents.filter(s => s.Class && myClasses.has(s.Class));
+    return res.json(filtered);
+  }
+  
+  // Default for Admin or if credentials aren't provided (fallback to preserve compatibility)
+  res.json(allStudents);
 });
 
 // 13. Save Config Endpoint (NEW)
@@ -908,6 +990,25 @@ app.post('/api/teacher/create', verifyAdmin, (req, res) => {
   }
 });
 
+app.post('/api/teacher/update-account', verifyAdmin, (req, res) => {
+  const { username, fullName, role, password } = req.body;
+  if (!username || !fullName || !role) {
+    return res.status(400).json({ success: false, message: 'ข้อมูลไม่ครบถ้วน' });
+  }
+  
+  const updatedData = { fullName, role };
+  if (password && password.trim() !== '') {
+    updatedData.password = password.trim();
+  }
+  
+  const updated = db.updateTeacher(username, updatedData);
+  if (updated) {
+    res.json({ success: true, message: `แก้ไขบัญชีผู้ใช้ ${username} สำเร็จ` });
+  } else {
+    res.status(404).json({ success: false, message: 'ไม่พบบัญชีครูผู้สอนดังกล่าว' });
+  }
+});
+
 app.post('/api/teacher/delete', verifyAdmin, (req, res) => {
   const { username } = req.body;
   if (!username) {
@@ -926,15 +1027,28 @@ app.get('/api/subjects', (req, res) => {
   res.json(db.getSubjects());
 });
 
-app.post('/api/subjects', verifyAdmin, (req, res) => {
-  const { Subject_ID, Subject_Name, Teacher_Username } = req.body;
+app.post('/api/subjects', (req, res) => {
+  const { Subject_ID, Subject_Name, Teacher_Username, Department, Classes, Requester_Username, Requester_Role } = req.body;
   if (!Subject_ID || !Subject_Name || !Teacher_Username) {
     return res.status(400).json({ success: false, message: 'ข้อมูลไม่ครบถ้วน' });
   }
+  if (!Requester_Username || !Requester_Role) {
+    return res.status(403).json({ success: false, message: 'ปฏิเสธการเข้าถึง: ไม่พบสิทธิ์ผู้ร้องขอ' });
+  }
+  
+  if (Requester_Role === 'Teacher' && Teacher_Username.toLowerCase() !== Requester_Username.toLowerCase()) {
+    return res.status(403).json({ success: false, message: 'ปฏิเสธการเข้าถึง: คุณสามารถสร้างรายวิชาของตัวคุณเองได้เท่านั้น' });
+  }
+  if (Requester_Role !== 'Admin' && Requester_Role !== 'Teacher') {
+    return res.status(403).json({ success: false, message: 'ปฏิเสธการเข้าถึง: บทบาทไม่มีสิทธิ์ในส่วนนี้' });
+  }
+  
   const newSub = db.addSubject({
     Subject_ID: Subject_ID.trim(),
     Subject_Name: Subject_Name.trim(),
-    Teacher_Username: Teacher_Username.trim()
+    Teacher_Username: Teacher_Username.trim(),
+    Department: Department || 'อื่นๆ / ไม่ระบุ',
+    Classes: Classes || 'ทุกชั้นเรียน'
   });
   if (newSub) {
     res.status(201).json({ success: true, message: `สร้างรายวิชา ${Subject_Name} สำเร็จ`, subject: newSub });
@@ -943,16 +1057,66 @@ app.post('/api/subjects', verifyAdmin, (req, res) => {
   }
 });
 
-app.post('/api/subjects/delete', verifyAdmin, (req, res) => {
-  const { Subject_ID } = req.body;
+app.post('/api/subjects/update', (req, res) => {
+  const { Subject_ID, Subject_Name, Teacher_Username, Department, Classes, Requester_Username, Requester_Role } = req.body;
+  if (!Subject_ID || !Subject_Name || !Teacher_Username) {
+    return res.status(400).json({ success: false, message: 'ข้อมูลไม่ครบถ้วน' });
+  }
+  
+  const subject = db.getSubjects().find(s => s.Subject_ID.toLowerCase() === Subject_ID.toLowerCase());
+  if (!subject) {
+    return res.status(404).json({ success: false, message: 'ไม่พบรายวิชาดังกล่าว' });
+  }
+  
+  const isAdmin = Requester_Role === 'Admin';
+  const isOwner = (subject.Teacher_Username || '').toLowerCase() === (Requester_Username || '').toLowerCase() || subject.Teacher_Username === 'any';
+  
+  if (!isAdmin && !isOwner) {
+    return res.status(403).json({ success: false, message: 'ปฏิเสธการเข้าถึง: คุณไม่มีสิทธิ์แก้ไขวิชานี้' });
+  }
+  
+  let targetTeacher = Teacher_Username.trim();
+  if (!isAdmin) {
+    targetTeacher = subject.Teacher_Username; // lock to original for regular teachers
+  }
+  
+  const updated = db.updateSubject(Subject_ID, {
+    Subject_Name: Subject_Name.trim(),
+    Teacher_Username: targetTeacher,
+    Department: Department || subject.Department || 'อื่นๆ / ไม่ระบุ',
+    Classes: Classes || subject.Classes || 'ทุกชั้นเรียน'
+  });
+  
+  if (updated) {
+    res.json({ success: true, message: 'แก้ไขรายวิชาสำเร็จ', subject: updated });
+  } else {
+    res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาดในการแก้ไขรายวิชา' });
+  }
+});
+
+app.post('/api/subjects/delete', (req, res) => {
+  const { Subject_ID, Requester_Username, Requester_Role } = req.body;
   if (!Subject_ID) {
     return res.status(400).json({ success: false, message: 'ไม่ระบุรหัสวิชา' });
   }
+  
+  const subject = db.getSubjects().find(s => s.Subject_ID.toLowerCase() === Subject_ID.toLowerCase());
+  if (!subject) {
+    return res.status(404).json({ success: false, message: 'ไม่พบวิชาดังกล่าวในระบบ' });
+  }
+  
+  const isAdmin = Requester_Role === 'Admin';
+  const isOwner = (subject.Teacher_Username || '').toLowerCase() === (Requester_Username || '').toLowerCase();
+  
+  if (!isAdmin && !isOwner) {
+    return res.status(403).json({ success: false, message: 'ปฏิเสธการเข้าถึง: คุณไม่มีสิทธิ์ลบรายวิชานี้' });
+  }
+  
   const deleted = db.deleteSubject(Subject_ID);
   if (deleted) {
     res.json({ success: true, message: 'ลบรายวิชาเรียบร้อยแล้ว' });
   } else {
-    res.status(404).json({ success: false, message: 'ไม่พบวิชาดังกล่าวในระบบ' });
+    res.status(500).json({ success: false, message: 'ไม่สามารถลบรายวิชาได้' });
   }
 });
 

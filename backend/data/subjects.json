@@ -1,15 +1,5 @@
 [
   {
-    "Subject_ID": "S001",
-    "Subject_Name": "วิทยาการคำนวณ",
-    "Teacher_Username": "admin"
-  },
-  {
-    "Subject_ID": "S002",
-    "Subject_Name": "คณิตศาสตร์เบื้องต้น",
-    "Teacher_Username": "admin"
-  },
-  {
     "Subject_ID": "S003",
     "Subject_Name": "วิชาชุมนุม",
     "Teacher_Username": "any"
@@ -18,5 +8,35 @@
     "Subject_ID": "S004",
     "Subject_Name": "กิจกรรมลูกเสือ",
     "Teacher_Username": "any"
+  },
+  {
+    "Subject_ID": "S002",
+    "Subject_Name": "คณิตศาสตร์เบื้องต้น",
+    "Teacher_Username": "admin"
+  },
+  {
+    "Subject_ID": "S006",
+    "Subject_Name": "วิทยาการคำนวณ ป.5",
+    "Teacher_Username": "Ging"
+  },
+  {
+    "Subject_ID": "S0010",
+    "Subject_Name": "วิทยาการคำนวณ ม.1",
+    "Teacher_Username": "Krugingcom"
+  },
+  {
+    "Subject_ID": "J001",
+    "Subject_Name": "คัดคำศัพธ์",
+    "Teacher_Username": "admin"
+  },
+  {
+    "Subject_ID": "S001",
+    "Subject_Name": "วิทยาการคำนวณ",
+    "Teacher_Username": "admin"
+  },
+  {
+    "Subject_ID": "P004-3",
+    "Subject_Name": "วิทยาการคำนวณ ป.403",
+    "Teacher_Username": "admin"
   }
 ]

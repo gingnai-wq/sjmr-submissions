@@ -1602,10 +1602,13 @@ body.pastel-theme .theme-toggle-btn:hover {
     width: 100%;
     display: grid !important;
     grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
+    gap: 12px;
+    row-gap: 18px;
     background: white !important;
     color: black !important;
-    padding: 10px;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
   }
   
   #print-report-area {
@@ -1624,9 +1627,14 @@ body.pastel-theme .theme-toggle-btn:hover {
     break-inside: avoid;
   }
   
+  .printable-student-card .qr-code {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+  
   /* Reset page borders/margins for nice printing */
   @page {
-    margin: 10mm;
+    margin: 8mm;
     size: A4 portrait;
   }
 }
@@ -2350,7 +2358,29 @@ body.pastel-theme .theme-toggle-btn:hover {
 .method-tab:hover:not(.active) {
   background: rgba(255, 255, 255, 0.05) !important;
   color: var(--text-primary) !important;
+}/* Class checkboxes container styling */
+.class-checkboxes-container {
+  background: var(--bg-secondary);
+  border: 1px solid var(--glass-border);
+  border-radius: 6px;
+  padding: 10px;
+  max-height: 150px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
+.class-checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
 
-
+.class-checkbox-item input {
+  width: auto !important;
+  margin: 0 !important;
+  cursor: pointer;
+}
