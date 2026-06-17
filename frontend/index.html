@@ -640,6 +640,26 @@
                 </div>
               </div>
 
+              <!-- Banana Planting Quiz Integration Card -->
+              <div class="glass-card admin-action-card" style="border: 2px solid #2ecc71;">
+                <h3><i class="fa-solid fa-leaf text-green" style="color: #2ecc71;"></i> เชื่อมต่อสื่อการสอนปลูกกล้วย</h3>
+                <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 12px;">
+                  ส่งลิงก์แชร์ด้านล่างนี้ให้นักเรียน ป.4 ทำแบบทดสอบ เมื่อเด็กๆ ทำเสร็จและสแกน QR Code ผลคะแนนจะบันทึกเข้าระบบส่งงานนี้โดยอัตโนมัติทันที!
+                </p>
+                <div style="background: rgba(0,0,0,0.15); padding: 10px; border-radius: 8px; border: 1px dashed var(--glass-border); margin-bottom: 12px;">
+                  <label style="font-size: 0.75rem; font-weight: bold; color: var(--text-muted); display: block; margin-bottom: 4px;">ลิงก์ส่งให้นักเรียน:</label>
+                  <input type="text" id="banana-student-link" readonly style="width: 100%; padding: 8px; font-size: 0.75rem; border-radius: 6px; background: var(--bg-secondary); border: 1px solid var(--glass-border); color: var(--text-primary); font-family: monospace;" />
+                </div>
+                <div style="display: flex; gap: 8px;">
+                  <button type="button" id="btn-copy-banana-link" class="btn btn-green" style="flex: 1; font-size: 0.8rem; font-weight: bold; cursor: pointer;">
+                    <i class="fa-regular fa-copy"></i> คัดลอกลิงก์
+                  </button>
+                  <a id="btn-open-banana-link" target="_blank" class="btn btn-secondary" style="font-size: 0.8rem; font-weight: bold; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 4px; cursor: pointer;">
+                    <i class="fa-solid fa-up-right-from-square"></i> เปิดดูแอป
+                  </a>
+                </div>
+              </div>
+
               <!-- Create Assignment Card -->
               <div class="glass-card admin-action-card">
                 <h3><i class="fa-solid fa-folder-plus text-purple"></i> สร้างภาระงานใหม่</h3>

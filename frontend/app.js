@@ -3135,6 +3135,34 @@ async function initApp() {
   if (savedTheme) {
     applyTheme(savedTheme);
   }
+
+  // Initialize Banana Planting Quiz integration links
+  const bananaStudentLink = document.getElementById('banana-student-link');
+  const btnCopyBananaLink = document.getElementById('btn-copy-banana-link');
+  const btnOpenBananaLink = document.getElementById('btn-open-banana-link');
+  
+  if (bananaStudentLink) {
+    const localGradingUrl = `${window.location.origin}/api/grade-external`;
+    const fullBananaUrl = `https://gingnai-wq.github.io/banana-planting-edu/?form=${encodeURIComponent(localGradingUrl)}`;
+    bananaStudentLink.value = fullBananaUrl;
+    
+    if (btnOpenBananaLink) {
+      btnOpenBananaLink.href = fullBananaUrl;
+    }
+    
+    if (btnCopyBananaLink) {
+      btnCopyBananaLink.addEventListener('click', () => {
+        navigator.clipboard.writeText(fullBananaUrl).then(() => {
+          btnCopyBananaLink.innerHTML = '<i class="fa-solid fa-check-double"></i> คัดลอกแล้ว!';
+          setTimeout(() => {
+            btnCopyBananaLink.innerHTML = '<i class="fa-regular fa-copy"></i> คัดลอกลิงก์';
+          }, 2000);
+        }).catch(err => {
+          console.error('Copy link failed:', err);
+        });
+      });
+    }
+  }
 }
 
 // Run initialization immediately since script is at the bottom of the body

@@ -518,6 +518,187 @@ app.post('/api/quick-grade', (req, res) => {
   }
 });
 
+// 9.1 GET endpoint for external grading (e.g. QR code scan from Banana Planting Game)
+app.get('/api/grade-external', async (req, res) => {
+  const { student_id, name, room, no, score } = req.query;
+  const assignment_id = req.query.assignment_id || 'BANANA01'; // Default assignment ID for banana planting quiz
+
+  if (!score) {
+    return res.status(400).send('<h1>เกิดข้อผิดพลาด: ไม่พบข้อมูลคะแนน</h1>');
+  }
+
+  try {
+    // 1. Ensure the Banana Planting assignment exists
+    let assignments = db.getAssignments();
+    let bananaAssignment = assignments.find(a => a.Assignment_ID === assignment_id);
+    if (!bananaAssignment) {
+      bananaAssignment = {
+        Assignment_ID: assignment_id,
+        Assignment_Name: "แบบทดสอบอัลกอริทึมการปลูกกล้วย (กล้วยหรรษา)",
+        Subject_ID: "S001", // Match general subject or default
+        Due_Date: new Date().toISOString().split('T')[0],
+        Max_Score: 5,
+        Class: "ป.4"
+      };
+      assignments.push(bananaAssignment);
+      db.setAssignments(assignments);
+    }
+
+    // 2. Find or create the student
+    let student = null;
+    if (student_id) {
+      student = db.findStudentById(student_id);
+    }
+
+    if (!student && name) {
+      // Clean name prefix for smart matching (e.g. เด็กชาย, เด็กหญิง, ด.ช., ด.ญ., นาย, นางสาว)
+      const cleanName = name.replace(/^(เด็กชาย|เด็กหญิง|ด\.ช\.|ด\.ญ\.|นาย|นางสาว|นาง)\s*/, '').trim();
+      const studentsList = db.getStudents();
+      student = studentsList.find(s => {
+        const dbCleanName = s.FullName.replace(/^(เด็กชาย|เด็กหญิง|ด\.ช\.|ด\.ญ\.|นาย|นางสาว|นาง)\s*/, '').trim();
+        const classMatches = room ? (s.Class === room || s.Class.includes(room) || room.includes(s.Class)) : true;
+        return classMatches && (dbCleanName.includes(cleanName) || cleanName.includes(dbCleanName));
+      });
+    }
+
+    let isNewStudent = false;
+    if (!student) {
+      isNewStudent = true;
+      const generatedId = student_id || 'STU' + Date.now();
+      student = {
+        Student_ID: String(generatedId),
+        FullName: name || `นักเรียนเลขที่ ${no || '-'} (ห้อง ${room || '-'})`,
+        Class: room || "ป.4/ทั่วไป",
+        Email: `${generatedId}@school.mail`,
+        Status: "กำลังศึกษาอยู่",
+        Photo: ""
+      };
+      const currentStudents = db.getStudents();
+      currentStudents.push(student);
+      db.setStudents(currentStudents);
+    }
+
+    // 3. Record the submission
+    const submissions = db.getSubmissions();
+    const existingSubIdx = submissions.findIndex(s => s.Student_ID === student.Student_ID && s.Assignment_ID === assignment_id);
+
+    const submissionData = {
+      Student_ID: String(student.Student_ID),
+      FullName: student.FullName,
+      Assignment_ID: assignment_id,
+      File_Link: existingSubIdx !== -1 ? submissions[existingSubIdx].File_Link : '',
+      Notes: `ตรวจบันทึกโดยการสแกน QR Code จากแบบทดสอบกล้วยหรรษา (เลขที่: ${no || '-'})`,
+      Score: Number(score),
+      Status: 'Graded'
+    };
+
+    let finalSub = null;
+    if (existingSubIdx !== -1) {
+      submissions[existingSubIdx] = {
+        ...submissions[existingSubIdx],
+        ...submissionData,
+        Timestamp: new Date().toISOString()
+      };
+      db.updateSubmissionScore(submissions[existingSubIdx].Submission_ID, Number(score), 'Graded');
+      finalSub = submissions[existingSubIdx];
+    } else {
+      finalSub = db.addSubmission(submissionData);
+    }
+
+    // 4. Return a beautiful confirmation page
+    const html = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>บันทึกคะแนนระบบส่งงานสำเร็จ</title>
+        <link href="https://fonts.googleapis.com/css2?family=Mitr:wght@400;500;600&family=Sarabun:wght@400;500;700&display=swap" rel="stylesheet">
+        <style>
+          body {
+            font-family: 'Sarabun', 'Mitr', sans-serif;
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            color: #2e7d32;
+          }
+          .container {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 450px;
+            width: 90%;
+            border-top: 8px solid #2ecc71;
+          }
+          .success-icon {
+            font-size: 50px;
+            color: #2ecc71;
+            margin-bottom: 15px;
+          }
+          h2 {
+            font-family: 'Mitr', sans-serif;
+            margin-top: 0;
+            color: #1b5e20;
+          }
+          .student-details {
+            background-color: #f1f8e9;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: left;
+            margin: 20px 0;
+            font-size: 0.95rem;
+            color: #33691e;
+          }
+          .student-details p {
+            margin: 6px 0;
+          }
+          .score-box {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #ffb300;
+            margin: 15px 0;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+          }
+          .footer-note {
+            font-size: 0.8rem;
+            color: #757575;
+            margin-top: 20px;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="success-icon">🎉</div>
+          <h2>บันทึกเข้า "ระบบส่งงาน" สำเร็จ!</h2>
+          <p>บันทึกผลการทดสอบวิชาวิทยาการคำนวณเรียบร้อยแล้วจ้า</p>
+          
+          <div class="student-details">
+            <p><strong>นักเรียน:</strong> ${student.FullName} (รหัส: ${student.Student_ID})</p>
+            <p><strong>ห้องเรียน:</strong> ${student.Class} ${no ? '(เลขที่ ' + no + ')' : ''}</p>
+            <p><strong>แบบทดสอบ:</strong> แบบทดสอบอัลกอริทึมการปลูกกล้วย</p>
+            ${isNewStudent ? '<p style="color:#d35400; font-size:0.85rem; margin-top:5px;">⚠️ *หมายเหตุ: สร้างประวัตินักเรียนชั่วคราวให้ใหม่ในระบบส่งงาน</p>' : ''}
+          </div>
+          
+          <div class="score-box">${score} / 5</div>
+          <p>คะแนนบันทึกในระบบเรียบร้อยแล้ว</p>
+          
+          <div class="footer-note">คุณครูสามารถปิดหน้าต่างนี้เพื่อสแกนคนต่อไปได้เลยครับ</div>
+        </div>
+      </body>
+      </html>
+    `;
+    res.send(html);
+  } catch (err) {
+    console.error('Error grading externally:', err);
+    res.status(500).send('<h1>เกิดข้อผิดพลาดในการบันทึกคะแนน</h1><p>' + err.message + '</p>');
+  }
+});
+
 // 10. Re-import / Reload student list from Excel
 app.post('/api/import-excel', verifyAdmin, (req, res) => {
   try {
