@@ -1549,13 +1549,73 @@ async function processQuickGradeScan(studentId) {
   const scanType = document.getElementById('scan-type-select').value;
 
   if (scanType === 'grade') {
-    const activeAssignment = scanAssignSelect.value;
-    const activeScore = Number(scanScoreInput.value);
+    let activeAssignment = scanAssignSelect.value;
+    let activeScore = Number(scanScoreInput.value);
 
     if (!activeAssignment) {
       showToast("กรุณาเลือกการบ้านเพื่อลงคะแนน", "error");
       scannerCooldown = false;
       return;
+    }
+
+    // Check if scanned value is a URL
+    if (studentId.startsWith('http://') || studentId.startsWith('https://')) {
+      try {
+        const urlObj = new URL(studentId);
+        const params = new URLSearchParams(urlObj.search);
+        
+        const qScore = params.get('score');
+        if (qScore !== null) activeScore = Number(qScore);
+        
+        const qAssign = params.get('assignment_id');
+        if (qAssign !== null) activeAssignment = qAssign;
+        else activeAssignment = 'BANANA01'; // Default
+        
+        const qStudentId = params.get('student_id');
+        if (qStudentId) {
+          studentId = qStudentId;
+        } else {
+          // If no student_id, hit the GET endpoint directly to match/register
+          const response = await fetch(studentId);
+          const responseText = await response.text();
+          
+          playBeep('success');
+          const qName = params.get('name') || 'ไม่ระบุชื่อ';
+          const qRoom = params.get('room') || '';
+          const qNo = params.get('no') || '';
+          
+          lastScannedText.textContent = `${qName} (ห้อง ${qRoom} เลขที่ ${qNo}) - บันทึก ${activeScore} คะแนนสำเร็จ`;
+          lastScannedResult.classList.remove('hidden');
+
+          // Show HUD
+          hudStudentName.textContent = qName;
+          hudStudentId.textContent = `เลขที่: ${qNo || '-'}`;
+          hudStudentClass.textContent = `ห้องเรียน: ${qRoom || 'ทั่วไป'}`;
+          hudStudentScore.textContent = activeScore;
+          
+          const scoreBadge = document.querySelector('.hud-score-badge');
+          if (scoreBadge) {
+            scoreBadge.innerHTML = `+ <span>${activeScore}</span> คะแนน`;
+            scoreBadge.style.background = 'rgba(16, 185, 129, 0.18)';
+            scoreBadge.style.color = '#34d399';
+          }
+          hudStudentPhoto.src = `https://api.dicebear.com/7.x/adventurer/svg?seed=${qName}`;
+          
+          hudProgressBar.classList.remove('hud-countdown-active');
+          void hudProgressBar.offsetWidth;
+          scanHudOverlay.classList.remove('hidden');
+          hudProgressBar.classList.add('hud-countdown-active');
+
+          if (hudTimeoutId) clearTimeout(hudTimeoutId);
+          hudTimeoutId = setTimeout(() => {
+            scanHudOverlay.classList.add('hidden');
+            scannerCooldown = false;
+          }, 5000);
+          return;
+        }
+      } catch (err) {
+        console.error("Error parsing scanned QR URL:", err);
+      }
     }
 
     try {

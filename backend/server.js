@@ -519,11 +519,20 @@ app.post('/api/quick-grade', (req, res) => {
 });
 
 // 9.1 GET endpoint for external grading (e.g. QR code scan from Banana Planting Game)
-app.get('/api/grade-external', async (req, res) => {
-  const { student_id, name, room, no, score } = req.query;
-  const assignment_id = req.query.assignment_id || 'BANANA01'; // Default assignment ID for banana planting quiz
+app.all('/api/grade-external', upload.single('file'), async (req, res) => {
+  const method = req.method;
+  const isPost = method === 'POST';
+  const data = isPost ? req.body : req.query;
+  const file = req.file;
+
+  const { student_id, name, room, no, score } = data;
+  const assignment_id = data.assignment_id || 'BANANA01'; // Default assignment ID for banana planting quiz
 
   if (!score) {
+    if (file) fs.unlinkSync(file.path);
+    if (isPost) {
+      return res.status(400).json({ success: false, message: 'ข้อมูลคะแนนไม่ถูกต้อง' });
+    }
     return res.status(400).send('<h1>เกิดข้อผิดพลาด: ไม่พบข้อมูลคะแนน</h1>');
   }
 
@@ -540,8 +549,7 @@ app.get('/api/grade-external', async (req, res) => {
         Max_Score: 5,
         Class: "ป.4"
       };
-      assignments.push(bananaAssignment);
-      db.setAssignments(assignments);
+      db.addAssignment(bananaAssignment);
     }
 
     // 2. Find or create the student
@@ -582,18 +590,25 @@ app.get('/api/grade-external', async (req, res) => {
     const submissions = db.getSubmissions();
     const existingSubIdx = submissions.findIndex(s => s.Student_ID === student.Student_ID && s.Assignment_ID === assignment_id);
 
+    const fileLink = file ? `/uploads/${file.filename}` : '';
     const submissionData = {
       Student_ID: String(student.Student_ID),
       FullName: student.FullName,
       Assignment_ID: assignment_id,
-      File_Link: existingSubIdx !== -1 ? submissions[existingSubIdx].File_Link : '',
-      Notes: `ตรวจบันทึกโดยการสแกน QR Code จากแบบทดสอบกล้วยหรรษา (เลขที่: ${no || '-'})`,
+      File_Link: fileLink || (existingSubIdx !== -1 ? submissions[existingSubIdx].File_Link : ''),
+      Notes: `ตรวจบันทึกผ่านทางแบบทดสอบกล้วยหรรษา (เลขที่: ${no || '-'})`,
       Score: Number(score),
       Status: 'Graded'
     };
 
     let finalSub = null;
     if (existingSubIdx !== -1) {
+      const oldFile = submissions[existingSubIdx].File_Link;
+      if (file && oldFile && oldFile.startsWith('/uploads/')) {
+        const oldPath = path.join(__dirname, '..', oldFile);
+        if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+      }
+
       submissions[existingSubIdx] = {
         ...submissions[existingSubIdx],
         ...submissionData,
@@ -605,7 +620,17 @@ app.get('/api/grade-external', async (req, res) => {
       finalSub = db.addSubmission(submissionData);
     }
 
-    // 4. Return a beautiful confirmation page
+    // If POST, return JSON response
+    if (isPost) {
+      return res.json({
+        success: true,
+        message: 'ส่งคะแนนและเกียรติบัตรเข้าสู่ระบบส่งงานเรียบร้อยแล้วจ้า',
+        student: student,
+        submission: finalSub
+      });
+    }
+
+    // 4. Return a beautiful confirmation page for GET (QR scan)
     const html = `
       <!DOCTYPE html>
       <html>
@@ -695,6 +720,10 @@ app.get('/api/grade-external', async (req, res) => {
     res.send(html);
   } catch (err) {
     console.error('Error grading externally:', err);
+    if (file) fs.unlinkSync(file.path);
+    if (isPost) {
+      return res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาดในการบันทึกคะแนน: ' + err.message });
+    }
     res.status(500).send('<h1>เกิดข้อผิดพลาดในการบันทึกคะแนน</h1><p>' + err.message + '</p>');
   }
 });
