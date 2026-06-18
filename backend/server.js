@@ -269,6 +269,8 @@ app.post('/api/assignments', (req, res) => {
     return res.status(400).json({ success: false, message: 'รหัสการบ้านนี้มีอยู่แล้วในระบบ' });
   }
 
+  const publicProtocol = req.get('x-forwarded-proto') || req.protocol;
+  const submissionUrl = `${publicProtocol}://${req.get('host')}/?assign=${encodeURIComponent(Assignment_ID)}`;
   const newAssignment = db.addAssignment({
     Assignment_ID,
     Assignment_Name,
@@ -276,7 +278,8 @@ app.post('/api/assignments', (req, res) => {
     Due_Date,
     Max_Score: Number(Max_Score),
     Class: Class || "ทุกชั้นเรียน",
-    QR_Link: `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${Assignment_ID}`
+    Submission_URL: submissionUrl,
+    QR_Link: `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(submissionUrl)}`
   });
 
   res.status(201).json({ success: true, assignment: newAssignment });
@@ -460,6 +463,26 @@ app.post('/api/export', (req, res) => {
   }
 });
 
+// Download a portable JSON backup without writing to the server filesystem.
+app.post('/api/backup/download', verifyAdmin, (req, res) => {
+  const generatedAt = new Date().toISOString();
+  const backup = {
+    version: 1,
+    generatedAt,
+    students: db.getStudents(),
+    assignments: db.getAssignments(),
+    submissions: db.getSubmissions(),
+    teachers: db.getTeachers(),
+    subjects: db.getSubjects(),
+    attendance: db.getAttendance(),
+    usageLogs: db.getUsageLogs()
+  };
+  const dateStamp = generatedAt.slice(0, 10);
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  res.setHeader('Content-Disposition', `attachment; filename="sjmr-backup-${dateStamp}.json"`);
+  res.send(JSON.stringify(backup, null, 2));
+});
+
 // 8. Sync with Google Sheets API
 app.post('/api/sync-sheets', (req, res) => {
   res.json({ 
@@ -529,6 +552,115 @@ app.post('/api/quick-grade', (req, res) => {
     const newSub = db.addSubmission(submissionData);
     res.status(201).json({ success: true, message: `บันทึกคะแนน ${student.FullName} สำเร็จ`, submission: newSub, student: student, isNewStudent });
   }
+});
+
+// Generic integration endpoint for games, quizzes, forms, and learning apps.
+// Set INTEGRATION_API_KEY in production to require a Bearer token or x-api-key.
+app.post('/api/integrations/submissions', upload.single('file'), (req, res) => {
+  const configuredKey = process.env.INTEGRATION_API_KEY || '';
+  const authorization = req.get('authorization') || '';
+  const suppliedKey = req.get('x-api-key') || authorization.replace(/^Bearer\s+/i, '');
+
+  if (configuredKey && suppliedKey !== configuredKey) {
+    if (req.file && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
+    return res.status(401).json({ success: false, message: 'Integration API key ไม่ถูกต้อง' });
+  }
+
+  const data = req.body || {};
+  const studentId = String(data.studentId || data.student_id || '').trim();
+  const assignmentId = String(data.assignmentId || data.assignment_id || '').trim();
+  const source = String(data.source || 'external-app').trim().slice(0, 80);
+  const scoreValue = data.score;
+
+  if (!studentId || !assignmentId) {
+    if (req.file && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
+    return res.status(400).json({
+      success: false,
+      message: 'กรุณาระบุ studentId และ assignmentId'
+    });
+  }
+
+  const student = db.findStudentById(studentId);
+  if (!student) {
+    if (req.file && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
+    return res.status(404).json({
+      success: false,
+      message: `ไม่พบนักเรียนรหัส ${studentId}`,
+      code: 'STUDENT_NOT_FOUND'
+    });
+  }
+
+  const assignment = db.getAssignments().find(item => item.Assignment_ID === assignmentId);
+  if (!assignment) {
+    if (req.file && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
+    return res.status(404).json({
+      success: false,
+      message: `ไม่พบภาระงานรหัส ${assignmentId}`,
+      code: 'ASSIGNMENT_NOT_FOUND'
+    });
+  }
+
+  const numericScore = scoreValue === undefined || scoreValue === null || scoreValue === ''
+    ? null
+    : Number(scoreValue);
+  if (numericScore !== null && (!Number.isFinite(numericScore) || numericScore < 0 || numericScore > Number(assignment.Max_Score))) {
+    if (req.file && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
+    return res.status(400).json({
+      success: false,
+      message: `คะแนนต้องอยู่ระหว่าง 0 ถึง ${assignment.Max_Score}`,
+      code: 'INVALID_SCORE'
+    });
+  }
+
+  const submissions = db.getSubmissions();
+  const existing = submissions.find(item =>
+    String(item.Student_ID) === studentId && item.Assignment_ID === assignmentId
+  );
+  const requestedStatus = String(data.status || (numericScore === null ? 'Submitted' : 'Graded'));
+  const allowedStatuses = new Set(['Submitted', 'Resubmitted', 'Need_Correction', 'Graded']);
+  const status = allowedStatuses.has(requestedStatus) ? requestedStatus : 'Submitted';
+  const uploadedFile = req.file ? `/uploads/${req.file.filename}` : '';
+  const evidenceUrl = String(data.evidenceUrl || data.evidence_url || '').trim();
+  const notes = String(data.notes || `รับข้อมูลจาก ${source}`).trim();
+
+  if (existing) {
+    existing.FullName = student.FullName;
+    existing.File_Link = uploadedFile || evidenceUrl || existing.File_Link || '';
+    existing.Notes = notes || existing.Notes || '';
+    existing.Source = source;
+    existing.External_Reference = String(data.externalReference || data.external_reference || '');
+    existing.Timestamp = new Date().toISOString();
+    db.updateSubmissionScore(existing.Submission_ID, numericScore === null ? existing.Score : numericScore, status);
+    return res.json({
+      success: true,
+      created: false,
+      message: `อัปเดตข้อมูลจาก ${source} สำเร็จ`,
+      student,
+      assignment,
+      submission: existing
+    });
+  }
+
+  const submission = db.addSubmission({
+    Student_ID: studentId,
+    FullName: student.FullName,
+    Assignment_ID: assignmentId,
+    File_Link: uploadedFile || evidenceUrl,
+    Notes: notes,
+    Score: numericScore,
+    Status: status,
+    Source: source,
+    External_Reference: String(data.externalReference || data.external_reference || '')
+  });
+
+  res.status(201).json({
+    success: true,
+    created: true,
+    message: `รับข้อมูลจาก ${source} สำเร็จ`,
+    student,
+    assignment,
+    submission
+  });
 });
 
 // 9.1 GET endpoint for external grading (e.g. QR code scan from Banana Planting Game)

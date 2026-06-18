@@ -137,6 +137,45 @@
               <span id="assignment-count" class="badge">0 งาน</span>
             </div>
 
+            <div id="student-assignment-summary" class="assignment-summary" aria-label="สรุปสถานะภาระงาน">
+              <button type="button" class="summary-chip active" data-status="all">
+                <span class="summary-label">ทั้งหมด</span>
+                <strong id="summary-all-count">0</strong>
+              </button>
+              <button type="button" class="summary-chip summary-chip-urgent" data-status="todo">
+                <span class="summary-label">ต้องทำ</span>
+                <strong id="summary-todo-count">0</strong>
+              </button>
+              <button type="button" class="summary-chip summary-chip-correction" data-status="correction">
+                <span class="summary-label">ต้องแก้ไข</span>
+                <strong id="summary-correction-count">0</strong>
+              </button>
+              <button type="button" class="summary-chip summary-chip-waiting" data-status="waiting">
+                <span class="summary-label">รอตรวจ</span>
+                <strong id="summary-waiting-count">0</strong>
+              </button>
+              <button type="button" class="summary-chip summary-chip-done" data-status="done">
+                <span class="summary-label">เสร็จแล้ว</span>
+                <strong id="summary-done-count">0</strong>
+              </button>
+            </div>
+
+            <div class="student-assignment-toolbar" aria-label="เครื่องมือค้นหาและจัดเรียงภาระงาน">
+              <div class="search-box student-assignment-search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="search" id="student-assignment-search" placeholder="ค้นหาชื่องาน วิชา หรือรหัสงาน">
+              </div>
+              <select id="student-assignment-subject-filter" aria-label="กรองตามรายวิชา">
+                <option value="">ทุกวิชา</option>
+              </select>
+              <select id="student-assignment-sort" aria-label="เรียงลำดับงาน">
+                <option value="priority">งานเร่งด่วนก่อน</option>
+                <option value="due-asc">กำหนดส่งใกล้สุด</option>
+                <option value="due-desc">กำหนดส่งไกลสุด</option>
+                <option value="name">ชื่อ ก-ฮ</option>
+              </select>
+            </div>
+
             <!-- List Grid -->
             <div id="student-assignments-grid" class="assignments-grid">
               <!-- Cards dynamically inserted here -->
@@ -221,6 +260,8 @@
                     <select id="filter-status">
                       <option value="">สถานะทั้งหมด</option>
                       <option value="Submitted">ส่งแล้ว (รอตรวจ)</option>
+                      <option value="Resubmitted">ส่งแก้ไขแล้ว</option>
+                      <option value="Need_Correction">ต้องแก้ไข</option>
                       <option value="Graded">ตรวจแล้ว</option>
                     </select>
                   </div>
@@ -340,6 +381,20 @@
                     <i class="fa-solid fa-user-plus"></i> เพิ่มบัญชีครูใหม่
                   </button>
                 </div>
+                <div class="management-filter-bar">
+                  <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="search" id="teacher-account-search" placeholder="ค้นหาชื่อหรือ username">
+                  </div>
+                  <select id="teacher-role-filter">
+                    <option value="">ทุกบทบาท</option>
+                    <option value="Admin">Admin</option>
+                    <option value="Teacher">Teacher</option>
+                  </select>
+                  <button type="button" class="btn btn-secondary btn-clear-management-filter" data-filter-group="teachers">
+                    <i class="fa-solid fa-rotate-left"></i> ล้างตัวกรอง
+                  </button>
+                </div>
 
                 <div class="table-container" style="margin-top: 15px;">
                   <table class="data-table">
@@ -368,6 +423,21 @@
                     <i class="fa-solid fa-folder-plus"></i> เพิ่มรายวิชาใหม่
                   </button>
                 </div>
+                <div class="management-filter-bar">
+                  <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="search" id="subject-management-search" placeholder="ค้นหารหัส ชื่อวิชา หรือครู">
+                  </div>
+                  <select id="subject-department-filter">
+                    <option value="">ทุกกลุ่มสาระ</option>
+                  </select>
+                  <select id="subject-teacher-filter">
+                    <option value="">ครูทุกคน</option>
+                  </select>
+                  <button type="button" class="btn btn-secondary btn-clear-management-filter" data-filter-group="subjects">
+                    <i class="fa-solid fa-rotate-left"></i> ล้างตัวกรอง
+                  </button>
+                </div>
 
                 <div class="table-container" style="margin-top: 15px;">
                   <table class="data-table">
@@ -393,6 +463,27 @@
               <div id="panel-assignments-view" class="tab-view">
                 <div class="panel-header" style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center;">
                   <h3><i class="fa-solid fa-list-check text-purple"></i> ทะเบียนภาระงาน (Assignment Management)</h3>
+                </div>
+                <div class="management-filter-bar">
+                  <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="search" id="assignment-management-search" placeholder="ค้นหารหัสหรือชื่อภาระงาน">
+                  </div>
+                  <select id="assignment-subject-filter">
+                    <option value="">ทุกวิชา</option>
+                  </select>
+                  <select id="assignment-class-filter">
+                    <option value="">ทุกชั้นเรียน</option>
+                  </select>
+                  <select id="assignment-due-filter">
+                    <option value="">ทุกกำหนดส่ง</option>
+                    <option value="overdue">เลยกำหนด</option>
+                    <option value="today">ครบกำหนดวันนี้</option>
+                    <option value="upcoming">ยังไม่ครบกำหนด</option>
+                  </select>
+                  <button type="button" class="btn btn-secondary btn-clear-management-filter" data-filter-group="assignments">
+                    <i class="fa-solid fa-rotate-left"></i> ล้างตัวกรอง
+                  </button>
                 </div>
 
                 <div class="table-container" style="margin-top: 15px;">
@@ -493,6 +584,30 @@
                       <i class="fa-solid fa-file-arrow-down"></i> ดาวน์โหลดล็อก (.json)
                     </a>
                   </div>
+                </div>
+                <div class="management-filter-bar">
+                  <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="search" id="analytics-log-search" placeholder="ค้นหาเหตุการณ์ ผู้ใช้ หรือรายละเอียด">
+                  </div>
+                  <select id="analytics-role-filter">
+                    <option value="">ทุกบทบาท</option>
+                    <option value="Admin">Admin</option>
+                    <option value="Teacher">Teacher</option>
+                    <option value="Student">Student</option>
+                  </select>
+                  <select id="analytics-action-filter">
+                    <option value="">ทุกกิจกรรม</option>
+                    <option value="login">เข้าสู่ระบบ</option>
+                    <option value="create">สร้างข้อมูล</option>
+                    <option value="edit">แก้ไขข้อมูล</option>
+                    <option value="grade">ตรวจงาน/คะแนน</option>
+                    <option value="delete">ลบข้อมูล</option>
+                    <option value="sync">ซิงก์ข้อมูล</option>
+                  </select>
+                  <button type="button" class="btn btn-secondary btn-clear-management-filter" data-filter-group="analytics">
+                    <i class="fa-solid fa-rotate-left"></i> ล้างตัวกรอง
+                  </button>
                 </div>
 
                 <!-- Analytics Metrics Row -->
@@ -640,12 +755,20 @@
                 </div>
               </div>
 
-              <!-- Banana Planting Quiz Integration Card -->
+              <!-- Learning App Integration Center -->
               <div class="glass-card admin-action-card" style="border: 2px solid #2ecc71;">
-                <h3><i class="fa-solid fa-leaf text-green" style="color: #2ecc71;"></i> เชื่อมต่อสื่อการสอนปลูกกล้วย</h3>
+                <h3><i class="fa-solid fa-plug-circle-bolt text-green" style="color: #2ecc71;"></i> ศูนย์เชื่อมต่อเกมและแบบทดสอบ</h3>
                 <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 12px;">
-                  ส่งลิงก์แชร์ด้านล่างนี้ให้นักเรียน ป.4 ทำแบบทดสอบ เมื่อเด็กๆ ทำเสร็จและสแกน QR Code ผลคะแนนจะบันทึกเข้าระบบส่งงานนี้โดยอัตโนมัติทันที!
+                  เกม แบบทดสอบ หรือโปรแกรมภายนอกสามารถส่งผลเข้าระบบกลางได้ โดยระบุรหัสนักเรียน รหัสงาน คะแนน และแหล่งที่มา
                 </p>
+                <div style="background: rgba(0,0,0,0.15); padding: 10px; border-radius: 8px; border: 1px dashed var(--glass-border); margin-bottom: 12px;">
+                  <label style="font-size: 0.75rem; font-weight: bold; color: var(--text-muted); display: block; margin-bottom: 4px;">Integration API:</label>
+                  <input type="text" id="generic-integration-endpoint" readonly style="width: 100%; padding: 8px; font-size: 0.72rem; border-radius: 6px; background: var(--bg-secondary); border: 1px solid var(--glass-border); color: var(--text-primary); font-family: monospace;" />
+                  <button type="button" id="btn-copy-integration-endpoint" class="btn btn-secondary btn-block" style="margin-top: 8px; font-size: 0.78rem;">
+                    <i class="fa-regular fa-copy"></i> คัดลอก API กลาง
+                  </button>
+                </div>
+                <p style="font-size: 0.78rem; font-weight: 700; margin-bottom: 6px;"><i class="fa-solid fa-leaf"></i> เกมกล้วยเดิม</p>
                 <div style="background: rgba(0,0,0,0.15); padding: 10px; border-radius: 8px; border: 1px dashed var(--glass-border); margin-bottom: 12px;">
                   <label style="font-size: 0.75rem; font-weight: bold; color: var(--text-muted); display: block; margin-bottom: 4px;">ลิงก์ส่งให้นักเรียน:</label>
                   <input type="text" id="banana-student-link" readonly style="width: 100%; padding: 8px; font-size: 0.75rem; border-radius: 6px; background: var(--bg-secondary); border: 1px solid var(--glass-border); color: var(--text-primary); font-family: monospace;" />
@@ -720,6 +843,10 @@
 
                   <button id="btn-export-excel" class="btn btn-green btn-block btn-icon-left">
                     <i class="fa-solid fa-file-excel"></i> <span>ส่งออกรายงานลง Excel Desktop</span>
+                  </button>
+
+                  <button id="btn-download-backup" class="btn btn-green btn-block btn-icon-left" style="margin-top: 8px;">
+                    <i class="fa-solid fa-download"></i> <span>ดาวน์โหลดข้อมูลสำรอง (.json)</span>
                   </button>
                   
                   <button id="btn-sync-drive-photos" class="btn btn-blue btn-block btn-icon-left">

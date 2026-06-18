@@ -547,6 +547,65 @@ input:focus, select:focus, textarea:focus {
   gap: 20px;
 }
 
+.assignment-summary {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(110px, 1fr));
+  gap: 10px;
+}
+
+.summary-chip {
+  appearance: none;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  color: var(--text-main);
+  border-radius: var(--border-radius-md);
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  cursor: pointer;
+  font: inherit;
+  transition: var(--transition-smooth);
+}
+
+.summary-chip:hover,
+.summary-chip.active {
+  border-color: var(--primary);
+  background: rgba(59, 130, 246, 0.14);
+  transform: translateY(-2px);
+}
+
+.summary-chip strong {
+  font-size: 1.15rem;
+}
+
+.summary-label {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.summary-chip-urgent strong { color: var(--warning); }
+.summary-chip-correction strong { color: var(--error); }
+.summary-chip-waiting strong { color: var(--primary); }
+.summary-chip-done strong { color: var(--success); }
+
+.student-assignment-toolbar {
+  display: grid;
+  grid-template-columns: minmax(240px, 1fr) 180px 190px;
+  gap: 12px;
+}
+
+.student-assignment-toolbar select,
+.student-assignment-search input {
+  width: 100%;
+}
+
+.student-assignment-search input {
+  padding-left: 36px;
+}
+
 .assignment-card {
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
@@ -581,6 +640,18 @@ input:focus, select:focus, textarea:focus {
 .assignment-card.status-submitted::before { background: var(--primary); }
 .assignment-card.status-graded::before { background: var(--success); }
 .assignment-card.status-correction::before { background: var(--error); }
+.assignment-card.status-overdue::before { background: var(--error); }
+.assignment-card.status-due-soon::before { background: var(--warning); }
+
+.assignment-subject {
+  color: var(--primary);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.assignment-subject i {
+  margin-right: 4px;
+}
 
 .card-top {
   display: flex;
@@ -633,6 +704,32 @@ input:focus, select:focus, textarea:focus {
 .status-badge.submitted { background: rgba(59, 130, 246, 0.15); color: var(--primary); border: 1px solid rgba(59, 130, 246, 0.3); }
 .status-badge.graded { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); }
 .status-badge.correction { background: rgba(239, 68, 68, 0.15); color: var(--error); border: 1px solid rgba(239, 68, 68, 0.3); }
+.status-badge.overdue { background: rgba(239, 68, 68, 0.15); color: var(--error); border: 1px solid rgba(239, 68, 68, 0.3); }
+.status-badge.due-soon { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3); }
+
+.assignment-empty-state {
+  grid-column: 1 / -1;
+  min-height: 260px;
+  border: 1px dashed var(--glass-border-hover);
+  border-radius: var(--border-radius-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-align: center;
+  padding: 32px;
+  color: var(--text-muted);
+}
+
+.assignment-empty-state i {
+  color: var(--primary);
+  font-size: 2.4rem;
+}
+
+.assignment-empty-state h3 {
+  color: var(--text-main);
+}
 
 /* ================= TEACHER DASHBOARD ================= */
 .teacher-dashboard-layout {
@@ -726,10 +823,144 @@ input:focus, select:focus, textarea:focus {
   font-size: 0.85rem;
 }
 
+.management-filter-bar {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) repeat(3, minmax(140px, auto)) auto;
+  gap: 10px;
+  align-items: center;
+  margin-top: 14px;
+  padding: 12px;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--border-radius-md);
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.management-filter-bar .search-box input,
+.management-filter-bar select {
+  width: 100%;
+  min-width: 0;
+}
+
+.management-filter-bar .btn {
+  white-space: nowrap;
+}
+
+@media (max-width: 1200px) {
+  .management-filter-bar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .management-filter-bar {
+    grid-template-columns: 1fr;
+  }
+}
+
 .teacher-sidebar-panel {
   display: flex;
   flex-direction: column;
   gap: 24px;
+}
+
+.teacher-sidebar-panel > .admin-action-card:first-child {
+  border: 1px solid rgba(16, 185, 129, 0.45);
+  box-shadow: 0 12px 34px rgba(16, 185, 129, 0.12);
+}
+
+.teacher-sidebar-panel > .admin-action-card:first-child h3::after {
+  content: 'พร้อมใช้งาน';
+  margin-left: auto;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(16, 185, 129, 0.14);
+  color: var(--success);
+  font-size: 0.68rem;
+}
+
+.actions-group {
+  flex-wrap: wrap;
+}
+
+.btn-assignment-qr,
+.btn-copy-assignment-link {
+  min-width: 34px;
+  min-height: 34px;
+  padding: 6px 9px;
+}
+
+/* Scanner-first teacher workspace. The scanner remains the first visual task. */
+@media (min-width: 993px) {
+  body.teacher-mode-active .teacher-controls-grid {
+    grid-template-columns: 360px minmax(0, 1fr);
+  }
+
+  body.teacher-mode-active .teacher-sidebar-panel {
+    grid-column: 1;
+    grid-row: 1;
+    order: -1;
+  }
+
+  body.teacher-mode-active .teacher-main-panel {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  body.teacher-mode-active .teacher-sidebar-panel > .admin-action-card:first-child {
+    position: sticky;
+    top: 0;
+    z-index: 4;
+  }
+}
+
+@media (max-width: 992px) {
+  .teacher-controls-grid {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .teacher-sidebar-panel {
+    order: -1;
+  }
+
+  .teacher-sidebar-panel > .admin-action-card:first-child {
+    order: -1;
+  }
+}
+
+@media (max-width: 768px) {
+  .teacher-sidebar-panel {
+    gap: 14px;
+  }
+
+  .teacher-sidebar-panel > .admin-action-card:first-child {
+    padding: 14px !important;
+  }
+
+  .teacher-sidebar-panel > .admin-action-card:first-child .scanner-wrapper {
+    max-height: 62vh;
+    aspect-ratio: 3 / 4;
+  }
+
+  .manual-id-entry-container > div {
+    flex-direction: column;
+  }
+
+  #btn-manual-scan-submit,
+  #btn-toggle-teacher-scanner {
+    min-height: 46px;
+  }
+
+  .panel-tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    scrollbar-width: thin;
+  }
+
+  .tab-link {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
 }
 
 .admin-action-card h3 {
@@ -1349,6 +1580,15 @@ input:focus, select:focus, textarea:focus {
   .teacher-controls-grid {
     grid-template-columns: 1fr;
   }
+  .assignment-summary {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .student-assignment-toolbar {
+    grid-template-columns: 1fr 1fr;
+  }
+  .student-assignment-search {
+    grid-column: 1 / -1;
+  }
 }
 
 @media (max-width: 768px) {
@@ -1366,6 +1606,30 @@ input:focus, select:focus, textarea:focus {
 
   .stats-row {
     grid-template-columns: 1fr 1fr;
+  }
+  .assignment-summary {
+    display: flex;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scroll-snap-type: x proximity;
+  }
+  .summary-chip {
+    min-width: 125px;
+    scroll-snap-align: start;
+  }
+  .student-assignment-toolbar {
+    grid-template-columns: 1fr;
+  }
+  .student-assignment-search {
+    grid-column: auto;
+  }
+  .assignments-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .assignment-card {
+    min-height: auto;
+    padding: 16px;
   }
 }
 
@@ -2383,4 +2647,22 @@ body.pastel-theme .theme-toggle-btn:hover {
   width: auto !important;
   margin: 0 !important;
   cursor: pointer;
+}
+
+/* Final scanner-first layout overrides must remain after legacy viewport rules. */
+@media (min-width: 993px) {
+  body.teacher-mode-active .teacher-controls-grid {
+    grid-template-columns: 360px minmax(0, 1fr);
+  }
+
+  body.teacher-mode-active .teacher-sidebar-panel {
+    grid-column: 1;
+    grid-row: 1;
+    order: -1;
+  }
+
+  body.teacher-mode-active .teacher-main-panel {
+    grid-column: 2;
+    grid-row: 1;
+  }
 }
