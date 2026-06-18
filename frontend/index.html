@@ -137,6 +137,45 @@
               <span id="assignment-count" class="badge">0 งาน</span>
             </div>
 
+            <div id="student-assignment-summary" class="assignment-summary" aria-label="สรุปสถานะภาระงาน">
+              <button type="button" class="summary-chip active" data-status="all">
+                <span class="summary-label">ทั้งหมด</span>
+                <strong id="summary-all-count">0</strong>
+              </button>
+              <button type="button" class="summary-chip summary-chip-urgent" data-status="todo">
+                <span class="summary-label">ต้องทำ</span>
+                <strong id="summary-todo-count">0</strong>
+              </button>
+              <button type="button" class="summary-chip summary-chip-correction" data-status="correction">
+                <span class="summary-label">ต้องแก้ไข</span>
+                <strong id="summary-correction-count">0</strong>
+              </button>
+              <button type="button" class="summary-chip summary-chip-waiting" data-status="waiting">
+                <span class="summary-label">รอตรวจ</span>
+                <strong id="summary-waiting-count">0</strong>
+              </button>
+              <button type="button" class="summary-chip summary-chip-done" data-status="done">
+                <span class="summary-label">เสร็จแล้ว</span>
+                <strong id="summary-done-count">0</strong>
+              </button>
+            </div>
+
+            <div class="student-assignment-toolbar" aria-label="เครื่องมือค้นหาและจัดเรียงภาระงาน">
+              <div class="search-box student-assignment-search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="search" id="student-assignment-search" placeholder="ค้นหาชื่องาน วิชา หรือรหัสงาน">
+              </div>
+              <select id="student-assignment-subject-filter" aria-label="กรองตามรายวิชา">
+                <option value="">ทุกวิชา</option>
+              </select>
+              <select id="student-assignment-sort" aria-label="เรียงลำดับงาน">
+                <option value="priority">งานเร่งด่วนก่อน</option>
+                <option value="due-asc">กำหนดส่งใกล้สุด</option>
+                <option value="due-desc">กำหนดส่งไกลสุด</option>
+                <option value="name">ชื่อ ก-ฮ</option>
+              </select>
+            </div>
+
             <!-- List Grid -->
             <div id="student-assignments-grid" class="assignments-grid">
               <!-- Cards dynamically inserted here -->
