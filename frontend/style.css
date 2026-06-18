@@ -829,6 +829,106 @@ input:focus, select:focus, textarea:focus {
   gap: 24px;
 }
 
+.teacher-sidebar-panel > .admin-action-card:first-child {
+  border: 1px solid rgba(16, 185, 129, 0.45);
+  box-shadow: 0 12px 34px rgba(16, 185, 129, 0.12);
+}
+
+.teacher-sidebar-panel > .admin-action-card:first-child h3::after {
+  content: 'พร้อมใช้งาน';
+  margin-left: auto;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(16, 185, 129, 0.14);
+  color: var(--success);
+  font-size: 0.68rem;
+}
+
+.actions-group {
+  flex-wrap: wrap;
+}
+
+.btn-assignment-qr,
+.btn-copy-assignment-link {
+  min-width: 34px;
+  min-height: 34px;
+  padding: 6px 9px;
+}
+
+/* Scanner-first teacher workspace. The scanner remains the first visual task. */
+@media (min-width: 993px) {
+  body.teacher-mode-active .teacher-controls-grid {
+    grid-template-columns: 360px minmax(0, 1fr);
+  }
+
+  body.teacher-mode-active .teacher-sidebar-panel {
+    grid-column: 1;
+    grid-row: 1;
+    order: -1;
+  }
+
+  body.teacher-mode-active .teacher-main-panel {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  body.teacher-mode-active .teacher-sidebar-panel > .admin-action-card:first-child {
+    position: sticky;
+    top: 0;
+    z-index: 4;
+  }
+}
+
+@media (max-width: 992px) {
+  .teacher-controls-grid {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .teacher-sidebar-panel {
+    order: -1;
+  }
+
+  .teacher-sidebar-panel > .admin-action-card:first-child {
+    order: -1;
+  }
+}
+
+@media (max-width: 768px) {
+  .teacher-sidebar-panel {
+    gap: 14px;
+  }
+
+  .teacher-sidebar-panel > .admin-action-card:first-child {
+    padding: 14px !important;
+  }
+
+  .teacher-sidebar-panel > .admin-action-card:first-child .scanner-wrapper {
+    max-height: 62vh;
+    aspect-ratio: 3 / 4;
+  }
+
+  .manual-id-entry-container > div {
+    flex-direction: column;
+  }
+
+  #btn-manual-scan-submit,
+  #btn-toggle-teacher-scanner {
+    min-height: 46px;
+  }
+
+  .panel-tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    scrollbar-width: thin;
+  }
+
+  .tab-link {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+}
+
 .admin-action-card h3 {
   font-size: 1.1rem;
   font-weight: 700;
@@ -2513,4 +2613,22 @@ body.pastel-theme .theme-toggle-btn:hover {
   width: auto !important;
   margin: 0 !important;
   cursor: pointer;
+}
+
+/* Final scanner-first layout overrides must remain after legacy viewport rules. */
+@media (min-width: 993px) {
+  body.teacher-mode-active .teacher-controls-grid {
+    grid-template-columns: 360px minmax(0, 1fr);
+  }
+
+  body.teacher-mode-active .teacher-sidebar-panel {
+    grid-column: 1;
+    grid-row: 1;
+    order: -1;
+  }
+
+  body.teacher-mode-active .teacher-main-panel {
+    grid-column: 2;
+    grid-row: 1;
+  }
 }

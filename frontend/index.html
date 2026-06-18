@@ -679,12 +679,20 @@
                 </div>
               </div>
 
-              <!-- Banana Planting Quiz Integration Card -->
+              <!-- Learning App Integration Center -->
               <div class="glass-card admin-action-card" style="border: 2px solid #2ecc71;">
-                <h3><i class="fa-solid fa-leaf text-green" style="color: #2ecc71;"></i> เชื่อมต่อสื่อการสอนปลูกกล้วย</h3>
+                <h3><i class="fa-solid fa-plug-circle-bolt text-green" style="color: #2ecc71;"></i> ศูนย์เชื่อมต่อเกมและแบบทดสอบ</h3>
                 <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 12px;">
-                  ส่งลิงก์แชร์ด้านล่างนี้ให้นักเรียน ป.4 ทำแบบทดสอบ เมื่อเด็กๆ ทำเสร็จและสแกน QR Code ผลคะแนนจะบันทึกเข้าระบบส่งงานนี้โดยอัตโนมัติทันที!
+                  เกม แบบทดสอบ หรือโปรแกรมภายนอกสามารถส่งผลเข้าระบบกลางได้ โดยระบุรหัสนักเรียน รหัสงาน คะแนน และแหล่งที่มา
                 </p>
+                <div style="background: rgba(0,0,0,0.15); padding: 10px; border-radius: 8px; border: 1px dashed var(--glass-border); margin-bottom: 12px;">
+                  <label style="font-size: 0.75rem; font-weight: bold; color: var(--text-muted); display: block; margin-bottom: 4px;">Integration API:</label>
+                  <input type="text" id="generic-integration-endpoint" readonly style="width: 100%; padding: 8px; font-size: 0.72rem; border-radius: 6px; background: var(--bg-secondary); border: 1px solid var(--glass-border); color: var(--text-primary); font-family: monospace;" />
+                  <button type="button" id="btn-copy-integration-endpoint" class="btn btn-secondary btn-block" style="margin-top: 8px; font-size: 0.78rem;">
+                    <i class="fa-regular fa-copy"></i> คัดลอก API กลาง
+                  </button>
+                </div>
+                <p style="font-size: 0.78rem; font-weight: 700; margin-bottom: 6px;"><i class="fa-solid fa-leaf"></i> เกมกล้วยเดิม</p>
                 <div style="background: rgba(0,0,0,0.15); padding: 10px; border-radius: 8px; border: 1px dashed var(--glass-border); margin-bottom: 12px;">
                   <label style="font-size: 0.75rem; font-weight: bold; color: var(--text-muted); display: block; margin-bottom: 4px;">ลิงก์ส่งให้นักเรียน:</label>
                   <input type="text" id="banana-student-link" readonly style="width: 100%; padding: 8px; font-size: 0.75rem; border-radius: 6px; background: var(--bg-secondary); border: 1px solid var(--glass-border); color: var(--text-primary); font-family: monospace;" />

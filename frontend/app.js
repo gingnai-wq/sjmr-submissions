@@ -1485,12 +1485,12 @@ function populateTeacherScannerAssignments(assignments) {
   });
   
   // Set default score when assignment is selected
-  scanAssignSelect.addEventListener('change', () => {
+  scanAssignSelect.onchange = () => {
     const activeAssign = permittedAssignments.find(a => a.Assignment_ID === scanAssignSelect.value);
     if (activeAssign) {
       scanScoreInput.value = activeAssign.Max_Score;
     }
-  });
+  };
 
   if (currentVal && Array.from(scanAssignSelect.options).some(o => o.value === currentVal)) {
     scanAssignSelect.value = currentVal;
@@ -1904,9 +1904,15 @@ btnToggleTeacherScanner.addEventListener('click', () => {
 });
 
 function startTeacherScanner() {
+  const scanType = document.getElementById('scan-type-select').value;
   const activeAssignment = scanAssignSelect.value;
-  if (!activeAssignment) {
+  const activeSubject = document.getElementById('scan-subject-select').value;
+  if (scanType === 'grade' && !activeAssignment) {
     showToast("กรุณาสร้างการบ้านเพื่อใช้ในการตรวจคะแนนก่อน", "error");
+    return;
+  }
+  if (scanType === 'attendance' && !activeSubject) {
+    showToast("กรุณาเลือกวิชาที่จะเช็คชื่อก่อน", "error");
     return;
   }
 
@@ -3396,6 +3402,8 @@ async function initApp() {
   const bananaStudentLink = document.getElementById('banana-student-link');
   const btnCopyBananaLink = document.getElementById('btn-copy-banana-link');
   const btnOpenBananaLink = document.getElementById('btn-open-banana-link');
+  const genericIntegrationEndpoint = document.getElementById('generic-integration-endpoint');
+  const btnCopyIntegrationEndpoint = document.getElementById('btn-copy-integration-endpoint');
   
   if (bananaStudentLink) {
     const initBananaLink = async () => {
@@ -3415,8 +3423,10 @@ async function initApp() {
       }
 
       const localGradingUrl = `${origin}/api/grade-external`;
+      const integrationUrl = `${origin}/api/integrations/submissions`;
       const fullBananaUrl = `https://gingnai-wq.github.io/banana-planting-edu/?form=${encodeURIComponent(localGradingUrl)}`;
       bananaStudentLink.value = fullBananaUrl;
+      if (genericIntegrationEndpoint) genericIntegrationEndpoint.value = integrationUrl;
       
       if (btnOpenBananaLink) {
         btnOpenBananaLink.href = fullBananaUrl;
@@ -3432,6 +3442,17 @@ async function initApp() {
           }).catch(err => {
             console.error('Copy link failed:', err);
           });
+        });
+      }
+
+      if (btnCopyIntegrationEndpoint) {
+        btnCopyIntegrationEndpoint.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(integrationUrl);
+            showToast('คัดลอก Integration API แล้ว', 'success');
+          } catch (err) {
+            window.prompt('คัดลอก Integration API', integrationUrl);
+          }
         });
       }
     };
@@ -4633,6 +4654,8 @@ async function loadAssignmentsTable() {
       }
 
       const maxScore = assign.Max_Score !== undefined ? assign.Max_Score : '-';
+      const submissionUrl = `${window.location.origin}/?assign=${encodeURIComponent(assign.Assignment_ID)}`;
+      const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=600x600&ecc=M&data=${encodeURIComponent(submissionUrl)}`;
       
       let classDisplay = 'ทุกชั้นเรียน';
       let classDataAttr = 'all';
@@ -4658,6 +4681,18 @@ async function loadAssignmentsTable() {
         <td><strong>${maxScore}</strong></td>
         <td>
           <div class="actions-group" style="display: flex; gap: 8px;">
+            <button class="btn btn-green btn-icon-only btn-assignment-qr"
+                    data-url="${submissionUrl}"
+                    data-qr="${qrImageUrl}"
+                    data-id="${assign.Assignment_ID}"
+                    title="เปิดและดาวน์โหลด QR สำหรับส่งงาน">
+              <i class="fa-solid fa-qrcode"></i>
+            </button>
+            <button class="btn btn-blue btn-icon-only btn-copy-assignment-link"
+                    data-url="${submissionUrl}"
+                    title="คัดลอกลิงก์ส่งงาน">
+              <i class="fa-solid fa-link"></i>
+            </button>
             <button class="btn btn-secondary btn-icon-only btn-edit-assign-trigger" 
                     data-id="${assign.Assignment_ID}"
                     data-name="${assign.Assignment_Name || ''}"
@@ -4685,6 +4720,63 @@ async function loadAssignmentsTable() {
     assignmentsTableBody.innerHTML = '<tr><td colspan="7" class="text-center text-red">เกิดข้อผิดพลาดในการแสดงตารางภาระงาน</td></tr>';
   }
 }
+
+document.getElementById('panel-assignments-view').addEventListener('click', async (event) => {
+  const copyButton = event.target.closest('.btn-copy-assignment-link');
+  if (copyButton) {
+    try {
+      await navigator.clipboard.writeText(copyButton.dataset.url);
+      showToast('คัดลอกลิงก์ส่งงานแล้ว', 'success');
+    } catch (err) {
+      window.prompt('คัดลอกลิงก์ส่งงานนี้', copyButton.dataset.url);
+    }
+    return;
+  }
+
+  const qrButton = event.target.closest('.btn-assignment-qr');
+  if (qrButton) {
+    const popup = window.open('', '_blank', 'width=720,height=820');
+    if (!popup) {
+      showToast('เบราว์เซอร์บล็อกหน้าต่าง QR กรุณาอนุญาต Pop-up', 'error');
+      return;
+    }
+    const assignmentName = state.assignments.find(item => item.Assignment_ID === qrButton.dataset.id)?.Assignment_Name || qrButton.dataset.id;
+    popup.document.write(`
+      <!doctype html>
+      <html lang="th">
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>QR ส่งงาน ${qrButton.dataset.id}</title>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 0; padding: 28px; text-align: center; color: #172033; }
+          .sheet { max-width: 620px; margin: auto; border: 2px solid #e5e7eb; border-radius: 20px; padding: 28px; }
+          img { width: min(82vw, 480px); height: auto; }
+          h1 { font-size: 1.5rem; margin-bottom: 6px; }
+          p { color: #64748b; overflow-wrap: anywhere; }
+          .actions { display: flex; gap: 10px; justify-content: center; margin-top: 18px; }
+          button, a { border: 0; border-radius: 10px; padding: 11px 16px; background: #2563eb; color: white; text-decoration: none; cursor: pointer; }
+          @media print { .actions { display: none; } body { padding: 0; } .sheet { border: 0; } }
+        </style>
+      </head>
+      <body>
+        <main class="sheet">
+          <h1>${assignmentName}</h1>
+          <strong>${qrButton.dataset.id}</strong>
+          <p>สแกนเพื่อเปิดงานนี้โดยตรง แล้วเข้าสู่ระบบนักเรียนเพื่อส่งงาน</p>
+          <img src="${qrButton.dataset.qr}" alt="QR ส่งงาน ${qrButton.dataset.id}">
+          <p>${qrButton.dataset.url}</p>
+          <div class="actions">
+            <button onclick="window.print()">พิมพ์ QR</button>
+            <a href="${qrButton.dataset.qr}" download="QR-${qrButton.dataset.id}.png">ดาวน์โหลดรูป QR</a>
+          </div>
+        </main>
+      </body>
+      </html>
+    `);
+    popup.document.close();
+  }
+});
 
 // Modal bindings for editing assignments
 if (assignmentEditForm) {
