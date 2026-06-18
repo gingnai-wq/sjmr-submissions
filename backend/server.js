@@ -460,6 +460,26 @@ app.post('/api/export', (req, res) => {
   }
 });
 
+// Download a portable JSON backup without writing to the server filesystem.
+app.post('/api/backup/download', verifyAdmin, (req, res) => {
+  const generatedAt = new Date().toISOString();
+  const backup = {
+    version: 1,
+    generatedAt,
+    students: db.getStudents(),
+    assignments: db.getAssignments(),
+    submissions: db.getSubmissions(),
+    teachers: db.getTeachers(),
+    subjects: db.getSubjects(),
+    attendance: db.getAttendance(),
+    usageLogs: db.getUsageLogs()
+  };
+  const dateStamp = generatedAt.slice(0, 10);
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  res.setHeader('Content-Disposition', `attachment; filename="sjmr-backup-${dateStamp}.json"`);
+  res.send(JSON.stringify(backup, null, 2));
+});
+
 // 8. Sync with Google Sheets API
 app.post('/api/sync-sheets', (req, res) => {
   res.json({ 

@@ -2308,6 +2308,51 @@ btnExportExcel.addEventListener('click', async () => {
   }
 });
 
+const btnDownloadBackup = document.getElementById('btn-download-backup');
+if (btnDownloadBackup) {
+  btnDownloadBackup.addEventListener('click', async () => {
+    const originalText = btnDownloadBackup.innerHTML;
+    btnDownloadBackup.disabled = true;
+    btnDownloadBackup.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังเตรียมข้อมูลสำรอง...';
+
+    try {
+      const response = await fetch('/api/backup/download', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          Requester_Username: state.teacherData ? state.teacherData.username : '',
+          Requester_Role: state.teacherData ? state.teacherData.role : ''
+        })
+      });
+
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({}));
+        throw new Error(error.message || 'ไม่สามารถสร้างข้อมูลสำรองได้');
+      }
+
+      const blob = await response.blob();
+      const disposition = response.headers.get('Content-Disposition') || '';
+      const fileNameMatch = disposition.match(/filename="?([^"]+)"?/i);
+      const fileName = fileNameMatch ? fileNameMatch[1] : `sjmr-backup-${new Date().toISOString().slice(0, 10)}.json`;
+      const downloadUrl = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(downloadUrl);
+      showToast('ดาวน์โหลดข้อมูลสำรองเรียบร้อยแล้ว กรุณาเก็บไฟล์นี้ไว้ในที่ปลอดภัย', 'success');
+    } catch (err) {
+      console.error(err);
+      showToast(err.message || 'เกิดข้อผิดพลาดในการดาวน์โหลดข้อมูลสำรอง', 'error');
+    } finally {
+      btnDownloadBackup.disabled = false;
+      btnDownloadBackup.innerHTML = originalText;
+    }
+  });
+}
+
 // Database Actions (Sync with Google Sheets API)
 if (btnSyncSheets) {
   btnSyncSheets.addEventListener('click', async () => {
