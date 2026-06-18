@@ -3202,26 +3202,44 @@ async function initApp() {
   const btnOpenBananaLink = document.getElementById('btn-open-banana-link');
   
   if (bananaStudentLink) {
-    const localGradingUrl = `${window.location.origin}/api/grade-external`;
-    const fullBananaUrl = `https://gingnai-wq.github.io/banana-planting-edu/?form=${encodeURIComponent(localGradingUrl)}`;
-    bananaStudentLink.value = fullBananaUrl;
-    
-    if (btnOpenBananaLink) {
-      btnOpenBananaLink.href = fullBananaUrl;
-    }
-    
-    if (btnCopyBananaLink) {
-      btnCopyBananaLink.addEventListener('click', () => {
-        navigator.clipboard.writeText(fullBananaUrl).then(() => {
-          btnCopyBananaLink.innerHTML = '<i class="fa-solid fa-check-double"></i> คัดลอกแล้ว!';
-          setTimeout(() => {
-            btnCopyBananaLink.innerHTML = '<i class="fa-regular fa-copy"></i> คัดลอกลิงก์';
-          }, 2000);
-        }).catch(err => {
-          console.error('Copy link failed:', err);
+    const initBananaLink = async () => {
+      let origin = window.location.origin;
+      
+      // If accessed via localhost, try to replace with LAN IP from server info config
+      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        try {
+          const res = await fetch('/api/server-info');
+          const data = await res.json();
+          if (data.ip && data.ip !== 'localhost') {
+            origin = `http://${data.ip}:${data.port}`;
+          }
+        } catch (err) {
+          console.error("Failed to fetch server LAN IP:", err);
+        }
+      }
+
+      const localGradingUrl = `${origin}/api/grade-external`;
+      const fullBananaUrl = `${origin}/banana/index.html?form=${encodeURIComponent(localGradingUrl)}`;
+      bananaStudentLink.value = fullBananaUrl;
+      
+      if (btnOpenBananaLink) {
+        btnOpenBananaLink.href = fullBananaUrl;
+      }
+      
+      if (btnCopyBananaLink) {
+        btnCopyBananaLink.addEventListener('click', () => {
+          navigator.clipboard.writeText(fullBananaUrl).then(() => {
+            btnCopyBananaLink.innerHTML = '<i class="fa-solid fa-check-double"></i> คัดลอกแล้ว!';
+            setTimeout(() => {
+              btnCopyBananaLink.innerHTML = '<i class="fa-regular fa-copy"></i> คัดลอกลิงก์';
+            }, 2000);
+          }).catch(err => {
+            console.error('Copy link failed:', err);
+          });
         });
-      });
-    }
+      }
+    };
+    initBananaLink();
   }
 }
 

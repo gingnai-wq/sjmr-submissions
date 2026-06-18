@@ -2,6 +2,7 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const os = require('os');
 const db = require('./database');
 const excelHelper = require('./excelHelper');
 const AdmZip = require('adm-zip');
@@ -9,6 +10,18 @@ const urlModule = require('url');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Custom CORS middleware to allow student app requests from any origin
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  next();
+});
 
 // Body parser middleware
 app.use(express.json());
@@ -1419,6 +1432,21 @@ app.post('/api/log', (req, res) => {
 
 app.get('/api/logs', (req, res) => {
   res.json(db.getUsageLogs());
+});
+
+app.get('/api/server-info', (req, res) => {
+  const interfaces = os.networkInterfaces();
+  let ipAddress = 'localhost';
+  for (const name of Object.keys(interfaces)) {
+    for (const iface of interfaces[name]) {
+      if (iface.family === 'IPv4' && !iface.internal) {
+        ipAddress = iface.address;
+        break;
+      }
+    }
+    if (ipAddress !== 'localhost') break;
+  }
+  res.json({ ip: ipAddress, port: PORT });
 });
 
 // Start the server
