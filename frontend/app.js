@@ -3219,7 +3219,7 @@ async function initApp() {
       }
 
       const localGradingUrl = `${origin}/api/grade-external`;
-      const fullBananaUrl = `${origin}/banana/index.html?form=${encodeURIComponent(localGradingUrl)}`;
+      const fullBananaUrl = `https://gingnai-wq.github.io/banana-planting-edu/?form=${encodeURIComponent(localGradingUrl)}`;
       bananaStudentLink.value = fullBananaUrl;
       
       if (btnOpenBananaLink) {
