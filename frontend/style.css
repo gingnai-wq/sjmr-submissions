@@ -829,6 +829,10 @@ input:focus, select:focus, textarea:focus {
   gap: 24px;
 }
 
+.teacher-sidebar-panel .glass-card {
+  flex-shrink: 0 !important;
+}
+
 .teacher-sidebar-panel > .admin-action-card:first-child {
   border: 1px solid rgba(16, 185, 129, 0.45);
   box-shadow: 0 12px 34px rgba(16, 185, 129, 0.12);
@@ -856,7 +860,7 @@ input:focus, select:focus, textarea:focus {
 }
 
 /* Scanner-first teacher workspace. The scanner remains the first visual task. */
-@media (min-width: 993px) {
+@media (min-width: 1200px) and (min-height: 700px) {
   body.teacher-mode-active .teacher-controls-grid {
     grid-template-columns: 360px minmax(0, 1fr);
   }
@@ -879,7 +883,7 @@ input:focus, select:focus, textarea:focus {
   }
 }
 
-@media (max-width: 992px) {
+@media (max-width: 1199px) {
   .teacher-controls-grid {
     display: flex;
     flex-direction: column;
@@ -2616,7 +2620,7 @@ body.pastel-theme .theme-toggle-btn:hover {
 }
 
 /* Final scanner-first layout overrides must remain after legacy viewport rules. */
-@media (min-width: 993px) {
+@media (min-width: 1200px) and (min-height: 700px) {
   body.teacher-mode-active .teacher-controls-grid {
     grid-template-columns: 360px minmax(0, 1fr);
   }
