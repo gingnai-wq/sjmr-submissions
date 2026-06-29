@@ -988,6 +988,53 @@ app.post('/api/import-photos-zip', upload.single('zip'), verifyAdmin, (req, res)
   }
 });
 
+// 10.3. Upload and import student submissions files from a ZIP file (Admin/Teacher Web UI)
+app.post('/api/import-submissions-zip', upload.single('zip'), verifyAdmin, (req, res) => {
+  const file = req.file;
+  if (!file) {
+    return res.status(400).json({ success: false, message: 'กรุณาอัปโหลดไฟล์ ZIP (.zip)' });
+  }
+
+  try {
+    const zipPath = file.path;
+    const zip = new AdmZip(zipPath);
+    const zipEntries = zip.getEntries();
+    
+    let copyCount = 0;
+    
+    zipEntries.forEach(entry => {
+      if (entry.isDirectory) return;
+      
+      const fileName = path.basename(entry.entryName);
+      if (fileName.startsWith('._') || fileName.startsWith('~$')) return; // Ignore macOS metadata/temp files
+      
+      // Save it directly into UPLOADS_DIR
+      const targetPath = path.join(UPLOADS_DIR, fileName);
+      const fileContent = entry.getData();
+      fs.writeFileSync(targetPath, fileContent);
+      copyCount++;
+    });
+
+    // Delete temp uploaded zip file
+    if (fs.existsSync(zipPath)) {
+      fs.unlinkSync(zipPath);
+    }
+
+    if (copyCount > 0) {
+      res.json({ success: true, message: `นำเข้าไฟล์งานส่งนักเรียนสำเร็จทั้งหมด ${copyCount} ไฟล์` });
+    } else {
+      res.status(400).json({ success: false, message: 'ไม่พบไฟล์งานส่งใดๆ ในไฟล์ ZIP ที่อัปโหลด' });
+    }
+  } catch (err) {
+    console.error(err);
+    if (file && fs.existsSync(file.path)) {
+      fs.unlinkSync(file.path);
+    }
+    res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาดในการแตกไฟล์ ZIP และบันทึกไฟล์งานส่ง' });
+  }
+});
+
+
 // Helper to recursively fetch JSON, following HTTP/HTTPS redirects
 function downloadJson(url, callback) {
   const lib = url.startsWith('https') ? require('https') : require('http');

@@ -2188,6 +2188,53 @@ if (btnImportPhotosZip && photosZipInput) {
   });
 }
 
+// Database Actions (Import Submissions from ZIP File)
+const btnImportSubmissionsZip = document.getElementById('btn-import-submissions-zip');
+const submissionsZipInput = document.getElementById('submissions-zip-input');
+
+if (btnImportSubmissionsZip && submissionsZipInput) {
+  btnImportSubmissionsZip.addEventListener('click', () => {
+    submissionsZipInput.click(); // Trigger file dialog
+  });
+
+  submissionsZipInput.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const btnOriginalText = btnImportSubmissionsZip.innerHTML;
+    btnImportSubmissionsZip.disabled = true;
+    btnImportSubmissionsZip.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังแตกไฟล์งาน...';
+
+    const formData = new FormData();
+    formData.append('zip', file);
+    if (state.teacherData) {
+      formData.append('Requester_Username', state.teacherData.username);
+      formData.append('Requester_Role', state.teacherData.role);
+    }
+
+    try {
+      const res = await fetch('/api/import-submissions-zip', {
+        method: 'POST',
+        body: formData
+      }).then(r => r.json());
+
+      if (res.success) {
+        showToast(res.message, 'success');
+        await loadTeacherDashboard();
+      } else {
+        showToast(res.message, 'error');
+      }
+    } catch (err) {
+      console.error(err);
+      showToast('เกิดข้อผิดพลาดในการอัปโหลดและนำเข้าไฟล์งานส่งนักเรียน', 'error');
+    } finally {
+      btnImportSubmissionsZip.disabled = false;
+      btnImportSubmissionsZip.innerHTML = btnOriginalText;
+      submissionsZipInput.value = ''; // Reset file input
+    }
+  });
+}
+
 // Database Actions (Google Drive Photos Sync)
 const btnSyncDrivePhotos = document.getElementById('btn-sync-drive-photos');
 const driveSyncModal = document.getElementById('drive-sync-modal');
