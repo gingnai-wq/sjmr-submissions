@@ -1342,7 +1342,7 @@ input:focus, select:focus, textarea:focus {
 }
 
 /* ================= RESPONSIVE DESIGN ================= */
-@media (max-width: 992px) {
+@media (max-width: 1199px) {
   .dashboard-layout {
     grid-template-columns: 1fr;
   }
@@ -1848,7 +1848,7 @@ body.pastel-theme .theme-toggle-btn:hover {
 
 /* ================= COMPACT TEACHER VIEWPORT-LOCK LAYOUT (NEW) ================= */
 
-@media (min-width: 992px) {
+@media (min-width: 1200px) and (min-height: 700px) {
   /* Lock Teacher view to single page (No page-level scroll) */
   #teacher-view.active {
     height: calc(100vh - 100px);
@@ -2032,7 +2032,7 @@ body.pastel-theme .theme-toggle-btn:hover {
 }
 
 /* ================= TEACHER HEIGHT CONSTRAINT ================= */
-@media (min-width: 993px) {
+@media (min-width: 1200px) and (min-height: 700px) {
   body.teacher-mode-active {
     height: 100vh;
     overflow: hidden;

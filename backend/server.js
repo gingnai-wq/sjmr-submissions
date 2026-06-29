@@ -269,6 +269,9 @@ app.post('/api/assignments', (req, res) => {
     return res.status(400).json({ success: false, message: 'รหัสการบ้านนี้มีอยู่แล้วในระบบ' });
   }
 
+  const origin = `${req.protocol}://${req.get('host')}`;
+  const assignLink = `${origin}/?assign=${Assignment_ID}`;
+
   const newAssignment = db.addAssignment({
     Assignment_ID,
     Assignment_Name,
@@ -276,7 +279,7 @@ app.post('/api/assignments', (req, res) => {
     Due_Date,
     Max_Score: Number(Max_Score),
     Class: Class || "ทุกชั้นเรียน",
-    QR_Link: `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${Assignment_ID}`
+    QR_Link: `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(assignLink)}`
   });
 
   res.status(201).json({ success: true, assignment: newAssignment });

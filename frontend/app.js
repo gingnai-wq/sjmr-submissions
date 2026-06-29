@@ -223,10 +223,15 @@ function closeModal(modal) {
 // Parse query params on load
 function checkQueryParams() {
   const urlParams = new URLSearchParams(window.location.search);
-  const assignParam = urlParams.get('assign');
+  const assignParam = urlParams.get('assign') || urlParams.get('assignment_id');
   if (assignParam) {
     state.autoRouteAssignmentId = assignParam;
     console.log(`Auto routing detected for assignment: ${assignParam}`);
+  }
+  const studentIdParam = urlParams.get('student_id') || urlParams.get('studentId');
+  if (studentIdParam) {
+    state.autoLoginStudentId = studentIdParam;
+    console.log(`Auto login detected for student: ${studentIdParam}`);
   }
 }
 
@@ -344,7 +349,8 @@ async function loginStudent(studentId) {
       // Update Student Personal QR Code (NEW)
       const studentQrCodeImg = document.getElementById('student-qr-code-img');
       if (studentQrCodeImg) {
-        studentQrCodeImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${res.student.Student_ID}&ecc=M`;
+        const autoLoginUrl = `${window.location.origin}/?student_id=${res.student.Student_ID}`;
+        studentQrCodeImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(autoLoginUrl)}&ecc=M`;
       }
       
       // Switch layouts
@@ -1567,11 +1573,11 @@ async function processQuickGradeScan(studentId) {
         const qScore = params.get('score');
         if (qScore !== null) activeScore = Number(qScore);
         
-        const qAssign = params.get('assignment_id');
+        const qAssign = params.get('assignment_id') || params.get('assign');
         if (qAssign !== null) activeAssignment = qAssign;
         else activeAssignment = 'BANANA01'; // Default
         
-        const qStudentId = params.get('student_id');
+        const qStudentId = params.get('student_id') || params.get('studentId');
         if (qStudentId) {
           studentId = qStudentId;
         } else {
@@ -2687,7 +2693,8 @@ function printStudentCards(studentList) {
   
   studentList.forEach(s => {
     const avatarSrc = s.Photo ? s.Photo : `https://api.dicebear.com/7.x/adventurer/svg?seed=${s.Student_ID}`;
-    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${s.Student_ID}&ecc=M`;
+    const autoLoginUrl = `${window.location.origin}/?student_id=${s.Student_ID}`;
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(autoLoginUrl)}&ecc=M`;
     
     const card = document.createElement('div');
     card.className = `printable-student-card ${selectedStyle}`;
@@ -3163,6 +3170,8 @@ async function initApp() {
     } catch (e) {
       localStorage.removeItem('auth_teacher');
     }
+  } else if (state.autoLoginStudentId) {
+    loginStudent(state.autoLoginStudentId);
   } else if (authStudentId) {
     loginStudent(authStudentId);
   }
