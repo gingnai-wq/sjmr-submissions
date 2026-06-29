@@ -65,6 +65,10 @@ let state = {
   attendance: [], // For teacher attendance (NEW)
   directoryPage: 1, // Student directory pagination page
   directoryLimit: 50, // Student directory pagination limit
+  studentAssignmentFilter: 'all',
+  studentAssignmentSearch: '',
+  studentAssignmentSubject: '',
+  studentAssignmentSort: 'priority',
   selectedFile: null,
   autoRouteAssignmentId: null, // From URL query ?assign=AXXX
   selectedStudentIds: new Set() // Selected student IDs for bulk actions (NEW)
@@ -96,6 +100,10 @@ const studentEmailDisplay = document.getElementById('student-email-display');
 const btnStudentLogout = document.getElementById('btn-student-logout');
 const studentAssignmentsGrid = document.getElementById('student-assignments-grid');
 const assignmentCount = document.getElementById('assignment-count');
+const studentAssignmentSummary = document.getElementById('student-assignment-summary');
+const studentAssignmentSearch = document.getElementById('student-assignment-search');
+const studentAssignmentSubjectFilter = document.getElementById('student-assignment-subject-filter');
+const studentAssignmentSort = document.getElementById('student-assignment-sort');
 
 // Teacher Elements
 const statTotalStudents = document.getElementById('stat-total-students');
@@ -407,9 +415,12 @@ btnStudentLogout.addEventListener('click', () => {
 // Load assignments for Student
 async function loadStudentAssignments() {
   try {
-    const assignments = await API.getAssignments();
+    const [assignments, subjects] = await Promise.all([
+      API.getAssignments(),
+      state.subjects.length ? Promise.resolve(state.subjects) : API.getSubjects()
+    ]);
     state.assignments = assignments;
-    assignmentCount.textContent = `${assignments.length} งาน`;
+    state.subjects = Array.isArray(subjects) ? subjects : [];
     
     renderStudentAssignments();
   } catch (err) {
@@ -418,47 +429,149 @@ async function loadStudentAssignments() {
   }
 }
 
+function getStudentVisibleAssignments() {
+  const studentClass = state.studentData ? state.studentData.Class : '';
+  return state.assignments.filter(assign => {
+    if (!assign.Class) return true;
+    if (Array.isArray(assign.Class)) {
+      return assign.Class.includes('all') ||
+             assign.Class.includes('ทุกชั้นเรียน') ||
+             assign.Class.some(c => String(c).toLowerCase() === studentClass.toLowerCase());
+    }
+    return assign.Class === 'all' ||
+           assign.Class === 'ทุกชั้นเรียน' ||
+           String(assign.Class).toLowerCase() === studentClass.toLowerCase();
+  });
+}
+
+function getAssignmentViewData(assign) {
+  const submission = state.studentSubmissions.find(s => s.Assignment_ID === assign.Assignment_ID);
+  const dueDateValue = assign.Due_Date
+    ? (String(assign.Due_Date).includes('T') ? String(assign.Due_Date) : `${assign.Due_Date}T23:59:59`)
+    : null;
+  const dueDate = dueDateValue ? new Date(dueDateValue) : null;
+  const now = new Date();
+  const daysRemaining = dueDate && !Number.isNaN(dueDate.getTime())
+    ? Math.ceil((dueDate.getTime() - now.getTime()) / 86400000)
+    : null;
+
+  let group = 'todo';
+  let statusClass = 'status-pending';
+  let statusText = 'ยังไม่ส่งงาน';
+  let badgeClass = 'pending';
+  let priority = 3;
+
+  if (submission && submission.Status === 'Graded') {
+    group = 'done';
+    statusClass = 'status-graded';
+    statusText = 'ตรวจคะแนนแล้ว';
+    badgeClass = 'graded';
+    priority = 5;
+  } else if (submission && submission.Status === 'Need_Correction') {
+    group = 'correction';
+    statusClass = 'status-correction';
+    statusText = 'ต้องแก้ไขและส่งใหม่';
+    badgeClass = 'correction';
+    priority = 0;
+  } else if (submission) {
+    group = 'waiting';
+    statusClass = 'status-submitted';
+    statusText = submission.Status === 'Resubmitted' ? 'ส่งแก้ไขแล้ว (รอตรวจ)' : 'ส่งงานแล้ว (รอตรวจ)';
+    badgeClass = 'submitted';
+    priority = 4;
+  } else if (daysRemaining !== null && daysRemaining < 0) {
+    statusClass = 'status-overdue';
+    statusText = `เลยกำหนด ${Math.abs(daysRemaining)} วัน`;
+    badgeClass = 'overdue';
+    priority = 1;
+  } else if (daysRemaining !== null && daysRemaining <= 3) {
+    statusClass = 'status-due-soon';
+    statusText = daysRemaining === 0 ? 'ครบกำหนดวันนี้' : `เหลือ ${daysRemaining} วัน`;
+    badgeClass = 'due-soon';
+    priority = 2;
+  }
+
+  return { assign, submission, dueDate, daysRemaining, group, statusClass, statusText, badgeClass, priority };
+}
+
+function updateStudentAssignmentControls(items) {
+  const counts = items.reduce((result, item) => {
+    result[item.group] += 1;
+    return result;
+  }, { todo: 0, correction: 0, waiting: 0, done: 0 });
+
+  assignmentCount.textContent = `${items.length} งาน`;
+  document.getElementById('summary-all-count').textContent = items.length;
+  document.getElementById('summary-todo-count').textContent = counts.todo;
+  document.getElementById('summary-correction-count').textContent = counts.correction;
+  document.getElementById('summary-waiting-count').textContent = counts.waiting;
+  document.getElementById('summary-done-count').textContent = counts.done;
+
+  const availableSubjects = [...new Set(items.map(item => item.assign.Subject_ID).filter(Boolean))];
+  const selectedSubject = state.studentAssignmentSubject;
+  studentAssignmentSubjectFilter.innerHTML = '<option value="">ทุกวิชา</option>';
+  availableSubjects.forEach(subjectId => {
+    const subject = state.subjects.find(item => item.Subject_ID === subjectId);
+    const option = document.createElement('option');
+    option.value = subjectId;
+    option.textContent = subject ? subject.Subject_Name : subjectId;
+    studentAssignmentSubjectFilter.appendChild(option);
+  });
+  studentAssignmentSubjectFilter.value = availableSubjects.includes(selectedSubject) ? selectedSubject : '';
+  if (studentAssignmentSubjectFilter.value !== selectedSubject) state.studentAssignmentSubject = '';
+}
+
 // Render Assignments
 function renderStudentAssignments() {
   studentAssignmentsGrid.innerHTML = '';
-  
-  const studentClass = state.studentData ? state.studentData.Class : '';
-  const filtered = state.assignments.filter(assign => {
-    if (!assign.Class) return true;
-    if (Array.isArray(assign.Class)) {
-      return assign.Class.includes('all') || 
-             assign.Class.includes('ทุกชั้นเรียน') || 
-             assign.Class.some(c => String(c).toLowerCase() === studentClass.toLowerCase());
-    }
-    return assign.Class === 'all' || 
-           assign.Class === 'ทุกชั้นเรียน' || 
-           String(assign.Class).toLowerCase() === studentClass.toLowerCase();
+  const allItems = getStudentVisibleAssignments().map(getAssignmentViewData);
+  updateStudentAssignmentControls(allItems);
+
+  const query = state.studentAssignmentSearch.toLowerCase();
+  const filtered = allItems.filter(item => {
+    const subject = state.subjects.find(subjectItem => subjectItem.Subject_ID === item.assign.Subject_ID);
+    const searchableText = [
+      item.assign.Assignment_ID,
+      item.assign.Assignment_Name,
+      item.assign.Subject_ID,
+      subject ? subject.Subject_Name : ''
+    ].join(' ').toLowerCase();
+    const matchesStatus = state.studentAssignmentFilter === 'all' || item.group === state.studentAssignmentFilter;
+    const matchesSubject = !state.studentAssignmentSubject || item.assign.Subject_ID === state.studentAssignmentSubject;
+    return matchesStatus && matchesSubject && (!query || searchableText.includes(query));
   });
-  
-  filtered.forEach(assign => {
-    const submission = state.studentSubmissions.find(s => s.Assignment_ID === assign.Assignment_ID);
-    
-    let statusClass = 'status-pending';
-    let statusText = 'ยังไม่ส่งงาน';
-    let badgeClass = 'pending';
-    let scoreDisplay = '';
-    
-    if (submission) {
-      if (submission.Status === 'Graded') {
-        statusClass = 'status-graded';
-        statusText = 'ตรวจคะแนนแล้ว';
-        badgeClass = 'graded';
-        scoreDisplay = `<span class="score-badge">${submission.Score} / ${assign.Max_Score} คะแนน</span>`;
-      } else if (submission.Status === 'Need_Correction') {
-        statusClass = 'status-correction';
-        statusText = 'แก้ไขใหม่';
-        badgeClass = 'correction';
-      } else {
-        statusClass = 'status-submitted';
-        statusText = 'ส่งงานแล้ว (รอตรวจ)';
-        badgeClass = 'submitted';
-      }
+
+  filtered.sort((a, b) => {
+    if (state.studentAssignmentSort === 'name') {
+      return String(a.assign.Assignment_Name || '').localeCompare(String(b.assign.Assignment_Name || ''), 'th');
     }
+    const dateA = a.dueDate ? a.dueDate.getTime() : Number.MAX_SAFE_INTEGER;
+    const dateB = b.dueDate ? b.dueDate.getTime() : Number.MAX_SAFE_INTEGER;
+    if (state.studentAssignmentSort === 'due-desc') return dateB - dateA;
+    if (state.studentAssignmentSort === 'due-asc') return dateA - dateB;
+    return a.priority - b.priority || dateA - dateB;
+  });
+
+  if (filtered.length === 0) {
+    studentAssignmentsGrid.innerHTML = `
+      <div class="assignment-empty-state">
+        <i class="fa-solid fa-folder-open"></i>
+        <h3>ไม่พบภาระงาน</h3>
+        <p>${allItems.length ? 'ลองเปลี่ยนคำค้นหา ตัวกรอง หรือรายวิชา' : 'ขณะนี้ยังไม่มีงานสำหรับชั้นเรียนของคุณ'}</p>
+        ${allItems.length ? '<button type="button" id="btn-reset-assignment-filters" class="btn btn-secondary">ล้างตัวกรอง</button>' : ''}
+      </div>
+    `;
+    const resetButton = document.getElementById('btn-reset-assignment-filters');
+    if (resetButton) resetButton.addEventListener('click', resetStudentAssignmentFilters);
+    return;
+  }
+
+  filtered.forEach(({ assign, submission, statusClass, statusText, badgeClass }) => {
+    const scoreDisplay = submission && submission.Status === 'Graded'
+      ? `<span class="score-badge">${submission.Score} / ${assign.Max_Score} คะแนน</span>`
+      : '';
+    const subject = state.subjects.find(item => item.Subject_ID === assign.Subject_ID);
+    const subjectName = subject ? subject.Subject_Name : (assign.Subject_ID || 'ไม่ระบุวิชา');
 
     const card = document.createElement('div');
     card.className = `assignment-card ${statusClass}`;
@@ -498,6 +611,7 @@ function renderStudentAssignments() {
           <span class="card-id">${assign.Assignment_ID}</span>
           ${classBadgeHtml}
         </div>
+        <span class="assignment-subject"><i class="fa-solid fa-book-open"></i> ${subjectName}</span>
         <h4 class="card-title" style="margin-top: 6px;">${assign.Assignment_Name}</h4>
       </div>
       <div class="card-bottom">
@@ -594,6 +708,43 @@ function renderStudentAssignments() {
     });
   });
 }
+
+function resetStudentAssignmentFilters() {
+  state.studentAssignmentFilter = 'all';
+  state.studentAssignmentSearch = '';
+  state.studentAssignmentSubject = '';
+  state.studentAssignmentSort = 'priority';
+  studentAssignmentSearch.value = '';
+  studentAssignmentSubjectFilter.value = '';
+  studentAssignmentSort.value = 'priority';
+  document.querySelectorAll('.summary-chip').forEach(chip => {
+    chip.classList.toggle('active', chip.dataset.status === 'all');
+  });
+  renderStudentAssignments();
+}
+
+studentAssignmentSummary.addEventListener('click', (event) => {
+  const chip = event.target.closest('.summary-chip');
+  if (!chip) return;
+  state.studentAssignmentFilter = chip.dataset.status;
+  document.querySelectorAll('.summary-chip').forEach(item => item.classList.toggle('active', item === chip));
+  renderStudentAssignments();
+});
+
+studentAssignmentSearch.addEventListener('input', (event) => {
+  state.studentAssignmentSearch = event.target.value.trim();
+  renderStudentAssignments();
+});
+
+studentAssignmentSubjectFilter.addEventListener('change', (event) => {
+  state.studentAssignmentSubject = event.target.value;
+  renderStudentAssignments();
+});
+
+studentAssignmentSort.addEventListener('change', (event) => {
+  state.studentAssignmentSort = event.target.value;
+  renderStudentAssignments();
+});
 
 // Bind subPreviewModal close controls (NEW)
 const subPreviewModal = document.getElementById('student-submission-preview-modal');
@@ -1340,12 +1491,12 @@ function populateTeacherScannerAssignments(assignments) {
   });
   
   // Set default score when assignment is selected
-  scanAssignSelect.addEventListener('change', () => {
+  scanAssignSelect.onchange = () => {
     const activeAssign = permittedAssignments.find(a => a.Assignment_ID === scanAssignSelect.value);
     if (activeAssign) {
       scanScoreInput.value = activeAssign.Max_Score;
     }
-  });
+  };
 
   if (currentVal && Array.from(scanAssignSelect.options).some(o => o.value === currentVal)) {
     scanAssignSelect.value = currentVal;
@@ -1759,9 +1910,15 @@ btnToggleTeacherScanner.addEventListener('click', () => {
 });
 
 function startTeacherScanner() {
+  const scanType = document.getElementById('scan-type-select').value;
   const activeAssignment = scanAssignSelect.value;
-  if (!activeAssignment) {
+  const activeSubject = document.getElementById('scan-subject-select').value;
+  if (scanType === 'grade' && !activeAssignment) {
     showToast("กรุณาสร้างการบ้านเพื่อใช้ในการตรวจคะแนนก่อน", "error");
+    return;
+  }
+  if (scanType === 'attendance' && !activeSubject) {
+    showToast("กรุณาเลือกวิชาที่จะเช็คชื่อก่อน", "error");
     return;
   }
 
@@ -2162,6 +2319,51 @@ btnExportExcel.addEventListener('click', async () => {
     btnExportExcel.innerHTML = btnOriginalText;
   }
 });
+
+const btnDownloadBackup = document.getElementById('btn-download-backup');
+if (btnDownloadBackup) {
+  btnDownloadBackup.addEventListener('click', async () => {
+    const originalText = btnDownloadBackup.innerHTML;
+    btnDownloadBackup.disabled = true;
+    btnDownloadBackup.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังเตรียมข้อมูลสำรอง...';
+
+    try {
+      const response = await fetch('/api/backup/download', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          Requester_Username: state.teacherData ? state.teacherData.username : '',
+          Requester_Role: state.teacherData ? state.teacherData.role : ''
+        })
+      });
+
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({}));
+        throw new Error(error.message || 'ไม่สามารถสร้างข้อมูลสำรองได้');
+      }
+
+      const blob = await response.blob();
+      const disposition = response.headers.get('Content-Disposition') || '';
+      const fileNameMatch = disposition.match(/filename="?([^"]+)"?/i);
+      const fileName = fileNameMatch ? fileNameMatch[1] : `sjmr-backup-${new Date().toISOString().slice(0, 10)}.json`;
+      const downloadUrl = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(downloadUrl);
+      showToast('ดาวน์โหลดข้อมูลสำรองเรียบร้อยแล้ว กรุณาเก็บไฟล์นี้ไว้ในที่ปลอดภัย', 'success');
+    } catch (err) {
+      console.error(err);
+      showToast(err.message || 'เกิดข้อผิดพลาดในการดาวน์โหลดข้อมูลสำรอง', 'error');
+    } finally {
+      btnDownloadBackup.disabled = false;
+      btnDownloadBackup.innerHTML = originalText;
+    }
+  });
+}
 
 // Database Actions (Sync with Google Sheets API)
 if (btnSyncSheets) {
@@ -3209,6 +3411,8 @@ async function initApp() {
   const bananaStudentLink = document.getElementById('banana-student-link');
   const btnCopyBananaLink = document.getElementById('btn-copy-banana-link');
   const btnOpenBananaLink = document.getElementById('btn-open-banana-link');
+  const genericIntegrationEndpoint = document.getElementById('generic-integration-endpoint');
+  const btnCopyIntegrationEndpoint = document.getElementById('btn-copy-integration-endpoint');
   
   if (bananaStudentLink) {
     const initBananaLink = async () => {
@@ -3228,8 +3432,10 @@ async function initApp() {
       }
 
       const localGradingUrl = `${origin}/api/grade-external`;
+      const integrationUrl = `${origin}/api/integrations/submissions`;
       const fullBananaUrl = `https://gingnai-wq.github.io/banana-planting-edu/?form=${encodeURIComponent(localGradingUrl)}`;
       bananaStudentLink.value = fullBananaUrl;
+      if (genericIntegrationEndpoint) genericIntegrationEndpoint.value = integrationUrl;
       
       if (btnOpenBananaLink) {
         btnOpenBananaLink.href = fullBananaUrl;
@@ -3245,6 +3451,17 @@ async function initApp() {
           }).catch(err => {
             console.error('Copy link failed:', err);
           });
+        });
+      }
+
+      if (btnCopyIntegrationEndpoint) {
+        btnCopyIntegrationEndpoint.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(integrationUrl);
+            showToast('คัดลอก Integration API แล้ว', 'success');
+          } catch (err) {
+            window.prompt('คัดลอก Integration API', integrationUrl);
+          }
         });
       }
     };
@@ -4446,6 +4663,8 @@ async function loadAssignmentsTable() {
       }
 
       const maxScore = assign.Max_Score !== undefined ? assign.Max_Score : '-';
+      const submissionUrl = `${window.location.origin}/?assign=${encodeURIComponent(assign.Assignment_ID)}`;
+      const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=600x600&ecc=M&data=${encodeURIComponent(submissionUrl)}`;
       
       let classDisplay = 'ทุกชั้นเรียน';
       let classDataAttr = 'all';
@@ -4471,6 +4690,18 @@ async function loadAssignmentsTable() {
         <td><strong>${maxScore}</strong></td>
         <td>
           <div class="actions-group" style="display: flex; gap: 8px;">
+            <button class="btn btn-green btn-icon-only btn-assignment-qr"
+                    data-url="${submissionUrl}"
+                    data-qr="${qrImageUrl}"
+                    data-id="${assign.Assignment_ID}"
+                    title="เปิดและดาวน์โหลด QR สำหรับส่งงาน">
+              <i class="fa-solid fa-qrcode"></i>
+            </button>
+            <button class="btn btn-blue btn-icon-only btn-copy-assignment-link"
+                    data-url="${submissionUrl}"
+                    title="คัดลอกลิงก์ส่งงาน">
+              <i class="fa-solid fa-link"></i>
+            </button>
             <button class="btn btn-secondary btn-icon-only btn-edit-assign-trigger" 
                     data-id="${assign.Assignment_ID}"
                     data-name="${assign.Assignment_Name || ''}"
@@ -4498,6 +4729,63 @@ async function loadAssignmentsTable() {
     assignmentsTableBody.innerHTML = '<tr><td colspan="7" class="text-center text-red">เกิดข้อผิดพลาดในการแสดงตารางภาระงาน</td></tr>';
   }
 }
+
+document.getElementById('panel-assignments-view').addEventListener('click', async (event) => {
+  const copyButton = event.target.closest('.btn-copy-assignment-link');
+  if (copyButton) {
+    try {
+      await navigator.clipboard.writeText(copyButton.dataset.url);
+      showToast('คัดลอกลิงก์ส่งงานแล้ว', 'success');
+    } catch (err) {
+      window.prompt('คัดลอกลิงก์ส่งงานนี้', copyButton.dataset.url);
+    }
+    return;
+  }
+
+  const qrButton = event.target.closest('.btn-assignment-qr');
+  if (qrButton) {
+    const popup = window.open('', '_blank', 'width=720,height=820');
+    if (!popup) {
+      showToast('เบราว์เซอร์บล็อกหน้าต่าง QR กรุณาอนุญาต Pop-up', 'error');
+      return;
+    }
+    const assignmentName = state.assignments.find(item => item.Assignment_ID === qrButton.dataset.id)?.Assignment_Name || qrButton.dataset.id;
+    popup.document.write(`
+      <!doctype html>
+      <html lang="th">
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>QR ส่งงาน ${qrButton.dataset.id}</title>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 0; padding: 28px; text-align: center; color: #172033; }
+          .sheet { max-width: 620px; margin: auto; border: 2px solid #e5e7eb; border-radius: 20px; padding: 28px; }
+          img { width: min(82vw, 480px); height: auto; }
+          h1 { font-size: 1.5rem; margin-bottom: 6px; }
+          p { color: #64748b; overflow-wrap: anywhere; }
+          .actions { display: flex; gap: 10px; justify-content: center; margin-top: 18px; }
+          button, a { border: 0; border-radius: 10px; padding: 11px 16px; background: #2563eb; color: white; text-decoration: none; cursor: pointer; }
+          @media print { .actions { display: none; } body { padding: 0; } .sheet { border: 0; } }
+        </style>
+      </head>
+      <body>
+        <main class="sheet">
+          <h1>${assignmentName}</h1>
+          <strong>${qrButton.dataset.id}</strong>
+          <p>สแกนเพื่อเปิดงานนี้โดยตรง แล้วเข้าสู่ระบบนักเรียนเพื่อส่งงาน</p>
+          <img src="${qrButton.dataset.qr}" alt="QR ส่งงาน ${qrButton.dataset.id}">
+          <p>${qrButton.dataset.url}</p>
+          <div class="actions">
+            <button onclick="window.print()">พิมพ์ QR</button>
+            <a href="${qrButton.dataset.qr}" download="QR-${qrButton.dataset.id}.png">ดาวน์โหลดรูป QR</a>
+          </div>
+        </main>
+      </body>
+      </html>
+    `);
+    popup.document.close();
+  }
+});
 
 // Modal bindings for editing assignments
 if (assignmentEditForm) {
@@ -4689,4 +4977,3 @@ setInterval(() => {
     }
   }
 }, 5000); // Check every 5 seconds
-
