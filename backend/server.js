@@ -335,7 +335,7 @@ app.post('/api/assignments/delete', (req, res) => {
 });
 
 // 4. Submit assignment (Student)
-app.post('/api/submit', upload.single('file'), (req, res) => {
+app.post('/api/submit', upload.single('file'), async (req, res) => {
   const { Student_ID, Assignment_ID, Notes, Link } = req.body;
   const file = req.file;
 
@@ -350,7 +350,63 @@ app.post('/api/submit', upload.single('file'), (req, res) => {
     return res.status(404).json({ success: false, message: 'ไม่พบรหัสนักเรียน' });
   }
 
-  const fileLink = file ? `/uploads/${file.filename}` : (Link || '');
+  let fileLink = Link || '';
+
+  if (file) {
+    let uploadedToDrive = false;
+    const config = db.getConfig();
+    if (config.scriptUrl && config.folderId) {
+      try {
+        console.log(`Uploading submission file "${file.originalname}" to Google Drive...`);
+        const fileBuffer = fs.readFileSync(file.path);
+        const base64Content = fileBuffer.toString('base64');
+        
+        const uploadBody = {
+          action: "uploadFile",
+          folderId: config.folderId,
+          filename: `${student.Student_ID}_${Assignment_ID}_${file.originalname}`,
+          content: base64Content,
+          mimeType: file.mimetype
+        };
+        
+        const driveRes = await fetch(config.scriptUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(uploadBody)
+        });
+        
+        if (driveRes.ok) {
+          const driveResult = await driveRes.json();
+          if (driveResult.success && driveResult.url) {
+            fileLink = driveResult.url;
+            uploadedToDrive = true;
+            console.log('Successfully uploaded to Google Drive. Link:', fileLink);
+          } else {
+            console.warn('Apps Script upload failed, falling back to local storage:', driveResult.error);
+          }
+        } else {
+          console.warn(`Apps Script HTTP error ${driveRes.status}, falling back to local storage`);
+        }
+      } catch (err) {
+        console.error('Error uploading file to Google Drive, falling back to local:', err.message);
+      }
+    }
+    
+    if (uploadedToDrive) {
+      // Delete temp local file
+      try {
+        if (fs.existsSync(file.path)) {
+          fs.unlinkSync(file.path);
+        }
+      } catch (unlinkErr) {
+        console.error('Error deleting temp file:', unlinkErr.message);
+      }
+    } else {
+      // Fallback: use local storage path and do NOT delete the local file
+      fileLink = `/uploads/${file.filename}`;
+    }
+  }
+
   const submissions = db.getSubmissions();
   const existingSubIdx = submissions.findIndex(s => s.Student_ID === Student_ID && s.Assignment_ID === Assignment_ID);
 
@@ -366,7 +422,7 @@ app.post('/api/submit', upload.single('file'), (req, res) => {
 
   if (existingSubIdx !== -1) {
     const oldFile = submissions[existingSubIdx].File_Link;
-    if (file && oldFile && oldFile.startsWith('/uploads/')) {
+    if (oldFile && oldFile.startsWith('/uploads/')) {
       const oldPath = path.join(__dirname, '..', oldFile);
       if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
     }
