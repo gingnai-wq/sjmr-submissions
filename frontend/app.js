@@ -1290,7 +1290,51 @@ function populateSubjectsDropdowns(subjects) {
       opt.textContent = `${s.Subject_ID} - ${s.Subject_Name}`;
       newAssignSub.appendChild(opt);
     });
-    newAssignSub.onchange = updateSuggestedAssignmentId;
+    
+    // Add CUSTOM_NEW option
+    const optNew = document.createElement('option');
+    optNew.value = 'CUSTOM_NEW';
+    optNew.textContent = '+ กำหนดรายวิชาเอง (สร้างวิชาใหม่)...';
+    optNew.style.fontWeight = 'bold';
+    newAssignSub.appendChild(optNew);
+
+    newAssignSub.onchange = () => {
+      const customInputs = document.getElementById('custom-subject-inputs');
+      const newAssignId = document.getElementById('new-assign-id');
+      const newSubjectId = document.getElementById('new-subject-id');
+      const newSubjectName = document.getElementById('new-subject-name');
+      
+      if (newAssignSub.value === 'CUSTOM_NEW') {
+        if (customInputs) customInputs.style.display = 'block';
+        if (newSubjectId) newSubjectId.required = true;
+        if (newSubjectName) newSubjectName.required = true;
+        if (newAssignId) {
+          const val = (newSubjectId ? newSubjectId.value.trim().toUpperCase() : '') || 'S004';
+          newAssignId.value = `${val}-A01`;
+        }
+      } else {
+        if (customInputs) customInputs.style.display = 'none';
+        if (newSubjectId) { newSubjectId.required = false; newSubjectId.value = ''; }
+        if (newSubjectName) { newSubjectName.required = false; newSubjectName.value = ''; }
+        updateSuggestedAssignmentId();
+      }
+    };
+
+    // Attach listener to custom subject inputs if not already done
+    const newSubjectId = document.getElementById('new-subject-id');
+    if (newSubjectId && !newSubjectId.dataset.hasListener) {
+      newSubjectId.dataset.hasListener = 'true';
+      newSubjectId.addEventListener('input', () => {
+        if (newAssignSub.value === 'CUSTOM_NEW') {
+          const val = newSubjectId.value.trim().toUpperCase() || 'S004';
+          const newAssignId = document.getElementById('new-assign-id');
+          if (newAssignId) {
+            newAssignId.value = `${val}-A01`;
+          }
+        }
+      });
+    }
+
     updateSuggestedAssignmentId();
   }
   
@@ -2027,7 +2071,44 @@ createAssignmentForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const id = document.getElementById('new-assign-id').value.trim();
   const name = document.getElementById('new-assign-name').value.trim();
-  const subjectId = document.getElementById('new-assign-subject').value;
+  let subjectId = document.getElementById('new-assign-subject').value;
+  
+  if (subjectId === 'CUSTOM_NEW') {
+    const customSubId = document.getElementById('new-subject-id').value.trim().toUpperCase();
+    const customSubName = document.getElementById('new-subject-name').value.trim();
+    if (!customSubId || !customSubName) {
+      showToast('กรุณาระบุรหัสวิชาและชื่อวิชาใหม่', 'error');
+      return;
+    }
+    
+    try {
+      const subRes = await fetch('/api/subjects', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          Subject_ID: customSubId,
+          Subject_Name: customSubName,
+          Teacher_Username: state.teacherData ? state.teacherData.username : 'admin',
+          Department: 'ทั่วไป',
+          Classes: 'ทุกชั้นเรียน',
+          Requester_Username: state.teacherData ? state.teacherData.username : '',
+          Requester_Role: state.teacherData ? state.teacherData.role : ''
+        })
+      }).then(r => r.json());
+      
+      if (!subRes.success) {
+        showToast(`สร้างวิชาใหม่ล้มเหลว: ${subRes.message}`, 'error');
+        return;
+      }
+      
+      subjectId = customSubId;
+      showToast(`สร้างรายวิชา ${customSubName} สำเร็จ`, 'success');
+    } catch (err) {
+      console.error(err);
+      showToast('เกิดข้อผิดพลาดในการสร้างรายวิชาใหม่', 'error');
+      return;
+    }
+  }
   
   let assignClass = 'ทุกชั้นเรียน';
   const allCheckbox = document.getElementById('new-class-all');
@@ -2054,6 +2135,8 @@ createAssignmentForm.addEventListener('submit', async (e) => {
     if (res.success) {
       showToast('สร้างใบงานการบ้านเรียบร้อย', 'success');
       createAssignmentForm.reset();
+      const customInputs = document.getElementById('custom-subject-inputs');
+      if (customInputs) customInputs.style.display = 'none';
       await loadTeacherDashboard();
     } else {
       showToast(res.message, 'error');

@@ -136,5 +136,25 @@
     "Max_Score": 5,
     "Class": "ป.5/3",
     "QR_Link": "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=A1"
+  },
+  {
+    "Assignment_ID": "BANANA01",
+    "Assignment_Name": "แบบทดสอบอัลกอริทึมการปลูกกล้วย (กล้วยหรรษา)",
+    "Subject_ID": "S001",
+    "Due_Date": "2026-06-17",
+    "Max_Score": 5,
+    "Class": "ป.4"
+  },
+  {
+    "Assignment_ID": "S003-A01",
+    "Assignment_Name": "บุคคลสำคัญทางประวัติศาสตร์",
+    "Subject_ID": "S003",
+    "Due_Date": "2026-06-29",
+    "Max_Score": 5,
+    "Class": [
+      "ม.2/2"
+    ],
+    "Submission_URL": "https://sjmr-submissions.onrender.com/?assign=S003-A01",
+    "QR_Link": "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https%3A%2F%2Fsjmr-submissions.onrender.com%2F%3Fassign%3DS003-A01"
   }
 ]
