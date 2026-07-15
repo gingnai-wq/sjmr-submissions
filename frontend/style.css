@@ -877,8 +877,8 @@ input:focus, select:focus, textarea:focus {
   }
 
   body.teacher-mode-active .teacher-sidebar-panel > .admin-action-card:first-child {
-    position: sticky;
-    top: 0;
+    position: relative;
+    top: auto;
     z-index: 4;
   }
 }
