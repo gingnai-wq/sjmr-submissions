@@ -262,6 +262,10 @@
                       <option value="Submitted">ส่งแล้ว (รอตรวจ)</option>
                       <option value="Graded">ตรวจแล้ว</option>
                     </select>
+
+                    <button type="button" id="btn-reset-teacher-filters" class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.82rem;" title="ล้างตัวกรองทั้งหมด">
+                      <i class="fa-solid fa-rotate-left"></i> แสดงข้อมูลทั้งหมด
+                    </button>
                   </div>
                 </div>
 
@@ -727,12 +731,12 @@
                   </div>
                   <div id="custom-subject-inputs" style="display: none; border: 1px dashed var(--glass-border); padding: 12px; border-radius: 6px; margin-top: 8px; background: rgba(255,255,255,0.02);">
                     <div class="input-group" style="margin-bottom: 8px;">
-                      <label for="new-subject-id">รหัสวิชาใหม่ (เช่น S004)</label>
-                      <input type="text" id="new-subject-id" placeholder="S004" autocomplete="off">
+                      <label for="new-assign-custom-sub-id">รหัสวิชาใหม่ (เช่น S004)</label>
+                      <input type="text" id="new-assign-custom-sub-id" placeholder="S004" autocomplete="off">
                     </div>
                     <div class="input-group" style="margin-bottom: 0;">
-                      <label for="new-subject-name">ชื่อวิชาใหม่ (เช่น ภาษาไทย)</label>
-                      <input type="text" id="new-subject-name" placeholder="ภาษาไทย" autocomplete="off">
+                      <label for="new-assign-custom-sub-name">ชื่อวิชาใหม่ (เช่น ภาษาไทย)</label>
+                      <input type="text" id="new-assign-custom-sub-name" placeholder="ภาษาไทย" autocomplete="off">
                     </div>
                   </div>
                   <div class="input-group">
@@ -753,6 +757,50 @@
                   </div>
                   <button type="submit" class="btn btn-purple btn-block">
                     <i class="fa-solid fa-plus"></i> เพิ่มการบ้านใหม่
+                  </button>
+                </form>
+              </div>
+
+              <!-- Create Subject Card (NEW) -->
+              <div class="glass-card admin-action-card">
+                <h3><i class="fa-solid fa-book-medical text-purple"></i> สร้างรายวิชาเรียนใหม่</h3>
+                <form id="sidebar-add-subject-form" class="admin-form">
+                  <div class="input-group">
+                    <label for="sidebar-new-subject-id">รหัสวิชา (เช่น S005)</label>
+                    <input type="text" id="sidebar-new-subject-id" placeholder="เช่น S005" required autocomplete="off">
+                  </div>
+                  <div class="input-group">
+                    <label for="sidebar-new-subject-name">ชื่อวิชา (เช่น ภาษาอังกฤษ)</label>
+                    <input type="text" id="sidebar-new-subject-name" placeholder="ระบุชื่อวิชา..." required autocomplete="off">
+                  </div>
+                  <div class="input-group">
+                    <label for="sidebar-new-subject-department">กลุ่มสาระการเรียนรู้</label>
+                    <select id="sidebar-new-subject-department" required style="background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--glass-border); padding: 8px; border-radius: 6px; width: 100%;">
+                      <option value="วิทยาศาสตร์และเทคโนโลยี">วิทยาศาสตร์และเทคโนโลยี</option>
+                      <option value="คณิตศาสตร์">คณิตศาสตร์</option>
+                      <option value="ภาษาไทย">ภาษาไทย</option>
+                      <option value="สังคมศึกษา ศาสนา และวัฒนธรรม">สังคมศึกษา ศาสนา และวัฒนธรรม</option>
+                      <option value="ภาษาต่างประเทศ">ภาษาต่างประเทศ</option>
+                      <option value="สุขศึกษาและพลศึกษา">สุขศึกษาและพลศึกษา</option>
+                      <option value="ศิลปะ">ศิลปะ</option>
+                      <option value="การงานอาชีพ">การงานอาชีพ</option>
+                      <option value="กิจกรรมพัฒนาผู้เรียน">กิจกรรมพัฒนาผู้เรียน</option>
+                    </select>
+                  </div>
+                  <div class="input-group">
+                    <label>ระดับชั้นเรียนที่เรียนวิชานี้</label>
+                    <div id="sidebar-new-subject-classes-checkboxes" class="class-checkboxes-container">
+                      <!-- Populated dynamically -->
+                    </div>
+                  </div>
+                  <div class="input-group">
+                    <label for="sidebar-new-subject-teacher">คุณครูผู้สอนประจำวิชา</label>
+                    <select id="sidebar-new-subject-teacher" required style="background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--glass-border); padding: 8px; border-radius: 6px; width: 100%;">
+                      <!-- Options loaded dynamically -->
+                    </select>
+                  </div>
+                  <button type="submit" class="btn btn-purple btn-block">
+                    <i class="fa-solid fa-plus"></i> เพิ่มรายวิชาใหม่
                   </button>
                 </form>
               </div>

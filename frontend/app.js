@@ -1610,6 +1610,20 @@ if (filterStatus) {
   filterStatus.addEventListener('change', renderSubmissionsTable);
 }
 
+const btnResetTeacherFilters = document.getElementById('btn-reset-teacher-filters');
+if (btnResetTeacherFilters) {
+  btnResetTeacherFilters.addEventListener('click', () => {
+    if (teacherSearch) teacherSearch.value = '';
+    if (filterSubject) filterSubject.value = '';
+    updateFilterAssignments();
+    if (filterAssignment) filterAssignment.value = '';
+    updateFilterClasses();
+    if (filterClass) filterClass.value = '';
+    if (filterStatus) filterStatus.value = '';
+    renderSubmissionsTable();
+  });
+}
+
 // Render Submissions Table
 function renderSubmissionsTable() {
   submissionsTableBody.innerHTML = '';
