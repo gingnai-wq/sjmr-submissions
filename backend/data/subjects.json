@@ -38,5 +38,12 @@
     "Subject_ID": "P004-3",
     "Subject_Name": "วิทยาการคำนวณ ป.403",
     "Teacher_Username": "admin"
+  },
+  {
+    "Subject_ID": "S011",
+    "Subject_Name": "วิทยาการคำนวน ป.402",
+    "Teacher_Username": "admin",
+    "Department": "ทั่วไป",
+    "Classes": "ทุกชั้นเรียน"
   }
 ]

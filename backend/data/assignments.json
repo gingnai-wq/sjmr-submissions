@@ -47,6 +47,7 @@
   {
     "Assignment_ID": "A001",
     "Assignment_Name": "Coding Project 1 (การเขียนโค้ดเบื้องต้น)",
+    "Subject_ID": "S001",
     "Due_Date": "2026-06-15",
     "Max_Score": 10,
     "QR_Link": "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=A001"
@@ -107,7 +108,8 @@
   },
   {
     "Assignment_ID": "A002",
-    "Assignment_Name": "Scratch Game Creation (สร้างเกมสร้างสรรค์ด้วย Scratch)",
+    "Assignment_Name": "Scratch Game Creation (สร้างเกมสร้างสรรค์ด้วย Scratch - เกมเก็บดาว)",
+    "Subject_ID": "S001",
     "Due_Date": "2026-06-22",
     "Max_Score": 20,
     "QR_Link": "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=A002"
@@ -115,6 +117,7 @@
   {
     "Assignment_ID": "A003",
     "Assignment_Name": "HTML Personal Website (สร้างเว็บไซต์แนะนำตัว)",
+    "Subject_ID": "S001",
     "Due_Date": "2026-06-30",
     "Max_Score": 15,
     "QR_Link": "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=A003"
@@ -156,5 +159,17 @@
     ],
     "Submission_URL": "https://sjmr-submissions.onrender.com/?assign=S003-A01",
     "QR_Link": "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https%3A%2F%2Fsjmr-submissions.onrender.com%2F%3Fassign%3DS003-A01"
+  },
+  {
+    "Assignment_ID": "S011-A01",
+    "Assignment_Name": "สอบเขียนตอนที่ 2 402",
+    "Subject_ID": "S011",
+    "Due_Date": "2026-07-16",
+    "Max_Score": 5,
+    "Class": [
+      "ป.4/2"
+    ],
+    "Submission_URL": "https://sjmr-submissions.onrender.com/?assign=S011-A01",
+    "QR_Link": "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https%3A%2F%2Fsjmr-submissions.onrender.com%2F%3Fassign%3DS011-A01"
   }
 ]

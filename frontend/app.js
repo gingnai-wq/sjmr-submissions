@@ -1100,7 +1100,7 @@ function stopStudentScanner() {
 function hasSubjectAccess(subjectId) {
   if (!state.teacherData) return false;
   if (state.teacherData.role === 'Admin') return true;
-  if (!subjectId) return false;
+  if (!subjectId) return true;
   
   const subj = Array.isArray(state.subjects) ? state.subjects.find(s => s && s.Subject_ID === subjectId) : null;
   if (!subj) return false;
@@ -1277,6 +1277,55 @@ function updateSuggestedAssignmentId() {
 
 // Populate subject select dropdowns (NEW)
 function populateSubjectsDropdowns(subjects) {
+  // Auto-populate next sequential ID for sidebar-new-subject-id
+  let nextNum = 1;
+  if (subjects && subjects.length > 0) {
+    const sIds = subjects
+      .map(s => {
+        const match = s.Subject_ID.match(/^S(\d+)$/i);
+        return match ? parseInt(match[1], 10) : null;
+      })
+      .filter(n => n !== null);
+    if (sIds.length > 0) {
+      nextNum = Math.max(...sIds) + 1;
+    }
+  }
+  const generatedId = `S${String(nextNum).padStart(3, '0')}`;
+  const sidebarSubId = document.getElementById('sidebar-new-subject-id');
+  if (sidebarSubId && !sidebarSubId.value) {
+    sidebarSubId.value = generatedId;
+  }
+
+  // Populate sidebar subject teacher dropdown
+  const sidebarTeacher = document.getElementById('sidebar-new-subject-teacher');
+  if (sidebarTeacher) {
+    const currentVal = sidebarTeacher.value;
+    sidebarTeacher.innerHTML = '<option value="any">ครูทุกคน (วิชากิจกรรม เช่น ลูกเสือ/ชุมนุม)</option>';
+    if (state.teachersList) {
+      state.teachersList.forEach(t => {
+        const opt = document.createElement('option');
+        opt.value = t.username;
+        opt.textContent = `${t.fullName} (${t.username})`;
+        sidebarTeacher.appendChild(opt);
+      });
+      sidebarTeacher.value = currentVal || 'any';
+    } else {
+      fetch('/api/teachers')
+        .then(r => r.json())
+        .then(teachersList => {
+          state.teachersList = teachersList;
+          teachersList.forEach(t => {
+            const opt = document.createElement('option');
+            opt.value = t.username;
+            opt.textContent = `${t.fullName} (${t.username})`;
+            sidebarTeacher.appendChild(opt);
+          });
+          sidebarTeacher.value = currentVal || 'any';
+        })
+        .catch(e => console.error('Failed to load teachers for sidebar subject:', e));
+    }
+  }
+
   const permittedSubjects = subjects.filter(s => hasSubjectAccess(s.Subject_ID));
   const newAssignSub = document.getElementById('new-assign-subject');
   const scanSub = document.getElementById('scan-subject-select');
@@ -1301,8 +1350,8 @@ function populateSubjectsDropdowns(subjects) {
     newAssignSub.onchange = () => {
       const customInputs = document.getElementById('custom-subject-inputs');
       const newAssignId = document.getElementById('new-assign-id');
-      const newSubjectId = document.getElementById('new-subject-id');
-      const newSubjectName = document.getElementById('new-subject-name');
+      const newSubjectId = document.getElementById('new-assign-custom-sub-id');
+      const newSubjectName = document.getElementById('new-assign-custom-sub-name');
       
       if (newAssignSub.value === 'CUSTOM_NEW') {
         if (customInputs) customInputs.style.display = 'block';
@@ -1321,7 +1370,7 @@ function populateSubjectsDropdowns(subjects) {
     };
 
     // Attach listener to custom subject inputs if not already done
-    const newSubjectId = document.getElementById('new-subject-id');
+    const newSubjectId = document.getElementById('new-assign-custom-sub-id');
     if (newSubjectId && !newSubjectId.dataset.hasListener) {
       newSubjectId.dataset.hasListener = 'true';
       newSubjectId.addEventListener('input', () => {
@@ -1410,6 +1459,7 @@ function populateAssignClassesCheckboxes() {
   setupCheckboxes('edit-assign-class-checkboxes', 'edit');
   setupCheckboxes('new-subject-classes-checkboxes', 'new-subject');
   setupCheckboxes('edit-subject-classes-checkboxes', 'edit-subject');
+  setupCheckboxes('sidebar-new-subject-classes-checkboxes', 'sidebar-new-subject');
 }
 
 // Populate filters dropdowns (Hierarchical cascading)
@@ -2074,8 +2124,8 @@ createAssignmentForm.addEventListener('submit', async (e) => {
   let subjectId = document.getElementById('new-assign-subject').value;
   
   if (subjectId === 'CUSTOM_NEW') {
-    const customSubId = document.getElementById('new-subject-id').value.trim().toUpperCase();
-    const customSubName = document.getElementById('new-subject-name').value.trim();
+    const customSubId = document.getElementById('new-assign-custom-sub-id').value.trim().toUpperCase();
+    const customSubName = document.getElementById('new-assign-custom-sub-name').value.trim();
     if (!customSubId || !customSubName) {
       showToast('กรุณาระบุรหัสวิชาและชื่อวิชาใหม่', 'error');
       return;
@@ -4574,6 +4624,63 @@ if (addSubjectForm) {
         logAgentEvent('create_subject', 'Teacher', { subjectId: id, teacher });
         closeModal(addSubjectModal);
         
+        await loadTeacherDashboard(); 
+        await loadSubjectsTable();
+      } else {
+        showToast(res.message, 'error');
+      }
+    } catch (err) {
+      console.error(err);
+      showToast('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์', 'error');
+    } finally {
+      btnSubmit.disabled = false;
+      btnSubmit.innerHTML = btnOriginalText;
+    }
+  });
+}
+
+const sidebarAddSubjectForm = document.getElementById('sidebar-add-subject-form');
+if (sidebarAddSubjectForm) {
+  sidebarAddSubjectForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('sidebar-new-subject-id').value.trim();
+    const name = document.getElementById('sidebar-new-subject-name').value.trim();
+    const teacher = document.getElementById('sidebar-new-subject-teacher').value;
+    const department = document.getElementById('sidebar-new-subject-department').value;
+    
+    let subjectClasses = 'ทุกชั้นเรียน';
+    const allCheckbox = document.getElementById('sidebar-new-subject-class-all');
+    if (allCheckbox && !allCheckbox.checked) {
+      const checkedBoxes = document.querySelectorAll('.sidebar-new-subject-class-checkbox:checked');
+      if (checkedBoxes.length > 0) {
+        subjectClasses = Array.from(checkedBoxes).map(cb => cb.value);
+      }
+    }
+    
+    const btnSubmit = sidebarAddSubjectForm.querySelector('button[type="submit"]');
+    const btnOriginalText = btnSubmit.innerHTML;
+    btnSubmit.disabled = true;
+    btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังบันทึก...';
+    
+    try {
+      const res = await fetch('/api/subjects', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          Subject_ID: id,
+          Subject_Name: name,
+          Teacher_Username: teacher,
+          Department: department,
+          Classes: subjectClasses,
+          Requester_Username: state.teacherData ? state.teacherData.username : '',
+          Requester_Role: state.teacherData ? state.teacherData.role : ''
+        })
+      }).then(r => r.json());
+      
+      if (res.success) {
+        showToast(res.message, 'success');
+        logAgentEvent('create_subject', 'Teacher', { subjectId: id, teacher });
+        sidebarAddSubjectForm.reset();
         await loadTeacherDashboard(); 
         await loadSubjectsTable();
       } else {
