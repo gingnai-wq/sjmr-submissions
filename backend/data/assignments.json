@@ -171,5 +171,17 @@
     ],
     "Submission_URL": "https://sjmr-submissions.onrender.com/?assign=S011-A01",
     "QR_Link": "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https%3A%2F%2Fsjmr-submissions.onrender.com%2F%3Fassign%3DS011-A01"
+  },
+  {
+    "Assignment_ID": "S0010-A02",
+    "Assignment_Name": "สร้างเกมสร้างสรรค์ด้วย Scratch (เกมเก็บดาว - ม.1/1)",
+    "Subject_ID": "S0010",
+    "Due_Date": "2026-08-05",
+    "Max_Score": 10,
+    "Class": [
+      "ม.1/1"
+    ],
+    "Submission_URL": "https://sjmr-submissions.onrender.com/?assign=S0010-A02",
+    "QR_Link": "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https%3A%2F%2Fsjmr-submissions.onrender.com%2F%3Fassign%3DS0010-A02"
   }
 ]
