@@ -12,37 +12,37 @@
   {
     "Subject_ID": "S002",
     "Subject_Name": "คณิตศาสตร์เบื้องต้น",
-    "Teacher_Username": "admin"
+    "Teacher_Username": "any"
   },
   {
     "Subject_ID": "S006",
     "Subject_Name": "วิทยาการคำนวณ ป.5",
-    "Teacher_Username": "Ging"
+    "Teacher_Username": "any"
   },
   {
     "Subject_ID": "S0010",
     "Subject_Name": "วิทยาการคำนวณ ม.1",
-    "Teacher_Username": "Krugingcom"
+    "Teacher_Username": "any"
   },
   {
     "Subject_ID": "J001",
     "Subject_Name": "คัดคำศัพธ์",
-    "Teacher_Username": "admin"
+    "Teacher_Username": "any"
   },
   {
     "Subject_ID": "S001",
     "Subject_Name": "วิทยาการคำนวณ",
-    "Teacher_Username": "admin"
+    "Teacher_Username": "any"
   },
   {
     "Subject_ID": "P004-3",
     "Subject_Name": "วิทยาการคำนวณ ป.403",
-    "Teacher_Username": "admin"
+    "Teacher_Username": "any"
   },
   {
     "Subject_ID": "S011",
     "Subject_Name": "วิทยาการคำนวน ป.402",
-    "Teacher_Username": "admin",
+    "Teacher_Username": "any",
     "Department": "ทั่วไป",
     "Classes": "ทุกชั้นเรียน"
   }

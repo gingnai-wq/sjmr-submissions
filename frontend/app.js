@@ -1099,22 +1099,7 @@ function stopStudentScanner() {
 // Helper to determine if the logged-in teacher has access to a specific subject (NEW)
 function hasSubjectAccess(subjectId) {
   if (!state.teacherData) return false;
-  if (state.teacherData.role === 'Admin') return true;
-  if (!subjectId) return true;
-  
-  const subj = Array.isArray(state.subjects) ? state.subjects.find(s => s && s.Subject_ID === subjectId) : null;
-  if (!subj) return false;
-  
-  const teacherUsername = subj.Teacher_Username || '';
-  const subjectName = subj.Subject_Name || '';
-  
-  if (teacherUsername === 'any' || 
-      subjectName.includes('ชุมนุม') || 
-      subjectName.includes('ลูกเสือ')) {
-    return true;
-  }
-  
-  return teacherUsername.toLowerCase() === (state.teacherData.username || '').toLowerCase();
+  return true;
 }
 
 // Helper to apply UI visibility rules based on the user's role (NEW)
