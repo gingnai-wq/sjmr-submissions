@@ -378,6 +378,8 @@ async function syncDrive() {
   }
 }
 
+let dbDirty = false;
+
 function pushToDrive() {
   dbDirty = true;
   forcePushToDrive().catch(err => console.error('Immediate push to drive failed:', err.message));
