@@ -733,5 +733,6 @@ module.exports = {
   },
   
   reload: loadData,
-  syncDrive: syncDrive
+  syncDrive: syncDrive,
+  forcePushToDrive: forcePushToDrive
 };
