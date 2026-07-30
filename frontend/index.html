@@ -432,64 +432,67 @@
                 </div>
               </div>
 
-              <!-- View 3.2: Assignment Management Table (NEW) -->
+              <!-- View 3.2: Assignment Management Table (NEW - Compact & Spacious) -->
               <div id="panel-assignments-view" class="tab-view">
-                <div class="panel-header" style="margin-top: 15px; display: flex; flex-direction: column; gap: 12px; align-items: stretch;">
+                <div class="panel-header" style="margin-top: 4px; display: flex; flex-direction: column; gap: 6px; align-items: stretch;">
                   <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <h3><i class="fa-solid fa-list-check text-purple"></i> ทะเบียนภาระงาน (Assignment Management)</h3>
-                    <span id="manage-assign-counter" class="badge badge-purple" style="font-size: 0.85rem; padding: 6px 12px;">กำลังโหลด...</span>
+                    <h4 style="margin: 0; font-size: 1rem; font-weight: 600; color: var(--text-primary);">
+                      <i class="fa-solid fa-list-check text-purple"></i> ทะเบียนภาระงาน (Assignment Management)
+                    </h4>
+                    <span id="manage-assign-counter" class="badge badge-purple" style="font-size: 0.78rem; padding: 3px 8px;">กำลังโหลด...</span>
                   </div>
 
-                  <!-- Detailed Assignment Filters Bar (NEW) -->
-                  <div class="filter-actions" style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center; background: rgba(255,255,255,0.02); padding: 12px; border-radius: 8px; border: 1px solid var(--glass-border);">
-                    <div class="search-box" style="flex: 1; min-width: 200px;">
-                      <i class="fa-solid fa-magnifying-glass"></i>
-                      <input type="text" id="manage-assign-search" placeholder="ค้นหาชื่อการบ้าน, รหัสภาระงาน...">
+                  <!-- Compact Single-Line Assignment Filters Bar -->
+                  <div class="filter-actions" style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center; background: rgba(255,255,255,0.02); padding: 6px 8px; border-radius: 6px; border: 1px solid var(--glass-border);">
+                    <div class="search-box" style="flex: 1; min-width: 160px;">
+                      <i class="fa-solid fa-magnifying-glass" style="font-size: 0.75rem;"></i>
+                      <input type="text" id="manage-assign-search" placeholder="ค้นหาชื่อการบ้าน, รหัสภาระงาน..." style="padding: 4px 8px 4px 26px; font-size: 0.8rem; height: 30px;">
                     </div>
 
-                    <select id="manage-assign-filter-subject" style="padding: 8px 12px; font-size: 0.85rem; background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--glass-border); border-radius: 6px;">
+                    <select id="manage-assign-filter-subject" style="padding: 4px 8px; font-size: 0.8rem; height: 30px; background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--glass-border); border-radius: 5px;">
                       <option value="">ทุกรายวิชา</option>
                     </select>
 
-                    <select id="manage-assign-filter-class" style="padding: 8px 12px; font-size: 0.85rem; background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--glass-border); border-radius: 6px;">
+                    <select id="manage-assign-filter-class" style="padding: 4px 8px; font-size: 0.8rem; height: 30px; background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--glass-border); border-radius: 5px;">
                       <option value="">ทุกชั้นเรียน</option>
                     </select>
 
-                    <select id="manage-assign-filter-due" style="padding: 8px 12px; font-size: 0.85rem; background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--glass-border); border-radius: 6px;">
+                    <select id="manage-assign-filter-due" style="padding: 4px 8px; font-size: 0.8rem; height: 30px; background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--glass-border); border-radius: 5px;">
                       <option value="">กำหนดส่งทั้งหมด</option>
                       <option value="active">ยังไม่ครบกำหนด (Active)</option>
                       <option value="expired">เลยกำหนดแล้ว (Expired)</option>
                     </select>
 
-                    <select id="manage-assign-filter-score" style="padding: 8px 12px; font-size: 0.85rem; background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--glass-border); border-radius: 6px;">
+                    <select id="manage-assign-filter-score" style="padding: 4px 8px; font-size: 0.8rem; height: 30px; background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--glass-border); border-radius: 5px;">
                       <option value="">คะแนนเต็มทั้งหมด</option>
                       <option value="1-5">1 - 5 คะแนน</option>
                       <option value="6-10">6 - 10 คะแนน</option>
                       <option value="11+">11 คะแนนขึ้นไป</option>
                     </select>
 
-                    <button type="button" id="btn-reset-manage-assign-filters" class="btn btn-secondary" style="padding: 8px 12px; font-size: 0.82rem;" title="ล้างตัวกรองทั้งหมด">
+                    <button type="button" id="btn-reset-manage-assign-filters" class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.78rem; height: 30px;" title="ล้างตัวกรองทั้งหมด">
                       <i class="fa-solid fa-rotate-left"></i> แสดงทั้งหมด
                     </button>
                   </div>
                 </div>
 
-                <div class="table-container" style="margin-top: 15px;">
-                  <table class="data-table">
-                    <thead>
-                      <tr>
-                        <th>รหัสการบ้าน</th>
-                        <th>ชื่อภาระงาน / หัวข้อ</th>
-                        <th>รายวิชา</th>
-                        <th>ห้องเรียนที่รับมอบหมาย</th>
-                        <th>วันครบกำหนด</th>
-                        <th>คะแนนเต็ม</th>
-                        <th>การจัดการ</th>
+                <!-- Expanded High-Visibility Table Area -->
+                <div class="table-container" style="margin-top: 8px; max-height: calc(82vh - 150px); min-height: 480px; overflow-y: auto; border: 1px solid var(--glass-border); border-radius: 8px;">
+                  <table class="data-table" style="width: 100%; border-collapse: collapse;">
+                    <thead style="position: sticky; top: 0; z-index: 10; background: var(--bg-secondary);">
+                      <tr style="font-size: 0.82rem;">
+                        <th style="width: 110px; padding: 8px;">รหัสการบ้าน</th>
+                        <th style="min-width: 220px; padding: 8px;">ชื่อภาระงาน / หัวข้อ</th>
+                        <th style="min-width: 140px; padding: 8px;">รายวิชา</th>
+                        <th style="min-width: 120px; padding: 8px;">ห้องเรียนที่รับมอบหมาย</th>
+                        <th style="width: 110px; padding: 8px;">วันครบกำหนด</th>
+                        <th style="width: 85px; padding: 8px;">คะแนนเต็ม</th>
+                        <th style="width: 110px; padding: 8px;">การจัดการ</th>
                       </tr>
                     </thead>
-                    <tbody id="assignments-table-body">
+                    <tbody id="assignments-table-body" style="font-size: 0.84rem;">
                       <tr>
-                        <td colspan="7" class="text-center">กำลังโหลดข้อมูล...</td>
+                        <td colspan="7" class="text-center" style="padding: 16px;">กำลังโหลดข้อมูล...</td>
                       </tr>
                     </tbody>
                   </table>

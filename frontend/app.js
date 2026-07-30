@@ -5035,23 +5035,25 @@ async function loadAssignmentsTable() {
 
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td><strong>${assign.Assignment_ID}</strong></td>
-        <td>${assign.Assignment_Name || '-'}</td>
-        <td>${subjectName}</td>
-        <td><span class="badge" style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);">${classDisplay}</span></td>
-        <td>${formattedDate}</td>
-        <td><strong>${maxScore}</strong></td>
-        <td>
-          <div class="actions-group" style="display: flex; gap: 8px;">
+        <td style="padding: 8px 10px;"><strong>${assign.Assignment_ID}</strong></td>
+        <td style="padding: 8px 10px; font-weight: 500; color: var(--text-primary);">${assign.Assignment_Name || '-'}</td>
+        <td style="padding: 8px 10px;">${subjectName}</td>
+        <td style="padding: 8px 10px;"><span class="badge" style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); padding: 3px 8px; font-size: 0.78rem;">${classDisplay}</span></td>
+        <td style="padding: 8px 10px;">${formattedDate}</td>
+        <td style="padding: 8px 10px;"><strong>${maxScore}</strong></td>
+        <td style="padding: 8px 10px;">
+          <div class="actions-group" style="display: flex; gap: 6px;">
             <button class="btn btn-green btn-icon-only btn-assignment-qr"
                     data-url="${submissionUrl}"
                     data-qr="${qrImageUrl}"
                     data-id="${assign.Assignment_ID}"
+                    style="padding: 5px 9px; font-size: 0.8rem;"
                     title="เปิดและดาวน์โหลด QR สำหรับส่งงาน">
               <i class="fa-solid fa-qrcode"></i>
             </button>
             <button class="btn btn-blue btn-icon-only btn-copy-assignment-link"
                     data-url="${submissionUrl}"
+                    style="padding: 5px 9px; font-size: 0.8rem;"
                     title="คัดลอกลิงก์ส่งงาน">
               <i class="fa-solid fa-link"></i>
             </button>
@@ -5062,13 +5064,13 @@ async function loadAssignmentsTable() {
                     data-class="${classDataAttr}"
                     data-due="${assign.Due_Date || ''}"
                     data-score="${maxScore}"
-                    style="padding: 4px 8px; font-size: 0.8rem;"
+                    style="padding: 5px 9px; font-size: 0.8rem;"
                     title="แก้ไขการบ้าน">
               <i class="fa-solid fa-pen"></i>
             </button>
             <button class="btn btn-red btn-icon-only btn-delete-assign-trigger" 
                     data-id="${assign.Assignment_ID}"
-                    style="padding: 4px 8px; font-size: 0.8rem;"
+                    style="padding: 5px 9px; font-size: 0.8rem;"
                     title="ลบการบ้าน">
               <i class="fa-solid fa-trash"></i>
             </button>
