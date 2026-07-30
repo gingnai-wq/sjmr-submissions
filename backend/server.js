@@ -952,11 +952,11 @@ app.post('/api/import-excel-file', upload.single('excel'), verifyAdmin, async (r
       res.status(400).json({ success: false, message: 'ไม่พบข้อมูลนักเรียนที่สามารถแยกวิเคราะห์ได้จากไฟล์ Excel นี้ กรุณาตรวจสอบหัวตารางคอลัมน์' });
     }
   } catch (err) {
-    console.error(err);
+    console.error('Error parsing uploaded Excel file:', err);
     if (file && fs.existsSync(file.path)) {
-      fs.unlinkSync(file.path);
+      try { fs.unlinkSync(file.path); } catch (e) {}
     }
-    res.status(500).json({ success: false, message: 'เกิดข้อผิดพลาดในการโหลดและวิเคราะห์ไฟล์ Excel' });
+    res.status(500).json({ success: false, message: `เกิดข้อผิดพลาดในการโหลดไฟล์ Excel: ${err.message || err}` });
   }
 });
 

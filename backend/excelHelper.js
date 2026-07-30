@@ -141,14 +141,22 @@ function importStudents(filePath = null) {
   }
 
   try {
-    const wb = xlsx.readFile(targetPath);
+    let wb;
+    if (targetPath && fs.existsSync(targetPath)) {
+      const fileBuffer = fs.readFileSync(targetPath);
+      wb = xlsx.read(fileBuffer, { type: 'buffer', cellDates: true, cellNF: false });
+    } else {
+      console.warn(`Student list file not found at ${targetPath}.`);
+      return [];
+    }
+
     const allStudents = [];
 
     // Filter sheets: Parse all sheets except ignored metadata/report/utility sheets
     const IGNORED_SHEETS = [
       'assignment_list', 'submissions_master', 'sheetinfo', 'metadata', 'report', 'student_master',
       'ภาพรวม', 'ข้อมูลของผู้เข้าร่วม', 'ข้อมูลเวลา', 'รายละเอียดแบบทดสอบ',
-      'ผลสัมฤทธิ์', 'สรุปเกรด', 'สถิติ', 'สรุป', 'ผลสอบ', 'คะแนน', 'ประถมศึกษา', 'ค่าห้อง', 'ค่าใช้จ่าย',
+      'ผลสัมฤทธิ์', 'สรุปเกรด', 'สถิติ', 'สรุป', 'ผลสอบ', 'คะแนน', 'ค่าห้อง', 'ค่าใช้จ่าย',
       'จำนวนนักเรียน'
     ];
     let sheetsToParse = wb.SheetNames.filter(sheetName => {
@@ -161,8 +169,11 @@ function importStudents(filePath = null) {
     }
 
     sheetsToParse.forEach(sheetName => {
-      const sheet = wb.Sheets[sheetName];
-      const rows = xlsx.utils.sheet_to_json(sheet, { header: 1 });
+      try {
+        const sheet = wb.Sheets[sheetName];
+        if (!sheet || !sheet['!ref']) return;
+        const rows = xlsx.utils.sheet_to_json(sheet, { header: 1, raw: false, defval: '' });
+        if (!rows || !Array.isArray(rows) || rows.length === 0) return;
 
       let idColIdx = -1;
       let nameColIdx = -1;
@@ -489,6 +500,9 @@ function importStudents(filePath = null) {
             Photo: photoLink || ''
           });
         });
+      }
+      } catch (sheetErr) {
+        console.error(`Error parsing sheet "${sheetName}":`, sheetErr.message);
       }
     });
 
