@@ -434,8 +434,44 @@
 
               <!-- View 3.2: Assignment Management Table (NEW) -->
               <div id="panel-assignments-view" class="tab-view">
-                <div class="panel-header" style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center;">
-                  <h3><i class="fa-solid fa-list-check text-purple"></i> ทะเบียนภาระงาน (Assignment Management)</h3>
+                <div class="panel-header" style="margin-top: 15px; display: flex; flex-direction: column; gap: 12px; align-items: stretch;">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3><i class="fa-solid fa-list-check text-purple"></i> ทะเบียนภาระงาน (Assignment Management)</h3>
+                    <span id="manage-assign-counter" class="badge badge-purple" style="font-size: 0.85rem; padding: 6px 12px;">กำลังโหลด...</span>
+                  </div>
+
+                  <!-- Detailed Assignment Filters Bar (NEW) -->
+                  <div class="filter-actions" style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center; background: rgba(255,255,255,0.02); padding: 12px; border-radius: 8px; border: 1px solid var(--glass-border);">
+                    <div class="search-box" style="flex: 1; min-width: 200px;">
+                      <i class="fa-solid fa-magnifying-glass"></i>
+                      <input type="text" id="manage-assign-search" placeholder="ค้นหาชื่อการบ้าน, รหัสภาระงาน...">
+                    </div>
+
+                    <select id="manage-assign-filter-subject" style="padding: 8px 12px; font-size: 0.85rem; background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--glass-border); border-radius: 6px;">
+                      <option value="">ทุกรายวิชา</option>
+                    </select>
+
+                    <select id="manage-assign-filter-class" style="padding: 8px 12px; font-size: 0.85rem; background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--glass-border); border-radius: 6px;">
+                      <option value="">ทุกชั้นเรียน</option>
+                    </select>
+
+                    <select id="manage-assign-filter-due" style="padding: 8px 12px; font-size: 0.85rem; background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--glass-border); border-radius: 6px;">
+                      <option value="">กำหนดส่งทั้งหมด</option>
+                      <option value="active">ยังไม่ครบกำหนด (Active)</option>
+                      <option value="expired">เลยกำหนดแล้ว (Expired)</option>
+                    </select>
+
+                    <select id="manage-assign-filter-score" style="padding: 8px 12px; font-size: 0.85rem; background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--glass-border); border-radius: 6px;">
+                      <option value="">คะแนนเต็มทั้งหมด</option>
+                      <option value="1-5">1 - 5 คะแนน</option>
+                      <option value="6-10">6 - 10 คะแนน</option>
+                      <option value="11+">11 คะแนนขึ้นไป</option>
+                    </select>
+
+                    <button type="button" id="btn-reset-manage-assign-filters" class="btn btn-secondary" style="padding: 8px 12px; font-size: 0.82rem;" title="ล้างตัวกรองทั้งหมด">
+                      <i class="fa-solid fa-rotate-left"></i> แสดงทั้งหมด
+                    </button>
+                  </div>
                 </div>
 
                 <div class="table-container" style="margin-top: 15px;">

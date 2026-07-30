@@ -4851,12 +4851,65 @@ if (subjectEditForm) {
   });
 }
 
-// Render Assignments Table in Teacher Dashboard (NEW)
+// Populate Manage Assignments Filter Dropdowns (NEW)
+function populateManageAssignFilters() {
+  const filterSubject = document.getElementById('manage-assign-filter-subject');
+  const filterClass = document.getElementById('manage-assign-filter-class');
+  if (!filterSubject || !filterClass) return;
+
+  const currentSubject = filterSubject.value;
+  const currentClass = filterClass.value;
+
+  filterSubject.innerHTML = '<option value="">ทุกรายวิชา</option>';
+  const permittedSubjects = Array.isArray(state.subjects) ? state.subjects.filter(s => s && hasSubjectAccess(s.Subject_ID)) : [];
+  permittedSubjects.forEach(s => {
+    const opt = document.createElement('option');
+    opt.value = s.Subject_ID;
+    opt.textContent = `${s.Subject_ID} - ${s.Subject_Name}`;
+    filterSubject.appendChild(opt);
+  });
+  if (currentSubject && Array.from(filterSubject.options).some(o => o.value === currentSubject)) {
+    filterSubject.value = currentSubject;
+  }
+
+  filterClass.innerHTML = '<option value="">ทุกชั้นเรียน</option>';
+  const allClasses = new Set();
+  if (Array.isArray(state.assignments)) {
+    state.assignments.forEach(a => {
+      if (a && a.Class) {
+        if (Array.isArray(a.Class)) {
+          a.Class.forEach(c => { if (c !== 'all' && c !== 'ทุกชั้นเรียน') allClasses.add(c); });
+        } else if (a.Class !== 'all' && a.Class !== 'ทุกชั้นเรียน') {
+          allClasses.add(a.Class);
+        }
+      }
+    });
+  }
+  Array.from(allClasses).sort().forEach(cls => {
+    const opt = document.createElement('option');
+    opt.value = cls;
+    opt.textContent = `เฉพาะห้อง: ${cls}`;
+    filterClass.appendChild(opt);
+  });
+  if (currentClass && Array.from(filterClass.options).some(o => o.value === currentClass)) {
+    filterClass.value = currentClass;
+  }
+}
+
+// Render Assignments Table in Teacher Dashboard (Enhanced with Detailed Filters)
 async function loadAssignmentsTable() {
   if (!assignmentsTableBody) return;
-  assignmentsTableBody.innerHTML = '<tr><td colspan="7" class="text-center"><i class="fa-solid fa-spinner fa-spin"></i> กำลังโหลดข้อมูล...</td></tr>';
 
   try {
+    populateManageAssignFilters();
+
+    const searchQuery = (document.getElementById('manage-assign-search')?.value || '').toLowerCase().trim();
+    const selectedSubject = document.getElementById('manage-assign-filter-subject')?.value || '';
+    const selectedClass = document.getElementById('manage-assign-filter-class')?.value || '';
+    const selectedDue = document.getElementById('manage-assign-filter-due')?.value || '';
+    const selectedScore = document.getElementById('manage-assign-filter-score')?.value || '';
+    const counterBadge = document.getElementById('manage-assign-counter');
+
     // Sort assignments by ID descending
     const list = Array.isArray(state.assignments) ? [...state.assignments] : [];
     list.sort((a, b) => {
@@ -4865,13 +4918,77 @@ async function loadAssignmentsTable() {
       return idB.localeCompare(idA);
     });
 
-    assignmentsTableBody.innerHTML = '';
-    
-    // Filter assignments that are permitted
-    const permitted = list.filter(a => a && hasSubjectAccess(a.Subject_ID));
+    const todayStr = new Date().toISOString().split('T')[0];
 
-    if (permitted.length === 0) {
-      assignmentsTableBody.innerHTML = '<tr><td colspan="7" class="text-center">ไม่พบข้อมูลภาระงานที่ท่านมีสิทธิ์เข้าถึง</td></tr>';
+    // Detailed multi-criteria filter
+    const filtered = list.filter(assign => {
+      if (!assign || !assign.Assignment_ID) return false;
+      if (!hasSubjectAccess(assign.Subject_ID)) return false;
+
+      // 1. Search Query (ID or Name or Subject)
+      const subj = Array.isArray(state.subjects) ? state.subjects.find(s => s && s.Subject_ID === assign.Subject_ID) : null;
+      const textToSearch = [
+        assign.Assignment_ID,
+        assign.Assignment_Name,
+        assign.Subject_ID,
+        subj ? subj.Subject_Name : ''
+      ].join(' ').toLowerCase();
+
+      if (searchQuery && !textToSearch.includes(searchQuery)) return false;
+
+      // 2. Subject Filter
+      if (selectedSubject && assign.Subject_ID !== selectedSubject) return false;
+
+      // 3. Class Filter
+      if (selectedClass) {
+        if (Array.isArray(assign.Class)) {
+          if (!assign.Class.includes(selectedClass) && !assign.Class.includes('all') && !assign.Class.includes('ทุกชั้นเรียน')) return false;
+        } else if (assign.Class !== selectedClass && assign.Class !== 'all' && assign.Class !== 'ทุกชั้นเรียน') {
+          return false;
+        }
+      }
+
+      // 4. Due Date Status Filter
+      if (selectedDue && assign.Due_Date) {
+        const isExpired = assign.Due_Date < todayStr;
+        if (selectedDue === 'active' && isExpired) return false;
+        if (selectedDue === 'expired' && !isExpired) return false;
+      }
+
+      // 5. Max Score Filter
+      if (selectedScore) {
+        const score = Number(assign.Max_Score || 0);
+        if (selectedScore === '1-5' && (score < 1 || score > 5)) return false;
+        if (selectedScore === '6-10' && (score < 6 || score > 10)) return false;
+        if (selectedScore === '11+' && score < 11) return false;
+      }
+
+      return true;
+    });
+
+    if (counterBadge) {
+      counterBadge.textContent = `${filtered.length} จาก ${list.length} รายการ`;
+    }
+
+    assignmentsTableBody.innerHTML = '';
+
+    if (filtered.length === 0) {
+      assignmentsTableBody.innerHTML = `
+        <tr>
+          <td colspan="7" class="text-center" style="padding: 24px;">
+            <i class="fa-solid fa-folder-open text-purple" style="font-size: 2rem; margin-bottom: 8px;"></i>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">ไม่พบรายการภาระงานที่ตรงตามเงื่อนไขตัวกรอง</p>
+            <button type="button" class="btn btn-secondary btn-sm" id="btn-empty-reset-assign-filters" style="margin-top: 8px;">
+              <i class="fa-solid fa-rotate-left"></i> ล้างตัวกรองทั้งหมด
+            </button>
+          </td>
+        </tr>`;
+      const btnEmptyReset = document.getElementById('btn-empty-reset-assign-filters');
+      if (btnEmptyReset) {
+        btnEmptyReset.addEventListener('click', () => {
+          document.getElementById('btn-reset-manage-assign-filters')?.click();
+        });
+      }
       return;
     }
     
@@ -5022,6 +5139,31 @@ document.getElementById('panel-assignments-view').addEventListener('click', asyn
     popup.document.close();
   }
 });
+
+// Manage Assignment Filters Event Listeners (NEW)
+const manageSearchInput = document.getElementById('manage-assign-search');
+const manageSubSelect = document.getElementById('manage-assign-filter-subject');
+const manageClassSelect = document.getElementById('manage-assign-filter-class');
+const manageDueSelect = document.getElementById('manage-assign-filter-due');
+const manageScoreSelect = document.getElementById('manage-assign-filter-score');
+const btnResetManageFilters = document.getElementById('btn-reset-manage-assign-filters');
+
+if (manageSearchInput) manageSearchInput.addEventListener('input', loadAssignmentsTable);
+if (manageSubSelect) manageSubSelect.addEventListener('change', loadAssignmentsTable);
+if (manageClassSelect) manageClassSelect.addEventListener('change', loadAssignmentsTable);
+if (manageDueSelect) manageDueSelect.addEventListener('change', loadAssignmentsTable);
+if (manageScoreSelect) manageScoreSelect.addEventListener('change', loadAssignmentsTable);
+
+if (btnResetManageFilters) {
+  btnResetManageFilters.addEventListener('click', () => {
+    if (manageSearchInput) manageSearchInput.value = '';
+    if (manageSubSelect) manageSubSelect.value = '';
+    if (manageClassSelect) manageClassSelect.value = '';
+    if (manageDueSelect) manageDueSelect.value = '';
+    if (manageScoreSelect) manageScoreSelect.value = '';
+    loadAssignmentsTable();
+  });
+}
 
 // Modal bindings for editing assignments
 if (assignmentEditForm) {
