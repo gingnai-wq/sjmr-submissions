@@ -1098,7 +1098,6 @@ function stopStudentScanner() {
 
 // Helper to determine if the logged-in teacher has access to a specific subject (NEW)
 function hasSubjectAccess(subjectId) {
-  if (!state.teacherData) return false;
   return true;
 }
 
@@ -4923,34 +4922,35 @@ async function loadAssignmentsTable() {
     // Detailed multi-criteria filter
     const filtered = list.filter(assign => {
       if (!assign || !assign.Assignment_ID) return false;
-      if (!hasSubjectAccess(assign.Subject_ID)) return false;
+      const assignId = String(assign.Assignment_ID || '');
+      const assignName = String(assign.Assignment_Name || '');
+      const subjectId = String(assign.Subject_ID || '');
+
+      if (!hasSubjectAccess(subjectId)) return false;
 
       // 1. Search Query (ID or Name or Subject)
-      const subj = Array.isArray(state.subjects) ? state.subjects.find(s => s && s.Subject_ID === assign.Subject_ID) : null;
-      const textToSearch = [
-        assign.Assignment_ID,
-        assign.Assignment_Name,
-        assign.Subject_ID,
-        subj ? subj.Subject_Name : ''
-      ].join(' ').toLowerCase();
+      const subj = Array.isArray(state.subjects) ? state.subjects.find(s => s && String(s.Subject_ID) === subjectId) : null;
+      const subjName = subj ? String(subj.Subject_Name || '') : '';
+      const textToSearch = `${assignId} ${assignName} ${subjectId} ${subjName}`.toLowerCase();
 
       if (searchQuery && !textToSearch.includes(searchQuery)) return false;
 
       // 2. Subject Filter
-      if (selectedSubject && assign.Subject_ID !== selectedSubject) return false;
+      if (selectedSubject && subjectId !== selectedSubject) return false;
 
       // 3. Class Filter
       if (selectedClass) {
         if (Array.isArray(assign.Class)) {
           if (!assign.Class.includes(selectedClass) && !assign.Class.includes('all') && !assign.Class.includes('ทุกชั้นเรียน')) return false;
-        } else if (assign.Class !== selectedClass && assign.Class !== 'all' && assign.Class !== 'ทุกชั้นเรียน') {
+        } else if (String(assign.Class || '') !== selectedClass && assign.Class !== 'all' && assign.Class !== 'ทุกชั้นเรียน') {
           return false;
         }
       }
 
       // 4. Due Date Status Filter
       if (selectedDue && assign.Due_Date) {
-        const isExpired = assign.Due_Date < todayStr;
+        const dueStr = String(assign.Due_Date || '');
+        const isExpired = dueStr < todayStr;
         if (selectedDue === 'active' && isExpired) return false;
         if (selectedDue === 'expired' && !isExpired) return false;
       }
