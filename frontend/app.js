@@ -4992,7 +4992,7 @@ async function loadAssignmentsTable() {
       return;
     }
     
-    permitted.forEach(assign => {
+    filtered.forEach(assign => {
       if (!assign || !assign.Assignment_ID) return;
       const subj = Array.isArray(state.subjects) ? state.subjects.find(s => s && s.Subject_ID === assign.Subject_ID) : null;
       const subjectName = subj ? `${subj.Subject_Name || '-'} (${assign.Subject_ID || '-'})` : (assign.Subject_ID || '-');
