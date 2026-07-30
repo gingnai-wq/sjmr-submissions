@@ -365,6 +365,11 @@ async function loginStudent(studentId) {
       studentAuthCard.classList.add('hidden');
       studentDashboard.classList.remove('hidden');
       
+      const studentClassFilter = document.getElementById('student-assignment-class-filter');
+      if (studentClassFilter && res.student.Class) {
+        studentClassFilter.value = res.student.Class;
+      }
+
       // Fetch assignments and render
       await loadStudentAssignments();
       showToast(`ยินดีต้อนรับ ${res.student.FullName}`, 'success');
@@ -429,18 +434,74 @@ async function loadStudentAssignments() {
   }
 }
 
+function populateStudentClassFilter() {
+  const classFilter = document.getElementById('student-assignment-class-filter');
+  if (!classFilter) return;
+
+  const currentVal = classFilter.value || (state.studentData ? state.studentData.Class : '');
+  classFilter.innerHTML = '<option value="">ทุกชั้นเรียน</option>';
+
+  const allClasses = new Set();
+  if (Array.isArray(state.assignments)) {
+    state.assignments.forEach(a => {
+      if (a && a.Class) {
+        if (Array.isArray(a.Class)) {
+          a.Class.forEach(c => { if (c !== 'all' && c !== 'ทุกชั้นเรียน') allClasses.add(c); });
+        } else if (a.Class !== 'all' && a.Class !== 'ทุกชั้นเรียน') {
+          allClasses.add(a.Class);
+        }
+      }
+    });
+  }
+  Array.from(allClasses).sort().forEach(cls => {
+    const opt = document.createElement('option');
+    opt.value = cls;
+    opt.textContent = `เฉพาะห้อง: ${cls}`;
+    classFilter.appendChild(opt);
+  });
+
+  if (currentVal && Array.from(classFilter.options).some(o => o.value === currentVal)) {
+    classFilter.value = currentVal;
+  }
+}
+
 function getStudentVisibleAssignments() {
-  const studentClass = state.studentData ? state.studentData.Class : '';
+  populateStudentClassFilter();
+  const classFilter = document.getElementById('student-assignment-class-filter');
+  const selectedClass = classFilter ? classFilter.value : '';
+  const studentClass = state.studentData ? state.studentData.Class : selectedClass;
+  const activeClassFilter = selectedClass || studentClass || '';
+
   return state.assignments.filter(assign => {
-    if (!assign.Class) return true;
-    if (Array.isArray(assign.Class)) {
-      return assign.Class.includes('all') ||
-             assign.Class.includes('ทุกชั้นเรียน') ||
-             assign.Class.some(c => String(c).toLowerCase() === studentClass.toLowerCase());
+    if (!assign || !assign.Assignment_ID) return false;
+
+    // Strict class matching if student has a class selected or is logged in
+    if (activeClassFilter) {
+      const cleanStudentClass = String(activeClassFilter).trim().toLowerCase();
+      const studentGrade = cleanStudentClass.split('/')[0]; // e.g. "ม.1" from "ม.1/1"
+
+      if (!assign.Class || assign.Class === '' || assign.Class === null) {
+        // If assignment has no class specified, check subject relevance
+        if (assign.Subject_ID === 'S0010' && !studentGrade.startsWith('ม.1')) return false;
+        if (assign.Subject_ID === 'S003' && !studentGrade.startsWith('ม.2')) return false;
+        if (assign.Subject_ID === 'S011' && !studentGrade.startsWith('ป.4')) return false;
+        if (assign.Subject_ID === 'J001' && !studentGrade.startsWith('ป.5')) return false;
+        return true;
+      }
+
+      const classList = Array.isArray(assign.Class) ? assign.Class : [assign.Class];
+      const normalizedClasses = classList.map(c => String(c).trim().toLowerCase());
+
+      const isAll = normalizedClasses.includes('all') || normalizedClasses.includes('ทุกชั้นเรียน');
+      if (isAll) return true;
+
+      const matchesExactClass = normalizedClasses.includes(cleanStudentClass);
+      const matchesGrade = normalizedClasses.includes(studentGrade);
+
+      return matchesExactClass || matchesGrade;
     }
-    return assign.Class === 'all' ||
-           assign.Class === 'ทุกชั้นเรียน' ||
-           String(assign.Class).toLowerCase() === studentClass.toLowerCase();
+
+    return true;
   });
 }
 
@@ -740,6 +801,13 @@ studentAssignmentSubjectFilter.addEventListener('change', (event) => {
   state.studentAssignmentSubject = event.target.value;
   renderStudentAssignments();
 });
+
+const studentClassFilterSelect = document.getElementById('student-assignment-class-filter');
+if (studentClassFilterSelect) {
+  studentClassFilterSelect.addEventListener('change', () => {
+    renderStudentAssignments();
+  });
+}
 
 studentAssignmentSort.addEventListener('change', (event) => {
   state.studentAssignmentSort = event.target.value;
