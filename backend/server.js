@@ -908,12 +908,16 @@ app.all('/api/grade-external', upload.single('file'), async (req, res) => {
 });
 
 // 10. Re-import / Reload student list from Excel
-app.post('/api/import-excel', verifyAdmin, (req, res) => {
+app.post('/api/import-excel', verifyAdmin, async (req, res) => {
   try {
     const imported = excelHelper.importStudents();
     if (imported.length > 0) {
-      db.setStudents(imported);
-      res.json({ success: true, message: `นำเข้าข้อมูลนักเรียนสำเร็จ ${imported.length} คน จากไฟล์ Excel` });
+      const stats = db.mergeAndImportStudents(imported);
+      await db.forcePushToDrive();
+      res.json({
+        success: true,
+        message: `ผสานและนำเข้าข้อมูลนักเรียนสำเร็จ: เพิ่มนักเรียนใหม่ ${stats.addedCount} คน, อัปเดตข้อมูลเดิม ${stats.updatedCount} คน (รวมในระบบ ${stats.totalCount} คน)`
+      });
     } else {
       res.status(400).json({ success: false, message: 'ไม่พบข้อมูลนักเรียนที่จะนำเข้าได้จากไฟล์ Excel บน Desktop' });
     }
@@ -924,7 +928,7 @@ app.post('/api/import-excel', verifyAdmin, (req, res) => {
 });
 
 // 10.1. Upload and import student list from Excel file (Teacher/Web UI)
-app.post('/api/import-excel-file', upload.single('excel'), verifyAdmin, (req, res) => {
+app.post('/api/import-excel-file', upload.single('excel'), verifyAdmin, async (req, res) => {
   const file = req.file;
   if (!file) {
     return res.status(400).json({ success: false, message: 'กรุณาอัปโหลดไฟล์ Excel (.xlsx)' });
@@ -938,8 +942,12 @@ app.post('/api/import-excel-file', upload.single('excel'), verifyAdmin, (req, re
     }
 
     if (imported.length > 0) {
-      db.setStudents(imported);
-      res.json({ success: true, message: `นำเข้าข้อมูลนักเรียนสำเร็จ ${imported.length} คน จากไฟล์ Excel เรียบร้อย` });
+      const stats = db.mergeAndImportStudents(imported);
+      await db.forcePushToDrive();
+      res.json({
+        success: true,
+        message: `ผสานและนำเข้าข้อมูลนักเรียนสำเร็จ: เพิ่มนักเรียนใหม่ ${stats.addedCount} คน, อัปเดตข้อมูลเดิม ${stats.updatedCount} คน (รวมในระบบ ${stats.totalCount} คน)`
+      });
     } else {
       res.status(400).json({ success: false, message: 'ไม่พบข้อมูลนักเรียนที่สามารถแยกวิเคราะห์ได้จากไฟล์ Excel นี้ กรุณาตรวจสอบหัวตารางคอลัมน์' });
     }

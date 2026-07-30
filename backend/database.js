@@ -443,6 +443,40 @@ module.exports = {
     saveStudents();
     pushToDrive();
   },
+  mergeAndImportStudents: (importedList) => {
+    let addedCount = 0;
+    let updatedCount = 0;
+
+    const existingMap = {};
+    students.forEach(s => {
+      existingMap[String(s.Student_ID)] = s;
+    });
+
+    importedList.forEach(imp => {
+      if (!imp || !imp.Student_ID) return;
+      const idStr = String(imp.Student_ID);
+      if (!existingMap[idStr]) {
+        students.push(imp);
+        existingMap[idStr] = imp;
+        addedCount++;
+      } else {
+        const existing = existingMap[idStr];
+        const idx = students.findIndex(s => String(s.Student_ID) === idStr);
+        if (idx !== -1) {
+          students[idx] = {
+            ...existing,
+            ...imp,
+            Photo: existing.Photo || imp.Photo || ''
+          };
+          updatedCount++;
+        }
+      }
+    });
+
+    saveStudents();
+    pushToDrive();
+    return { addedCount, updatedCount, totalCount: students.length };
+  },
   findStudentById: (id) => students.find(s => s.Student_ID === id || s.Student_ID === String(id)),
   updateStudent: (studentId, updatedData) => {
     const idx = students.findIndex(s => s.Student_ID === studentId || s.Student_ID === String(studentId));
