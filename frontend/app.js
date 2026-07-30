@@ -478,15 +478,9 @@ function getStudentVisibleAssignments() {
     // Strict class matching if student has a class selected or is logged in
     if (activeClassFilter) {
       const cleanStudentClass = String(activeClassFilter).trim().toLowerCase();
-      const studentGrade = cleanStudentClass.split('/')[0]; // e.g. "ม.1" from "ม.1/1"
 
       if (!assign.Class || assign.Class === '' || assign.Class === null) {
-        // If assignment has no class specified, check subject relevance
-        if (assign.Subject_ID === 'S0010' && !studentGrade.startsWith('ม.1')) return false;
-        if (assign.Subject_ID === 'S003' && !studentGrade.startsWith('ม.2')) return false;
-        if (assign.Subject_ID === 'S011' && !studentGrade.startsWith('ป.4')) return false;
-        if (assign.Subject_ID === 'J001' && !studentGrade.startsWith('ป.5')) return false;
-        return true;
+        return false; // Hide assignments without class when filtering for specific class
       }
 
       const classList = Array.isArray(assign.Class) ? assign.Class : [assign.Class];
@@ -496,9 +490,7 @@ function getStudentVisibleAssignments() {
       if (isAll) return true;
 
       const matchesExactClass = normalizedClasses.includes(cleanStudentClass);
-      const matchesGrade = normalizedClasses.includes(studentGrade);
-
-      return matchesExactClass || matchesGrade;
+      return matchesExactClass;
     }
 
     return true;

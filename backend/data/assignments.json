@@ -50,7 +50,8 @@
     "Subject_ID": "S001",
     "Due_Date": "2026-06-15",
     "Max_Score": 10,
-    "QR_Link": "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=A001"
+    "QR_Link": "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=A001",
+    "Class": "ป.6/1"
   },
   {
     "Assignment_ID": "S001",
@@ -112,7 +113,8 @@
     "Subject_ID": "S001",
     "Due_Date": "2026-06-22",
     "Max_Score": 20,
-    "QR_Link": "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=A002"
+    "QR_Link": "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=A002",
+    "Class": "ป.6/1"
   },
   {
     "Assignment_ID": "A003",
@@ -120,7 +122,8 @@
     "Subject_ID": "S001",
     "Due_Date": "2026-06-30",
     "Max_Score": 15,
-    "QR_Link": "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=A003"
+    "QR_Link": "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=A003",
+    "Class": "ป.6/1"
   },
   {
     "Assignment_ID": "P004-1",
