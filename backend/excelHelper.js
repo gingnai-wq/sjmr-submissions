@@ -209,7 +209,8 @@ function importStudents(filePath = null) {
                 cleanVal === 'เลขประจำตัวนักศึกษา' ||
                 cleanVal === 'เลขประจำตัวนักเรียน' ||
                 cleanVal === 'studentid' ||
-                cleanVal === 'studentcode'
+                cleanVal === 'studentcode' ||
+                cleanVal === 'student_id'
               ) {
                 tempIdIdx = idx;
                 tempIdPriority = 2; // High priority exact match
@@ -217,9 +218,13 @@ function importStudents(filePath = null) {
                 cleanVal.includes('เลขประจำตัว') ||
                 cleanVal.includes('รหัสประจำตัว') ||
                 cleanVal.includes('รหัสผู้เรียน') ||
+                cleanVal.includes('รหัสนักเรียน') ||
                 cleanVal.includes('รหัส') ||
                 cleanVal === 'id' ||
-                cleanVal === 'code'
+                cleanVal === 'code' ||
+                cleanVal === 'no' ||
+                cleanVal === 'no.' ||
+                cleanVal === 'เลขที่'
               ) {
                 if (tempIdPriority < 2) {
                   tempIdIdx = idx;
@@ -336,8 +341,26 @@ function importStudents(filePath = null) {
             classColIdx = tempClassIdx;
             roomColIdx = tempRoomIdx;
             statusColIdx = tempStatusIdx;
+          } else {
+            // Auto-detection fallback: Check if data row directly contains student ID & Thai name
+            let autoIdIdx = -1;
+            let autoNameIdx = -1;
+            rowStr.forEach((val, idx) => {
+              const clean = val.replace(/\.0$/, '').trim();
+              if (clean.length >= 3 && clean.length <= 8 && !isNaN(Number(clean))) {
+                if (autoIdIdx === -1) autoIdIdx = idx;
+              } else if (clean.length >= 3 && isNaN(Number(clean)) && !clean.includes('/') && (clean.startsWith('เด็ก') || clean.startsWith('นาย') || clean.startsWith('นาง') || clean.length > 5)) {
+                if (autoNameIdx === -1) autoNameIdx = idx;
+              }
+            });
+            if (autoIdIdx !== -1 && autoNameIdx !== -1) {
+              headerRowFound = true;
+              idColIdx = autoIdIdx;
+              nameColIdx = autoNameIdx;
+            } else {
+              continue;
+            }
           }
-          continue;
         }
 
         // If we just found the header and haven't initialized blocks list
