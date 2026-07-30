@@ -151,10 +151,14 @@ function importStudents(filePath = null) {
       'ผลสัมฤทธิ์', 'สรุปเกรด', 'สถิติ', 'สรุป', 'ผลสอบ', 'คะแนน', 'ประถมศึกษา', 'ค่าห้อง', 'ค่าใช้จ่าย',
       'จำนวนนักเรียน'
     ];
-    const sheetsToParse = wb.SheetNames.filter(sheetName => {
+    let sheetsToParse = wb.SheetNames.filter(sheetName => {
       const lowerName = sheetName.trim().toLowerCase();
       return !IGNORED_SHEETS.some(ignored => lowerName.includes(ignored));
     });
+
+    if (sheetsToParse.length === 0) {
+      sheetsToParse = wb.SheetNames;
+    }
 
     sheetsToParse.forEach(sheetName => {
       const sheet = wb.Sheets[sheetName];
@@ -341,6 +345,7 @@ function importStudents(filePath = null) {
             classColIdx = tempClassIdx;
             roomColIdx = tempRoomIdx;
             statusColIdx = tempStatusIdx;
+            continue;
           } else {
             // Auto-detection fallback: Check if data row directly contains student ID & Thai name
             let autoIdIdx = -1;
@@ -349,7 +354,7 @@ function importStudents(filePath = null) {
               const clean = val.replace(/\.0$/, '').trim();
               if (clean.length >= 3 && clean.length <= 8 && !isNaN(Number(clean))) {
                 if (autoIdIdx === -1) autoIdIdx = idx;
-              } else if (clean.length >= 3 && isNaN(Number(clean)) && !clean.includes('/') && (clean.startsWith('เด็ก') || clean.startsWith('นาย') || clean.startsWith('นาง') || clean.length > 5)) {
+              } else if (clean.length >= 3 && isNaN(Number(clean)) && !clean.includes('/') && (clean.startsWith('เด็ก') || clean.startsWith('นาย') || clean.startsWith('นาง') || clean.length > 3)) {
                 if (autoNameIdx === -1) autoNameIdx = idx;
               }
             });
@@ -357,6 +362,7 @@ function importStudents(filePath = null) {
               headerRowFound = true;
               idColIdx = autoIdIdx;
               nameColIdx = autoNameIdx;
+              // Do NOT continue, process row r as student data!
             } else {
               continue;
             }
