@@ -477,7 +477,7 @@ module.exports = {
     pushToDrive();
     return { addedCount, updatedCount, totalCount: students.length };
   },
-  findStudentById: (id) => students.find(s => s.Student_ID === id || s.Student_ID === String(id)),
+  findStudentById: (id) => students.find(s => s && String(s.Student_ID).trim() === String(id).trim()),
   updateStudent: (studentId, updatedData) => {
     const idx = students.findIndex(s => s.Student_ID === studentId || s.Student_ID === String(studentId));
     if (idx !== -1) {

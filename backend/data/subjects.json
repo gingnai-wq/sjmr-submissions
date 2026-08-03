@@ -2,12 +2,27 @@
   {
     "Subject_ID": "S003",
     "Subject_Name": "วิชาชุมนุม",
-    "Teacher_Username": "any"
+    "Teacher_Username": "any",
+    "Department": "กิจกรรมพัฒนาผู้เรียน",
+    "Classes": [
+      "ป.4/1",
+      "ป.4/2",
+      "ป.4/3",
+      "ป.5/1",
+      "ป.5/2",
+      "ป.5/3",
+      "ป.6/1",
+      "ป.6/2"
+    ]
   },
   {
     "Subject_ID": "S004",
     "Subject_Name": "กิจกรรมลูกเสือ",
-    "Teacher_Username": "any"
+    "Teacher_Username": "any",
+    "Department": "กิจกรรมพัฒนาผู้เรียน",
+    "Classes": [
+      "ป.5/3"
+    ]
   },
   {
     "Subject_ID": "S002",
@@ -17,17 +32,33 @@
   {
     "Subject_ID": "S006",
     "Subject_Name": "วิทยาการคำนวณ ป.5",
-    "Teacher_Username": "any"
+    "Teacher_Username": "any",
+    "Department": "วิทยาศาสตร์และเทคโนโลยี",
+    "Classes": [
+      "ป.5/1",
+      "ป.5/2",
+      "ป.5/3"
+    ]
   },
   {
     "Subject_ID": "S0010",
     "Subject_Name": "วิทยาการคำนวณ ม.1",
-    "Teacher_Username": "any"
+    "Teacher_Username": "any",
+    "Department": "วิทยาศาสตร์และเทคโนโลยี",
+    "Classes": [
+      "ม.1/1",
+      "ม.1/2",
+      "ม.1/3"
+    ]
   },
   {
     "Subject_ID": "J001",
     "Subject_Name": "คัดคำศัพธ์",
-    "Teacher_Username": "any"
+    "Teacher_Username": "any",
+    "Department": "กิจกรรมพัฒนาผู้เรียน",
+    "Classes": [
+      "ป.5/3"
+    ]
   },
   {
     "Subject_ID": "S001",
