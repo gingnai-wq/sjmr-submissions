@@ -355,14 +355,16 @@ app.post('/api/submit', upload.single('file'), async (req, res) => {
         
         const driveRes = await fetch(config.scriptUrl, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(uploadBody)
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(uploadBody),
+          redirect: 'follow'
         });
         
         if (driveRes.ok) {
           const driveResult = await driveRes.json();
-          if (driveResult.success && driveResult.url) {
-            fileLink = driveResult.url;
+          const fileUrl = driveResult.url || (driveResult.id ? `https://drive.google.com/uc?export=download&id=${driveResult.id}` : '');
+          if (driveResult.success && fileUrl) {
+            fileLink = fileUrl;
             uploadedToDrive = true;
             console.log('Successfully uploaded to Google Drive. Link:', fileLink);
           } else {
