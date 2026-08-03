@@ -398,14 +398,17 @@ async function forcePushToDrive() {
     
     const res = await fetch(url, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(bodyData)
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(bodyData),
+      redirect: 'follow'
     });
     
     if (!res.ok) throw new Error(`HTTP error ${res.status}`);
     const result = await res.json();
     if (!result.success) {
       console.log('Apps Script database save failed:', result.error);
+    } else {
+      console.log('Successfully pushed database to Google Drive.');
     }
   } catch (err) {
     console.error('Error pushing database to Google Drive:', err.message);
