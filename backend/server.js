@@ -210,16 +210,22 @@ function verifyAdmin(req, res, next) {
 }
 
 // 1. Verify Student ID
-app.get('/api/student/:id', (req, res) => {
+app.get('/api/student/:id', async (req, res) => {
   const studentId = req.params.id;
-  const student = db.findStudentById(studentId);
+  let student = db.findStudentById(studentId);
   
+  if (!student) {
+    // Fallback sync with Google Drive
+    await db.syncDrive();
+    student = db.findStudentById(studentId);
+  }
+
   if (!student) {
     return res.status(404).json({ success: false, message: 'ไม่พบรหัสประจำตัวนักเรียนนี้ในระบบ' });
   }
 
   // Get submissions for this student
-  const studentSubmissions = db.getSubmissions().filter(s => s.Student_ID === studentId);
+  const studentSubmissions = db.getSubmissions().filter(s => String(s.Student_ID) === String(studentId));
 
   res.json({
     success: true,
