@@ -46,14 +46,50 @@ if (!fs.existsSync(UPLOADS_DIR)) {
 if (!fs.existsSync(SERVER_PHOTOS_DIR)) {
   fs.mkdirSync(SERVER_PHOTOS_DIR, { recursive: true });
 }
-app.use('/uploads', express.static(UPLOADS_DIR), (req, res) => {
-  // If express.static cannot find the file, redirect smoothly to Google Drive
+app.use('/uploads', express.static(UPLOADS_DIR), async (req, res) => {
   const requestedFile = req.url.replace(/^\//, '');
   const submissions = db.getSubmissions();
 
-  const sub = submissions.find(s => s.File_Link && s.File_Link.includes(requestedFile));
+  // 1. Direct HTTP link check
+  const sub = submissions.find(s => s.File_Link && (s.File_Link.includes(requestedFile) || s.File_Link.startsWith('http')));
   if (sub && sub.File_Link && sub.File_Link.startsWith('http')) {
     return res.redirect(sub.File_Link);
+  }
+
+  // 2. Extract Student ID from submission or filename
+  let studentId = sub ? sub.Student_ID : '';
+  if (!studentId) {
+    const match = requestedFile.match(/^(\d{3,6})/);
+    if (match) studentId = match[1];
+  }
+
+  // 3. Search Google Drive via Apps Script for exact student file
+  const config = db.getConfig();
+  if (config.scriptUrl && config.folderId && studentId) {
+    try {
+      const searchRes = await fetch(config.scriptUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({
+          action: "searchFile",
+          folderId: config.folderId,
+          studentId: studentId,
+          filename: requestedFile
+        }),
+        redirect: 'follow'
+      });
+      const searchData = await searchRes.json();
+      if (searchData.success && (searchData.downloadUrl || searchData.url)) {
+        const targetUrl = searchData.downloadUrl || searchData.url;
+        if (sub) {
+          sub.File_Link = targetUrl;
+          db.saveSubmissions();
+        }
+        return res.redirect(targetUrl);
+      }
+    } catch (err) {
+      console.error('Error searching file on Drive:', err.message);
+    }
   }
 
   const driveFolderUrl = `https://drive.google.com/drive/folders/${db.getConfig().folderId || '1NzhSQbM3vkopg9URFqTC-XJbzUAWrf4w'}`;
