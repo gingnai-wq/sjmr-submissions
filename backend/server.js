@@ -48,6 +48,22 @@ if (!fs.existsSync(SERVER_PHOTOS_DIR)) {
 }
 app.use('/uploads', express.static(UPLOADS_DIR));
 
+// Smart fallback handler for missing local upload files (e.g. after Render restart)
+app.get('/uploads/:filename(*)', (req, res) => {
+  const requestedFile = req.params.filename;
+  const submissions = db.getSubmissions();
+  
+  // Check if there is an HTTP/Drive link for this submission
+  const sub = submissions.find(s => s.File_Link && s.File_Link.includes(requestedFile));
+  if (sub && sub.File_Link && sub.File_Link.startsWith('http')) {
+    return res.redirect(sub.File_Link);
+  }
+  
+  // Redirect to Google Drive folder so teacher can access files directly
+  const driveFolderUrl = `https://drive.google.com/drive/folders/${db.getConfig().folderId || '1NzhSQbM3vkopg9URFqTC-XJbzUAWrf4w'}`;
+  res.redirect(driveFolderUrl);
+});
+
 // Configure multer for file uploads
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
