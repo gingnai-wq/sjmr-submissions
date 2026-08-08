@@ -46,20 +46,16 @@ if (!fs.existsSync(UPLOADS_DIR)) {
 if (!fs.existsSync(SERVER_PHOTOS_DIR)) {
   fs.mkdirSync(SERVER_PHOTOS_DIR, { recursive: true });
 }
-app.use('/uploads', express.static(UPLOADS_DIR));
-
-// Smart fallback handler for missing local upload files (e.g. after Render restart)
-app.get('/uploads/:filename(*)', (req, res) => {
-  const requestedFile = req.params.filename;
+app.use('/uploads', express.static(UPLOADS_DIR), (req, res) => {
+  // If express.static cannot find the file, redirect smoothly to Google Drive
+  const requestedFile = req.url.replace(/^\//, '');
   const submissions = db.getSubmissions();
-  
-  // Check if there is an HTTP/Drive link for this submission
+
   const sub = submissions.find(s => s.File_Link && s.File_Link.includes(requestedFile));
   if (sub && sub.File_Link && sub.File_Link.startsWith('http')) {
     return res.redirect(sub.File_Link);
   }
-  
-  // Redirect to Google Drive folder so teacher can access files directly
+
   const driveFolderUrl = `https://drive.google.com/drive/folders/${db.getConfig().folderId || '1NzhSQbM3vkopg9URFqTC-XJbzUAWrf4w'}`;
   res.redirect(driveFolderUrl);
 });
