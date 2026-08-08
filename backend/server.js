@@ -393,10 +393,13 @@ app.post('/api/submit', upload.single('file'), async (req, res) => {
         const fileBuffer = fs.readFileSync(file.path);
         const base64Content = fileBuffer.toString('base64');
         
+        const classSubfolder = student.Class ? `งานส่ง_${String(student.Class).trim().replace(/\//g, '-')}` : 'งานส่ง_ทั่วไป';
+        const cleanName = String(student.FullName || '').replace(/[\/\\:*?"<>|]/g, '_');
         const uploadBody = {
           action: "uploadFile",
           folderId: config.folderId,
-          filename: `${student.Student_ID}_${Assignment_ID}_${file.originalname}`,
+          subfolderName: classSubfolder,
+          filename: `${student.Student_ID}_${cleanName}_${Assignment_ID}_${file.originalname}`,
           content: base64Content,
           mimeType: file.mimetype
         };
