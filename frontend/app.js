@@ -475,22 +475,28 @@ function getStudentVisibleAssignments() {
   return state.assignments.filter(assign => {
     if (!assign || !assign.Assignment_ID) return false;
 
-    // Strict class matching if student has a class selected or is logged in
+    // If assignment has no class specified, it is visible to everyone
+    if (!assign.Class || assign.Class === '' || assign.Class === null) {
+      return true;
+    }
+
+    const classList = Array.isArray(assign.Class) ? assign.Class : [assign.Class];
+    const normalizedClasses = classList.map(c => String(c).trim().toLowerCase());
+
+    const isAll = normalizedClasses.some(c => c === 'all' || c === 'ทุกชั้นเรียน' || c === 'ทุกห้อง');
+    if (isAll) return true;
+
     if (activeClassFilter) {
       const cleanStudentClass = String(activeClassFilter).trim().toLowerCase();
 
-      if (!assign.Class || assign.Class === '' || assign.Class === null) {
-        return false; // Hide assignments without class when filtering for specific class
-      }
+      // 1. Exact class match (e.g. "ม.1/1" === "ม.1/1")
+      if (normalizedClasses.includes(cleanStudentClass)) return true;
 
-      const classList = Array.isArray(assign.Class) ? assign.Class : [assign.Class];
-      const normalizedClasses = classList.map(c => String(c).trim().toLowerCase());
+      // 2. Grade level match (e.g. assign.Class is "ป.4" and student is "ป.4/3")
+      const studentGradeLevel = cleanStudentClass.split('/')[0];
+      if (studentGradeLevel && normalizedClasses.includes(studentGradeLevel)) return true;
 
-      const isAll = normalizedClasses.includes('all') || normalizedClasses.includes('ทุกชั้นเรียน');
-      if (isAll) return true;
-
-      const matchesExactClass = normalizedClasses.includes(cleanStudentClass);
-      return matchesExactClass;
+      return false;
     }
 
     return true;
