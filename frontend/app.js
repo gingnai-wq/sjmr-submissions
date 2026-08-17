@@ -412,16 +412,30 @@ function convertThaiKeyboardToEnglish(str) {
 
 function extractStudentIdFromScan(inputStr) {
   if (!inputStr) return '';
-  // Convert Thai keyboard layout to English numbers/URL automatically
   const normalizedStr = convertThaiKeyboardToEnglish(String(inputStr).trim());
 
+  // 1. URL check e.g. https://...student_id=5971
   if (normalizedStr.includes('student_id=') || normalizedStr.includes('studentId=')) {
     const match = normalizedStr.match(/student_?id=([^&]+)/i);
     if (match && match[1]) return decodeURIComponent(match[1]).trim();
   }
 
-  if (normalizedStr.toUpperCase().startsWith('STUDENT:')) {
-    return normalizedStr.split(':')[1].trim();
+  // 2. Email check e.g. 5971@sjmr.ac.th
+  if (normalizedStr.includes('@')) {
+    const prefix = normalizedStr.split('@')[0].trim();
+    if (/^\d{3,6}$/.test(prefix)) return prefix;
+  }
+
+  // 3. Prefix check e.g. STUDENT:5971 or ID:5971
+  if (normalizedStr.toUpperCase().includes('STUDENT') || normalizedStr.toUpperCase().includes('ID')) {
+    const match = normalizedStr.match(/(?:student|id)[:=]?\s*(\d{3,6})/i);
+    if (match && match[1]) return match[1];
+  }
+
+  // 4. Any 3 to 6 digit sequence found in the string! (e.g. "5971", "STU5971", "5971\r\n")
+  const digitMatch = normalizedStr.match(/\b(\d{3,6})\b/);
+  if (digitMatch && digitMatch[1]) {
+    return digitMatch[1];
   }
 
   return normalizedStr;
@@ -573,6 +587,12 @@ function showQrScanResultModal(student, onConfirm) {
 }
 
 function handleHardwareQrScan(scannedCode) {
+  const rawSpan = document.getElementById('raw-scan-value');
+  if (rawSpan) {
+    rawSpan.textContent = scannedCode;
+    rawSpan.style.color = '#10B981';
+  }
+
   const extractedStudentId = extractStudentIdFromScan(scannedCode);
   const extractedAssignId = extractAssignmentIdFromScan(scannedCode);
 
