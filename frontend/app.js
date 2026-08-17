@@ -394,32 +394,49 @@ async function loginStudent(studentId) {
   }
 }
 
+function convertThaiKeyboardToEnglish(str) {
+  if (!str) return '';
+  const thaiToEngMap = {
+    'ๅ': '1', 'ๆ': '2', '_': '3', 'ภ': '4', 'ถ': '5',
+    'ุ': '6', 'ึ': '7', 'ค': '8', 'ต': '9', 'จ': '0',
+    '-': '2', 'ผ': 'z', 'ป': 'x', 'แ': 'c', 'อ': 'v',
+    'ิ': 'b', 'ื': 'n', 'ท': 'm', 'ม': ',', 'ใ': '.',
+    'ฝ': '/', 'ฟ': 'a', 'ห': 's', 'ก': 'd', 'ด': 'f',
+    'เ': 'g', '้': 'h', '่': 'j', 'า': 'k', 'ส': 'l',
+    'ว': ';', 'ง': '\'', 'ำ': 'e', 'พ': 'r', 'ะ': 't',
+    'ั': 'y', 'ี': 'u', 'ร': 'i', 'น': 'o', 'ย': 'p',
+    'บ': '[', 'ล': ']', 'ฃ': '\\'
+  };
+  return String(str).split('').map(ch => thaiToEngMap[ch] || ch).join('');
+}
+
 function extractStudentIdFromScan(inputStr) {
   if (!inputStr) return '';
-  const str = String(inputStr).trim();
+  // Convert Thai keyboard layout to English numbers/URL automatically
+  const normalizedStr = convertThaiKeyboardToEnglish(String(inputStr).trim());
 
-  if (str.includes('student_id=') || str.includes('studentId=')) {
-    const match = str.match(/student_?id=([^&]+)/i);
+  if (normalizedStr.includes('student_id=') || normalizedStr.includes('studentId=')) {
+    const match = normalizedStr.match(/student_?id=([^&]+)/i);
     if (match && match[1]) return decodeURIComponent(match[1]).trim();
   }
 
-  if (str.toUpperCase().startsWith('STUDENT:')) {
-    return str.split(':')[1].trim();
+  if (normalizedStr.toUpperCase().startsWith('STUDENT:')) {
+    return normalizedStr.split(':')[1].trim();
   }
 
-  return str;
+  return normalizedStr;
 }
 
 function extractAssignmentIdFromScan(inputStr) {
   if (!inputStr) return '';
-  const str = String(inputStr).trim();
+  const normalizedStr = convertThaiKeyboardToEnglish(String(inputStr).trim());
 
-  if (str.includes('assign=') || str.includes('assignment_id=')) {
-    const match = str.match(/(?:assign|assignment_?id)=([^&]+)/i);
+  if (normalizedStr.includes('assign=') || normalizedStr.includes('assignment_id=')) {
+    const match = normalizedStr.match(/(?:assign|assignment_?id)=([^&]+)/i);
     if (match && match[1]) return decodeURIComponent(match[1]).trim();
   }
 
-  return str;
+  return normalizedStr;
 }
 
 // Submit Login Form
@@ -446,6 +463,9 @@ window.addEventListener('keydown', (e) => {
   const timeDiff = now - lastQrKeyTime;
   lastQrKeyTime = now;
 
+  // Convert Thai keyboard key to English char
+  const keyChar = convertThaiKeyboardToEnglish(e.key);
+
   // Scanner guns type fast (< 60ms). If human is typing in a non-ID input field slowly, ignore.
   if (isInputFocused && document.activeElement !== studentIdInput && timeDiff > 80) {
     return;
@@ -468,7 +488,7 @@ window.addEventListener('keydown', (e) => {
       qrScanBuffer = '';
     }
   } else {
-    qrScanBuffer += e.key;
+    qrScanBuffer += keyChar;
 
     // Auto-flush timer: if fast typing stops for > 120ms, execute scan automatically! (No Enter required)
     qrScanTimeout = setTimeout(() => {
