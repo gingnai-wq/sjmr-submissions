@@ -588,9 +588,14 @@ function showQrScanResultModal(student, onConfirm) {
 
 function handleHardwareQrScan(scannedCode) {
   const rawSpan = document.getElementById('raw-scan-value');
+  const teacherRawSpan = document.getElementById('teacher-raw-scan-value');
   if (rawSpan) {
     rawSpan.textContent = scannedCode;
     rawSpan.style.color = '#10B981';
+  }
+  if (teacherRawSpan) {
+    teacherRawSpan.textContent = scannedCode;
+    teacherRawSpan.style.color = '#10B981';
   }
 
   const extractedStudentId = extractStudentIdFromScan(scannedCode);

@@ -204,6 +204,27 @@
       <section id="teacher-view" class="view-section">
         <!-- Admin Dashboard Panel -->
         <div class="teacher-dashboard-layout animate-fade-in">
+
+          <!-- Teacher View Hardware Scanner Real-Time Status Banner -->
+          <div id="teacher-scan-status-banner" style="background: rgba(16, 185, 129, 0.12); border: 2px dashed #10B981; padding: 14px 20px; border-radius: 14px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 14px;">
+              <div style="background: #10B981; color: white; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">
+                <i class="fa-solid fa-qrcode"></i>
+              </div>
+              <div>
+                <div style="font-weight: 700; color: #10B981; font-size: 1.05rem;">
+                  พร้อมรับสัญญาณเครื่องยิง QR Code หน้าแอดมินครู (เสียบสายยิงได้ทันที)
+                </div>
+                <div style="font-size: 0.9rem; color: var(--text-muted); margin-top: 2px;">
+                  ข้อความล่าสุดที่ยิงสแกนได้: <strong id="teacher-raw-scan-value" style="color: #10B981; font-size: 1rem;">(รอการยิงสแกน...)</strong>
+                </div>
+              </div>
+            </div>
+            <div style="font-size: 0.85rem; background: rgba(16, 185, 129, 0.2); color: #10B981; font-weight: 600; padding: 6px 14px; border-radius: 20px;">
+              <i class="fa-solid fa-bolt"></i> แป้นพิมพ์ภาษาไทย/อังกฤษ ออโต้
+            </div>
+          </div>
+
           <!-- Stats Summary Bar -->
           <div class="stats-row">
             <div id="card-stat-students" class="stat-card glass-card" style="cursor: pointer;">
