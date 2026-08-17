@@ -441,8 +441,12 @@ window.addEventListener('keydown', (e) => {
   const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
   const isInputFocused = activeTag === 'input' || activeTag === 'textarea' || activeTag === 'select';
 
-  // If user is actively typing in a non-ID input field manually, ignore automatic capture
-  if (isInputFocused && document.activeElement !== studentIdInput) {
+  const now = Date.now();
+  const timeDiff = now - lastQrKeyTime;
+  lastQrKeyTime = now;
+
+  // Scanner guns type fast (< 60ms). If human is typing in a non-ID input field slowly, ignore.
+  if (isInputFocused && document.activeElement !== studentIdInput && timeDiff > 80) {
     return;
   }
 
@@ -450,17 +454,13 @@ window.addEventListener('keydown', (e) => {
     return;
   }
 
-  const now = Date.now();
-  const timeDiff = now - lastQrKeyTime;
-  lastQrKeyTime = now;
-
-  if (timeDiff > 120) {
+  if (timeDiff > 150) {
     qrScanBuffer = '';
   }
 
   if (e.key === 'Enter') {
     if (qrScanBuffer.length >= 3) {
-      console.log('⚡ Hardware QR Scanner detected:', qrScanBuffer);
+      console.log('⚡ Hardware QR Scanner Gun detected:', qrScanBuffer);
       handleHardwareQrScan(qrScanBuffer);
       qrScanBuffer = '';
     }
@@ -478,7 +478,6 @@ function handleHardwareQrScan(scannedCode) {
     if (extractedStudentId) {
       studentIdInput.value = extractedStudentId;
       loginStudent(extractedStudentId);
-      showToast(`⚡ สแกน QR Code เข้าสู่ระบบสำเร็จ: ${extractedStudentId}`, 'success');
       return;
     }
   }
@@ -497,13 +496,16 @@ function handleHardwareQrScan(scannedCode) {
     }
   }
 
-  // 3. If teacher view -> Search student
+  // 3. If teacher view -> Search student & open record
   if (state.currentView === 'teacher') {
     const studentSearchInput = document.getElementById('search-student-input');
+    const matchedStudent = state.students ? state.students.find(s => String(s.Student_ID).trim() === String(extractedStudentId).trim()) : null;
+    const studentLabel = matchedStudent ? `${matchedStudent.FullName} (${matchedStudent.Class})` : extractedStudentId;
+
     if (studentSearchInput && extractedStudentId) {
       studentSearchInput.value = extractedStudentId;
       studentSearchInput.dispatchEvent(new Event('input'));
-      showToast(`⚡ สแกนค้นหานักเรียน: ${extractedStudentId}`, 'success');
+      showToast(`⚡ สแกนพบนักเรียน: ${studentLabel}`, 'success');
     }
   }
 }
