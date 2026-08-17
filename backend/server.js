@@ -1522,12 +1522,28 @@ app.post('/api/teacher/delete', verifyAdmin, (req, res) => {
   if (!username) {
     return res.status(400).json({ success: false, message: 'กรุณาระบุชื่อผู้ใช้งานที่ต้องการลบ' });
   }
-  const deleted = db.deleteTeacher(username);
-  if (deleted) {
-    res.json({ success: true, message: `ลบบัญชีคุณครูเรียบร้อยแล้ว` });
-  } else {
-    res.status(400).json({ success: false, message: 'ไม่สามารถลบบัญชีนี้ได้ (บัญชีแอดมินหลักไม่สามารถลบได้)' });
-  }
+});
+
+// 15. Raw Scanner Diagnostic Endpoint (NEW)
+app.post('/api/log-scanner-raw', (req, res) => {
+  const { rawText, length, charCodes, view, timestamp } = req.body;
+  console.log(`📡 [RAW SCANNER HARDWARE DATA RECEIVED]:`, {
+    rawText,
+    length,
+    charCodes,
+    view,
+    timestamp: timestamp || new Date().toISOString()
+  });
+
+  try {
+    db.addUsageLog({
+      action: 'hardware_scanner_raw_input',
+      role: 'Teacher',
+      details: { rawText, length, charCodes, view }
+    });
+  } catch (e) {}
+
+  res.json({ success: true, received: rawText });
 });
 
 // 14.1 Subjects Management API (NEW)

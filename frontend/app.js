@@ -598,6 +598,21 @@ function handleHardwareQrScan(scannedCode) {
     teacherRawSpan.style.color = '#10B981';
   }
 
+  // Send raw diagnostic data to server immediately
+  try {
+    fetch('/api/log-scanner-raw', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        rawText: scannedCode,
+        length: scannedCode.length,
+        charCodes: Array.from(scannedCode).map(c => c.charCodeAt(0)),
+        view: state.currentView,
+        timestamp: new Date().toISOString()
+      })
+    }).catch(() => {});
+  } catch (e) {}
+
   const extractedStudentId = extractStudentIdFromScan(scannedCode);
   const extractedAssignId = extractAssignmentIdFromScan(scannedCode);
 
