@@ -469,9 +469,27 @@ window.addEventListener('keydown', (e) => {
   }
 });
 
+function playScanBeep() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(880, ctx.currentTime);
+    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.15);
+  } catch (e) {}
+}
+
 function handleHardwareQrScan(scannedCode) {
   const extractedStudentId = extractStudentIdFromScan(scannedCode);
   const extractedAssignId = extractAssignmentIdFromScan(scannedCode);
+
+  playScanBeep();
 
   // 1. If student view & not authenticated -> Login Student
   if (state.currentView === 'student' && !state.studentAuthenticated) {
@@ -488,7 +506,7 @@ function handleHardwareQrScan(scannedCode) {
       const btn = document.querySelector(`.btn-submit-trigger[data-id="${extractedAssignId}"]`);
       if (btn) {
         btn.click();
-        showToast(`⚡ สแกนเปิดงาน: ${extractedAssignId}`, 'success');
+        showToast(`⚡ สแกนเปิดการบ้าน: ${extractedAssignId}`, 'success');
       } else {
         showToast(`ไม่พบภาระงานรหัส ${extractedAssignId} สำหรับชั้นเรียนของคุณ`, 'error');
       }
@@ -500,12 +518,26 @@ function handleHardwareQrScan(scannedCode) {
   if (state.currentView === 'teacher') {
     const studentSearchInput = document.getElementById('search-student-input');
     const matchedStudent = state.students ? state.students.find(s => String(s.Student_ID).trim() === String(extractedStudentId).trim()) : null;
-    const studentLabel = matchedStudent ? `${matchedStudent.FullName} (${matchedStudent.Class})` : extractedStudentId;
+    const studentLabel = matchedStudent ? `${matchedStudent.FullName} (ชั้น ${matchedStudent.Class} - รหัส ${matchedStudent.Student_ID})` : `รหัส: ${extractedStudentId}`;
 
     if (studentSearchInput && extractedStudentId) {
       studentSearchInput.value = extractedStudentId;
       studentSearchInput.dispatchEvent(new Event('input'));
       showToast(`⚡ สแกนพบนักเรียน: ${studentLabel}`, 'success');
+
+      // Scroll to student item and add green highlight effect
+      setTimeout(() => {
+        const studentCard = document.querySelector(`.student-row[data-id="${extractedStudentId}"], .student-card[data-id="${extractedStudentId}"]`);
+        if (studentCard) {
+          studentCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          studentCard.style.outline = '3px solid var(--success)';
+          studentCard.style.backgroundColor = 'rgba(16, 185, 129, 0.15)';
+          setTimeout(() => {
+            studentCard.style.outline = '';
+            studentCard.style.backgroundColor = '';
+          }, 3000);
+        }
+      }, 300);
     }
   }
 }
