@@ -635,22 +635,21 @@ function handleHardwareQrScan(scannedCode) {
     }
   }
 
-  // 3. If teacher view -> Search student & open record with Popup
+  // 3. If teacher view -> Trigger processQuickGradeScan & filter teacher table
   if (state.currentView === 'teacher') {
-    const studentSearchInput = document.getElementById('search-student-input');
-    const studentLabel = matchedStudent ? `${matchedStudent.FullName} (ชั้น ${matchedStudent.Class} - รหัส ${matchedStudent.Student_ID})` : `รหัส: ${extractedStudentId}`;
+    if (extractedStudentId) {
+      // Reset cooldown if using hardware scanner gun
+      scannerCooldown = false;
+      
+      // Execute Teacher Quick Scan (Attendance or Grading)
+      processQuickGradeScan(extractedStudentId);
 
-    if (matchedStudent) {
-      showQrScanResultModal(matchedStudent, () => {
-        if (studentSearchInput) {
-          studentSearchInput.value = extractedStudentId;
-          studentSearchInput.dispatchEvent(new Event('input'));
-        }
-      });
-    } else if (studentSearchInput && extractedStudentId) {
-      studentSearchInput.value = extractedStudentId;
-      studentSearchInput.dispatchEvent(new Event('input'));
-      showToast(`⚡ สแกนพบนักเรียน: ${studentLabel}`, 'success');
+      // Filter main teacher table by student ID
+      const teacherSearchInput = document.getElementById('teacher-search');
+      if (teacherSearchInput) {
+        teacherSearchInput.value = extractedStudentId;
+        teacherSearchInput.dispatchEvent(new Event('input'));
+      }
     }
   }
 }
