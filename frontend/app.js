@@ -4053,7 +4053,18 @@ if (scanTypeSelect) {
 
 // ================= REPORTS TAB LOGIC =================
 
+function ensureAttendanceReportOption() {
+  const typeSelect = document.getElementById('report-type-select');
+  if (typeSelect && !typeSelect.querySelector('option[value="attendance"]')) {
+    const opt = document.createElement('option');
+    opt.value = 'attendance';
+    opt.textContent = '3. สรุปรายงานการเช็คชื่อเข้าเรียน (Attendance)';
+    typeSelect.appendChild(opt);
+  }
+}
+
 function populateReportsFilters() {
+  ensureAttendanceReportOption();
   const classSelect = document.getElementById('report-class-select');
   const studentSelect = document.getElementById('report-student-select');
   
