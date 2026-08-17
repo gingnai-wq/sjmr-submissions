@@ -671,32 +671,35 @@ module.exports = {
   // Subject helpers
   getSubjects: () => subjects,
   addSubject: (subjectData) => {
-    const exists = subjects.some(s => s.Subject_ID.toLowerCase() === subjectData.Subject_ID.toLowerCase());
-    if (exists) return null;
-    subjects.push(subjectData);
+    const idx = subjects.findIndex(s => String(s.Subject_ID).trim().toLowerCase() === String(subjectData.Subject_ID).trim().toLowerCase());
+    if (idx !== -1) {
+      subjects[idx] = { ...subjects[idx], ...subjectData };
+    } else {
+      subjects.push(subjectData);
+    }
     saveSubjects();
-    pushToDrive();
+    forcePushToDrive().catch(err => console.error('Force push subject to drive failed:', err.message));
     return subjectData;
   },
   updateSubject: (subjectId, updatedData) => {
-    const idx = subjects.findIndex(s => s.Subject_ID.toLowerCase() === subjectId.toLowerCase());
+    const idx = subjects.findIndex(s => String(s.Subject_ID).trim().toLowerCase() === String(subjectId).trim().toLowerCase());
     if (idx !== -1) {
       subjects[idx] = {
         ...subjects[idx],
         ...updatedData
       };
       saveSubjects();
-      pushToDrive();
+      forcePushToDrive().catch(err => console.error('Force push subject to drive failed:', err.message));
       return subjects[idx];
     }
     return null;
   },
   deleteSubject: (subjectId) => {
-    const idx = subjects.findIndex(s => s.Subject_ID.toLowerCase() === subjectId.toLowerCase());
+    const idx = subjects.findIndex(s => String(s.Subject_ID).trim().toLowerCase() === String(subjectId).trim().toLowerCase());
     if (idx !== -1) {
       const removed = subjects.splice(idx, 1);
       saveSubjects();
-      pushToDrive();
+      forcePushToDrive().catch(err => console.error('Force push subject to drive failed:', err.message));
       return removed[0];
     }
     return null;
