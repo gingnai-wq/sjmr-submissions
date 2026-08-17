@@ -436,6 +436,7 @@ studentLoginForm.addEventListener('submit', (e) => {
 // Hardware QR Code Scanner Listener Engine (Auto-detects USB/Wireless QR Scanner Guns)
 let qrScanBuffer = '';
 let lastQrKeyTime = 0;
+let qrScanTimeout = null;
 
 window.addEventListener('keydown', (e) => {
   const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
@@ -454,20 +455,45 @@ window.addEventListener('keydown', (e) => {
     return;
   }
 
+  if (qrScanTimeout) clearTimeout(qrScanTimeout);
+
   if (timeDiff > 150) {
     qrScanBuffer = '';
   }
 
   if (e.key === 'Enter') {
     if (qrScanBuffer.length >= 3) {
-      console.log('⚡ Hardware QR Scanner Gun detected:', qrScanBuffer);
+      console.log('⚡ Hardware QR Scanner Gun detected (Enter):', qrScanBuffer);
       handleHardwareQrScan(qrScanBuffer);
       qrScanBuffer = '';
     }
   } else {
     qrScanBuffer += e.key;
+
+    // Auto-flush timer: if fast typing stops for > 120ms, execute scan automatically! (No Enter required)
+    qrScanTimeout = setTimeout(() => {
+      if (qrScanBuffer.length >= 3) {
+        console.log('⚡ Hardware QR Scanner Gun detected (Auto-Flush):', qrScanBuffer);
+        handleHardwareQrScan(qrScanBuffer);
+        qrScanBuffer = '';
+      }
+    }, 120);
   }
 });
+
+// Auto-trigger when scanner types directly into student-id-input
+if (studentIdInput) {
+  studentIdInput.addEventListener('input', () => {
+    const rawVal = studentIdInput.value.trim();
+    const extracted = extractStudentIdFromScan(rawVal);
+    if (extracted && (extracted.length === 4 || extracted.length === 5) && /^\d+$/.test(extracted)) {
+      if (state.currentView === 'student' && !state.studentAuthenticated) {
+        studentIdInput.value = extracted;
+        loginStudent(extracted);
+      }
+    }
+  });
+}
 
 function playScanBeep() {
   try {
@@ -485,17 +511,67 @@ function playScanBeep() {
   } catch (e) {}
 }
 
+function showQrScanResultModal(student, onConfirm) {
+  const modal = document.getElementById('qr-scan-result-modal');
+  const avatar = document.getElementById('scan-result-avatar');
+  const name = document.getElementById('scan-result-name');
+  const badge = document.getElementById('scan-result-badge');
+  const idDisplay = document.getElementById('scan-result-id');
+  const btnConfirm = document.getElementById('btn-confirm-qr-scan-modal');
+  const btnClose = document.getElementById('btn-close-qr-scan-modal');
+
+  if (!modal) {
+    if (onConfirm) onConfirm();
+    return;
+  }
+
+  const avatarSrc = student.Photo ? student.Photo : `https://api.dicebear.com/7.x/adventurer/svg?seed=${student.Student_ID}`;
+  if (avatar) avatar.src = avatarSrc;
+  if (name) name.textContent = student.FullName;
+  if (badge) badge.textContent = `ชั้น ${student.Class}`;
+  if (idDisplay) idDisplay.textContent = student.Student_ID;
+
+  openModal(modal);
+
+  let isHandled = false;
+  const confirmHandler = () => {
+    if (isHandled) return;
+    isHandled = true;
+    closeModal(modal);
+    if (onConfirm) onConfirm();
+  };
+
+  if (btnConfirm) btnConfirm.onclick = confirmHandler;
+  if (btnClose) btnClose.onclick = () => closeModal(modal);
+
+  // Auto confirm and close modal after 2.5 seconds
+  setTimeout(() => {
+    if (modal.classList.contains('active') && !isHandled) {
+      confirmHandler();
+    }
+  }, 2500);
+}
+
 function handleHardwareQrScan(scannedCode) {
   const extractedStudentId = extractStudentIdFromScan(scannedCode);
   const extractedAssignId = extractAssignmentIdFromScan(scannedCode);
 
   playScanBeep();
 
-  // 1. If student view & not authenticated -> Login Student
+  // Find student in state
+  const matchedStudent = state.students ? state.students.find(s => String(s.Student_ID).trim() === String(extractedStudentId).trim()) : null;
+
+  // 1. If student view & not authenticated -> Login Student with Big Popup
   if (state.currentView === 'student' && !state.studentAuthenticated) {
     if (extractedStudentId) {
       studentIdInput.value = extractedStudentId;
-      loginStudent(extractedStudentId);
+      if (matchedStudent) {
+        showQrScanResultModal(matchedStudent, () => {
+          loginStudent(extractedStudentId);
+        });
+      } else {
+        loginStudent(extractedStudentId);
+      }
       return;
     }
   }
@@ -514,30 +590,22 @@ function handleHardwareQrScan(scannedCode) {
     }
   }
 
-  // 3. If teacher view -> Search student & open record
+  // 3. If teacher view -> Search student & open record with Popup
   if (state.currentView === 'teacher') {
     const studentSearchInput = document.getElementById('search-student-input');
-    const matchedStudent = state.students ? state.students.find(s => String(s.Student_ID).trim() === String(extractedStudentId).trim()) : null;
     const studentLabel = matchedStudent ? `${matchedStudent.FullName} (ชั้น ${matchedStudent.Class} - รหัส ${matchedStudent.Student_ID})` : `รหัส: ${extractedStudentId}`;
 
-    if (studentSearchInput && extractedStudentId) {
+    if (matchedStudent) {
+      showQrScanResultModal(matchedStudent, () => {
+        if (studentSearchInput) {
+          studentSearchInput.value = extractedStudentId;
+          studentSearchInput.dispatchEvent(new Event('input'));
+        }
+      });
+    } else if (studentSearchInput && extractedStudentId) {
       studentSearchInput.value = extractedStudentId;
       studentSearchInput.dispatchEvent(new Event('input'));
       showToast(`⚡ สแกนพบนักเรียน: ${studentLabel}`, 'success');
-
-      // Scroll to student item and add green highlight effect
-      setTimeout(() => {
-        const studentCard = document.querySelector(`.student-row[data-id="${extractedStudentId}"], .student-card[data-id="${extractedStudentId}"]`);
-        if (studentCard) {
-          studentCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          studentCard.style.outline = '3px solid var(--success)';
-          studentCard.style.backgroundColor = 'rgba(16, 185, 129, 0.15)';
-          setTimeout(() => {
-            studentCard.style.outline = '';
-            studentCard.style.backgroundColor = '';
-          }, 3000);
-        }
-      }, 300);
     }
   }
 }
