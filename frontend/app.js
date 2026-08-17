@@ -481,7 +481,11 @@ let qrScanTimeout = null;
 
 window.addEventListener('keydown', (e) => {
   const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
-  const isInputFocused = activeTag === 'input' || activeTag === 'textarea' || activeTag === 'select';
+
+  // If focus is on a select dropdown, blur it immediately so focus returns to the page
+  if (activeTag === 'select') {
+    try { document.activeElement.blur(); } catch(err) {}
+  }
 
   const now = Date.now();
   const timeDiff = now - lastQrKeyTime;
@@ -490,18 +494,14 @@ window.addEventListener('keydown', (e) => {
   // Convert Thai keyboard key to English char
   const keyChar = convertThaiKeyboardToEnglish(e.key);
 
-  // Scanner guns type fast (< 60ms). If human is typing in a non-ID input field slowly, ignore.
-  if (isInputFocused && document.activeElement !== studentIdInput && timeDiff > 80) {
-    return;
-  }
-
+  // Ignore modifier keys or special function keys
   if (e.ctrlKey || e.altKey || e.metaKey || (e.key.length > 1 && e.key !== 'Enter')) {
     return;
   }
 
   if (qrScanTimeout) clearTimeout(qrScanTimeout);
 
-  if (timeDiff > 150) {
+  if (timeDiff > 250) {
     qrScanBuffer = '';
   }
 
@@ -514,7 +514,7 @@ window.addEventListener('keydown', (e) => {
   } else {
     qrScanBuffer += keyChar;
 
-    // Auto-flush timer: if fast typing stops for > 120ms, execute scan automatically! (No Enter required)
+    // Auto-flush timer: if typing stops for > 120ms, execute scan automatically! (No Enter required)
     qrScanTimeout = setTimeout(() => {
       if (qrScanBuffer.length >= 3) {
         console.log('⚡ Hardware QR Scanner Gun detected (Auto-Flush):', qrScanBuffer);
@@ -523,7 +523,7 @@ window.addEventListener('keydown', (e) => {
       }
     }, 120);
   }
-});
+}, true);
 
 // Auto-trigger when scanner types directly into student-id-input
 if (studentIdInput) {
