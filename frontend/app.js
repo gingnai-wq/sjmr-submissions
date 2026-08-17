@@ -397,15 +397,19 @@ async function loginStudent(studentId) {
 function convertThaiKeyboardToEnglish(str) {
   if (!str) return '';
   const thaiToEngMap = {
-    'ๅ': '1', 'ๆ': '2', '_': '3', 'ภ': '4', 'ถ': '5',
+    // Kedmanee Number Row
+    'ๅ': '1', 'ๆ': '2', '-': '3', 'ภ': '4', 'ถ': '5',
     'ุ': '6', 'ึ': '7', 'ค': '8', 'ต': '9', 'จ': '0',
-    '-': '2', 'ผ': 'z', 'ป': 'x', 'แ': 'c', 'อ': 'v',
-    'ิ': 'b', 'ื': 'n', 'ท': 'm', 'ม': ',', 'ใ': '.',
-    'ฝ': '/', 'ฟ': 'a', 'ห': 's', 'ก': 'd', 'ด': 'f',
-    'เ': 'g', '้': 'h', '่': 'j', 'า': 'k', 'ส': 'l',
-    'ว': ';', 'ง': '\'', 'ำ': 'e', 'พ': 'r', 'ะ': 't',
-    'ั': 'y', 'ี': 'u', 'ร': 'i', 'น': 'o', 'ย': 'p',
-    'บ': '[', 'ล': ']', 'ฃ': '\\'
+    'ข': '-', 'ช': '=',
+
+    // Shifted Thai Kedmanee digits
+    '๑': '1', '๒': '2', '๓': '3', '๔': '4', '๕': '5',
+    '๖': '6', '๗': '7', '๘': '8', '๙': '9', '๐': '0',
+
+    // Letters for URLs or prefixes
+    'ผ': 'z', 'ป': 'x', 'แ': 'c', 'อ': 'v', 'ิ': 'b', 'ื': 'n', 'ท': 'm', 'ม': ',', 'ใ': '.', 'ฝ': '/',
+    'ฟ': 'a', 'ห': 's', 'ก': 'd', 'ด': 'f', 'เ': 'g', '้': 'h', '่': 'j', 'า': 'k', 'ส': 'l', 'ว': ';', 'ง': '\'',
+    'ำ': 'e', 'พ': 'r', 'ะ': 't', 'ั': 'y', 'ี': 'u', 'ร': 'i', 'น': 'o', 'ย': 'p', 'บ': '[', 'ล': ']', 'ฃ': '\\'
   };
   return String(str).split('').map(ch => thaiToEngMap[ch] || ch).join('');
 }
@@ -432,10 +436,16 @@ function extractStudentIdFromScan(inputStr) {
     if (match && match[1]) return match[1];
   }
 
-  // 4. Any 3 to 6 digit sequence found in the string! (e.g. "5971", "STU5971", "5971\r\n")
+  // 4. Any 3 to 6 digit sequence found in the string! (e.g. "4638", "5971", "STU4638", "4638\r\n")
   const digitMatch = normalizedStr.match(/\b(\d{3,6})\b/);
   if (digitMatch && digitMatch[1]) {
     return digitMatch[1];
+  }
+
+  // Fallback: extract all digits from converted string e.g. "4638"
+  const rawDigits = normalizedStr.replace(/\D/g, '');
+  if (rawDigits.length >= 3 && rawDigits.length <= 6) {
+    return rawDigits;
   }
 
   return normalizedStr;
