@@ -394,12 +394,119 @@ async function loginStudent(studentId) {
   }
 }
 
+function extractStudentIdFromScan(inputStr) {
+  if (!inputStr) return '';
+  const str = String(inputStr).trim();
+
+  if (str.includes('student_id=') || str.includes('studentId=')) {
+    const match = str.match(/student_?id=([^&]+)/i);
+    if (match && match[1]) return decodeURIComponent(match[1]).trim();
+  }
+
+  if (str.toUpperCase().startsWith('STUDENT:')) {
+    return str.split(':')[1].trim();
+  }
+
+  return str;
+}
+
+function extractAssignmentIdFromScan(inputStr) {
+  if (!inputStr) return '';
+  const str = String(inputStr).trim();
+
+  if (str.includes('assign=') || str.includes('assignment_id=')) {
+    const match = str.match(/(?:assign|assignment_?id)=([^&]+)/i);
+    if (match && match[1]) return decodeURIComponent(match[1]).trim();
+  }
+
+  return str;
+}
+
 // Submit Login Form
 studentLoginForm.addEventListener('submit', (e) => {
   e.preventDefault();
-  const studentId = studentIdInput.value.trim();
-  if (studentId) loginStudent(studentId);
+  const rawValue = studentIdInput.value.trim();
+  const studentId = extractStudentIdFromScan(rawValue);
+  if (studentId) {
+    studentIdInput.value = studentId;
+    loginStudent(studentId);
+  }
 });
+
+// Hardware QR Code Scanner Listener Engine (Auto-detects USB/Wireless QR Scanner Guns)
+let qrScanBuffer = '';
+let lastQrKeyTime = 0;
+
+window.addEventListener('keydown', (e) => {
+  const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
+  const isInputFocused = activeTag === 'input' || activeTag === 'textarea' || activeTag === 'select';
+
+  // If user is actively typing in a non-ID input field manually, ignore automatic capture
+  if (isInputFocused && document.activeElement !== studentIdInput) {
+    return;
+  }
+
+  if (e.ctrlKey || e.altKey || e.metaKey || (e.key.length > 1 && e.key !== 'Enter')) {
+    return;
+  }
+
+  const now = Date.now();
+  const timeDiff = now - lastQrKeyTime;
+  lastQrKeyTime = now;
+
+  if (timeDiff > 120) {
+    qrScanBuffer = '';
+  }
+
+  if (e.key === 'Enter') {
+    if (qrScanBuffer.length >= 3) {
+      console.log('⚡ Hardware QR Scanner detected:', qrScanBuffer);
+      handleHardwareQrScan(qrScanBuffer);
+      qrScanBuffer = '';
+    }
+  } else {
+    qrScanBuffer += e.key;
+  }
+});
+
+function handleHardwareQrScan(scannedCode) {
+  const extractedStudentId = extractStudentIdFromScan(scannedCode);
+  const extractedAssignId = extractAssignmentIdFromScan(scannedCode);
+
+  // 1. If student view & not authenticated -> Login Student
+  if (state.currentView === 'student' && !state.studentAuthenticated) {
+    if (extractedStudentId) {
+      studentIdInput.value = extractedStudentId;
+      loginStudent(extractedStudentId);
+      showToast(`⚡ สแกน QR Code เข้าสู่ระบบสำเร็จ: ${extractedStudentId}`, 'success');
+      return;
+    }
+  }
+
+  // 2. If student view & authenticated -> Open Assignment
+  if (state.currentView === 'student' && state.studentAuthenticated) {
+    if (extractedAssignId) {
+      const btn = document.querySelector(`.btn-submit-trigger[data-id="${extractedAssignId}"]`);
+      if (btn) {
+        btn.click();
+        showToast(`⚡ สแกนเปิดงาน: ${extractedAssignId}`, 'success');
+      } else {
+        showToast(`ไม่พบภาระงานรหัส ${extractedAssignId} สำหรับชั้นเรียนของคุณ`, 'error');
+      }
+      return;
+    }
+  }
+
+  // 3. If teacher view -> Search student
+  if (state.currentView === 'teacher') {
+    const studentSearchInput = document.getElementById('search-student-input');
+    if (studentSearchInput && extractedStudentId) {
+      studentSearchInput.value = extractedStudentId;
+      studentSearchInput.dispatchEvent(new Event('input'));
+      showToast(`⚡ สแกนค้นหานักเรียน: ${extractedStudentId}`, 'success');
+    }
+  }
+}
 
 // Logout Student
 btnStudentLogout.addEventListener('click', () => {
