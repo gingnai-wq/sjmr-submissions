@@ -563,9 +563,10 @@
 
                     <div class="filter-item" style="display: flex; flex-direction: column; gap: 4px;">
                       <label style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold;">ประเภทรายงาน</label>
-                      <select id="report-type-select" style="width: 150px; padding: 6px 10px; font-size: 0.85rem; background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--glass-border); border-radius: 6px;">
-                        <option value="individual">รายงานรายบุคคล</option>
-                        <option value="class">ภาพรวมห้องเรียน</option>
+                      <select id="report-type-select" style="width: 190px; padding: 6px 10px; font-size: 0.85rem; background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--glass-border); border-radius: 6px;">
+                        <option value="individual">1. รายงานรายบุคคล (การส่งงาน)</option>
+                        <option value="class">2. ภาพรวมห้องเรียน (การส่งงาน)</option>
+                        <option value="attendance">3. สรุปรายงานการเช็คชื่อเข้าเรียน (Attendance)</option>
                       </select>
                     </div>
 
@@ -731,6 +732,11 @@
                       <button type="button" id="btn-manual-scan-submit" class="btn btn-purple" style="padding: 8px 16px; font-size: 0.85rem; font-weight: bold; white-space: nowrap;">บันทึก</button>
                     </div>
                   </div>
+
+                  <!-- Attendance Report Trigger Button (NEW) -->
+                  <button type="button" id="btn-open-attendance-report" class="btn btn-purple btn-block btn-icon-left" style="margin-top: 10px; font-weight: bold;">
+                    <i class="fa-solid fa-clipboard-user"></i> <span>📊 ติดตาม & ดูสรุปรายงานการเช็คชื่อ</span>
+                  </button>
 
                   <!-- Scanner Simulator -->
                   <div class="scanner-simulator">

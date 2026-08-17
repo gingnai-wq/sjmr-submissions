@@ -4137,6 +4137,8 @@ if (btnGenerateReport) {
         return;
       }
       generateIndividualReport(studentId, subjectId, period, resultsPanel, printArea);
+    } else if (type === 'attendance') {
+      generateAttendanceReport(selectedClass, subjectId, period, resultsPanel, printArea);
     } else {
       if (!selectedClass) {
         showToast('กรุณาเลือกชั้นเรียนเพื่อดึงรายงาน', 'error');
@@ -4145,6 +4147,176 @@ if (btnGenerateReport) {
       generateClassReport(selectedClass, subjectId, period, resultsPanel, printArea);
     }
   });
+}
+
+const btnOpenAttendanceReport = document.getElementById('btn-open-attendance-report');
+if (btnOpenAttendanceReport) {
+  btnOpenAttendanceReport.addEventListener('click', () => {
+    const tabReports = document.getElementById('tab-reports');
+    if (tabReports) tabReports.click();
+
+    const typeSelect = document.getElementById('report-type-select');
+    if (typeSelect) {
+      typeSelect.value = 'attendance';
+      typeSelect.dispatchEvent(new Event('change'));
+    }
+
+    setTimeout(() => {
+      const btnGen = document.getElementById('btn-generate-report');
+      if (btnGen) btnGen.click();
+    }, 200);
+  });
+}
+
+async function generateAttendanceReport(selectedClass, subjectId, period, resultsPanel, printArea) {
+  resultsPanel.innerHTML = `
+    <div style="text-align: center; padding: 30px;">
+      <i class="fa-solid fa-spinner fa-spin text-purple" style="font-size: 2.5rem; margin-bottom: 12px;"></i>
+      <p style="color: var(--text-muted);">กำลังดึงและประมวลผลรายงานการเช็คชื่อเข้าเรียน...</p>
+    </div>
+  `;
+
+  try {
+    const allAttendance = await fetch('/api/attendance').then(r => r.json());
+    let filtered = Array.isArray(allAttendance) ? allAttendance : [];
+
+    if (subjectId && subjectId !== 'all') {
+      filtered = filtered.filter(a => String(a.Subject_ID) === String(subjectId));
+    }
+
+    if (selectedClass && selectedClass !== 'all') {
+      filtered = filtered.filter(a => {
+        const student = state.students ? state.students.find(s => String(s.Student_ID).trim() === String(a.Student_ID).trim()) : null;
+        return student && String(student.Class) === String(selectedClass);
+      });
+    }
+
+    const now = new Date();
+    const todayStr = now.toISOString().split('T')[0];
+    if (period === 'daily') {
+      filtered = filtered.filter(a => String(a.Date || a.Timestamp || '').startsWith(todayStr));
+    } else if (period === 'weekly') {
+      const oneWeekAgo = new Date(now.getTime() - 7 * 86400000);
+      filtered = filtered.filter(a => new Date(a.Timestamp || a.Date) >= oneWeekAgo);
+    } else if (period === 'monthly') {
+      const oneMonthAgo = new Date(now.getTime() - 30 * 86400000);
+      filtered = filtered.filter(a => new Date(a.Timestamp || a.Date) >= oneMonthAgo);
+    }
+
+    filtered.sort((a, b) => new Date(b.Timestamp || b.Date) - new Date(a.Timestamp || a.Date));
+
+    const totalPresent = filtered.length;
+
+    resultsPanel.innerHTML = `
+      <div style="width: 100%; text-align: left;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 12px;">
+          <div>
+            <h3 style="margin: 0; color: var(--text-primary);"><i class="fa-solid fa-clipboard-user text-purple"></i> สรุปรายงานการเช็คชื่อเข้าเรียน</h3>
+            <p style="margin: 4px 0 0 0; color: var(--text-muted); font-size: 0.88rem;">
+              ช่วงเวลา: <strong>${period === 'daily' ? 'วันนี้' : period}</strong> | 
+              ชั้นเรียน: <strong>${selectedClass === 'all' ? 'ทุกชั้นเรียน' : selectedClass}</strong> | 
+              วิชา: <strong>${subjectId === 'all' ? 'ทุกวิชา' : subjectId}</strong>
+            </p>
+          </div>
+          <button id="btn-print-attendance-report" class="btn btn-purple btn-icon-left">
+            <i class="fa-solid fa-print"></i> พิมพ์รายงาน A4 / PDF
+          </button>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 20px;">
+          <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); padding: 12px 16px; border-radius: 10px;">
+            <div style="font-size: 0.8rem; color: #10B981; font-weight: bold;">เช็คชื่อเข้าเรียนทั้งหมด</div>
+            <div style="font-size: 1.6rem; font-weight: bold; color: var(--text-primary);">${totalPresent} รายการ</div>
+          </div>
+        </div>
+
+        <div style="max-height: 480px; overflow-y: auto; border: 1px solid var(--glass-border); border-radius: 8px;">
+          <table class="data-table" style="width: 100%; border-collapse: collapse;">
+            <thead style="position: sticky; top: 0; background: var(--bg-secondary);">
+              <tr style="font-size: 0.82rem;">
+                <th style="padding: 10px;">วันที่-เวลา</th>
+                <th style="padding: 10px;">รหัสนักเรียน</th>
+                <th style="padding: 10px;">ชื่อ-นามสกุล</th>
+                <th style="padding: 10px;">ชั้นเรียน</th>
+                <th style="padding: 10px;">วิชาเรียน</th>
+                <th style="padding: 10px;">สถานะ</th>
+                <th style="padding: 10px;">ผู้บันทึก</th>
+              </tr>
+            </thead>
+            <tbody style="font-size: 0.85rem;">
+              ${filtered.length === 0 ? `
+                <tr><td colspan="7" class="text-center" style="padding: 24px; color: var(--text-muted);">ยังไม่มีประวัติการเช็คชื่อตามเงื่อนไขที่เลือก</td></tr>
+              ` : filtered.map(a => {
+                const s = state.students ? state.students.find(st => String(st.Student_ID).trim() === String(a.Student_ID).trim()) : null;
+                const studentName = s ? s.FullName : (a.FullName || '-');
+                const studentClass = s ? s.Class : '-';
+                const timeFormatted = a.Timestamp ? new Date(a.Timestamp).toLocaleString('th-TH') : (a.Date || '-');
+                return `
+                  <tr>
+                    <td style="padding: 8px 10px;">${timeFormatted}</td>
+                    <td style="padding: 8px 10px; font-weight: bold;">${a.Student_ID}</td>
+                    <td style="padding: 8px 10px;">${studentName}</td>
+                    <td style="padding: 8px 10px;"><span class="badge-class">${studentClass}</span></td>
+                    <td style="padding: 8px 10px;">${a.Subject_ID || '-'}</td>
+                    <td style="padding: 8px 10px;"><span style="color: #10B981; font-weight: bold;"><i class="fa-solid fa-circle-check"></i> มาเรียน</span></td>
+                    <td style="padding: 8px 10px; color: var(--text-muted);">${a.Recorded_By || 'ครูผู้สอน'}</td>
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+
+    const printBtn = document.getElementById('btn-print-attendance-report');
+    if (printBtn) {
+      printBtn.onclick = () => {
+        printArea.innerHTML = `
+          <div style="font-family: 'Sarabun', sans-serif; padding: 20px; color: #000;">
+            <div style="text-align: center; margin-bottom: 20px;">
+              <h2 style="margin: 0;">รายงานสรุปการเข้าเรียนประจำวัน</h2>
+              <p style="margin: 4px 0;">โรงเรียนเซนต์โยเซฟแม่ระมาด</p>
+              <p style="margin: 2px 0; font-size: 0.9rem;">ชั้นเรียน: ${selectedClass === 'all' ? 'ทุกชั้นเรียน' : selectedClass} | วิชา: ${subjectId === 'all' ? 'ทุกวิชา' : subjectId}</p>
+            </div>
+            <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;" border="1" cellpadding="6">
+              <thead>
+                <tr style="background: #f3f4f6;">
+                  <th>ลำดับ</th>
+                  <th>วันที่-เวลา</th>
+                  <th>รหัสนักเรียน</th>
+                  <th>ชื่อ-นามสกุล</th>
+                  <th>ชั้นเรียน</th>
+                  <th>วิชาเรียน</th>
+                  <th>สถานะ</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${filtered.map((a, i) => {
+                  const s = state.students ? state.students.find(st => String(st.Student_ID).trim() === String(a.Student_ID).trim()) : null;
+                  return `
+                    <tr>
+                      <td style="text-align: center;">${i + 1}</td>
+                      <td>${a.Timestamp ? new Date(a.Timestamp).toLocaleString('th-TH') : a.Date}</td>
+                      <td style="text-align: center;">${a.Student_ID}</td>
+                      <td>${s ? s.FullName : (a.FullName || '-')}</td>
+                      <td style="text-align: center;">${s ? s.Class : '-'}</td>
+                      <td style="text-align: center;">${a.Subject_ID || '-'}</td>
+                      <td style="text-align: center;">มาเรียน (Present)</td>
+                    </tr>
+                  `;
+                }).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+        setTimeout(() => window.print(), 300);
+      };
+    }
+  } catch (err) {
+    console.error('Error generating attendance report:', err);
+    resultsPanel.innerHTML = `<div style="color: #ef4444; padding: 20px;">เกิดข้อผิดพลาดในการโหลดรายงานการเช็คชื่อ</div>`;
+  }
 }
 
 function generateIndividualReport(studentId, subjectId, period, resultsPanel, printArea) {
